@@ -12,8 +12,10 @@ proposalRoute.post('/update');
 
 proposalRoute.post('/delete');
 
-proposalRoute.get('/getAll');
+proposalRoute.get('/getAll', proposalController.getAll);
 
 proposalRoute.get('/getById');
+
+proposalRoute.get('/layout/:location/:noOfSeats', proposalController.layout);
 
 module.exports = proposalRoute;
