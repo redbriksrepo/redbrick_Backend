@@ -16,6 +16,6 @@ proposalRoute.get('/getAll', proposalController.getAll);
 
 proposalRoute.get('/getById');
 
-proposalRoute.get('/layout/:location/:noOfSeats', proposalController.layout);
+proposalRoute.get('/layout/:location/:noOfSeats/:selectFrom', proposalController.layout);
 
 module.exports = proposalRoute;
