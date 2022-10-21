@@ -15,8 +15,8 @@ const authentication = (req,res,next) => {
             error.status = 406;
             throw error;
         }
-        // let decode = jwt.verify(token, process.env.AUTH_TOKEN_SECRET);
-        let decode = jwt.verify(token, 'sdfkajsdfwf384*&^*^');
+        let decode = jwt.verify(token, process.env.AUTH_TOKEN_SECRET);
+        // let decode = jwt.verify(token, 'sdfkajsdfwf384*&^*^');
         if(decode) {
             User.findOne({'userName': decode.userName }).then((user) => {
                 if(user) {

@@ -116,8 +116,8 @@ const login = (req, res, next) => {
                         userName: data.userName,
                         deviceType: deviceType,
                     };
-                    // let token = jwt.sign(tokenPayload, process.env.AUTH_TOKEN_SECRET);
-                    let token = jwt.sign(tokenPayload, 'sdfkajsdfwf384*&^*^')
+                    let token = jwt.sign(tokenPayload, process.env.AUTH_TOKEN_SECRET);
+                    // let token = jwt.sign(tokenPayload, 'sdfkajsdfwf384*&^*^')
 
 
                     if (!data.deviceId) {

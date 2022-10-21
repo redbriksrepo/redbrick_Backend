@@ -12,8 +12,8 @@ const logout = (req,res,next) => {
             throw error;
         }
 
-        // let decode = jwt.verify(token, process.env.AUTH_TOKEN_SECRET);
-        let decode = jwt.verify(token, 'sdfkajsdfwf384*&^*^');
+        let decode = jwt.verify(token, process.env.AUTH_TOKEN_SECRET);
+        // let decode = jwt.verify(token, 'sdfkajsdfwf384*&^*^');
         if(decode){
             User.updateOne({'userName': decode.userName},{$set: {'userActive': false,'activeDevice': 'None'}}).then((data) => {
                 if(data.modifiedCount > 0) {
