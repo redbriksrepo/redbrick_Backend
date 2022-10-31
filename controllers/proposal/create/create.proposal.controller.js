@@ -95,6 +95,31 @@ const addClientInfo = (req, res, next) => {
     }
 }
 
+const checkRequiredNoOfSeats = (req, res, next) => {
+    let data = req.body;
+    let Id = req.params.Id;
+    let totalNoOfSeats = data.workstationNumber + data.cabinNumber + data.meetingRoomNumber + data.visitorMeetingRoomNumber;
+    Proposal.updateOne({ _id: mongoose.Types.ObjectId(Id) }, { $set: { totalNoOfSeatsSelected: totalNoOfSeats } }).then((result) => {
+        if (result.acknowledged === true) {
+            if (result.modifiedCount > 0) {
+                next();
+            }
+            else {
+                let error = new Error('Something went wrong while calculating total no of Seats');
+                throw error;
+            }
+        }
+        else {
+            let error = new Error('Cannot find proposal with given Id');
+            throw error;
+        }
+    }).catch((err) => {
+        if (!err.message) err.message = 'Error while calculating total no of Seats';
+        if (!err.status) err.status = 400;
+        next(err);
+    })
+}
+
 const addProposalRequirement = (req, res, next) => {
     let data = req.body;
     let Id = req.params.Id;
@@ -112,10 +137,25 @@ const addProposalRequirement = (req, res, next) => {
                 throw error;
             }
             else {
+                // try {
+                //     let requirementFields = ['workStation', 'cabin', 'meetingRooms'];
+                //     requirementFields.forEach((mainField) => {
+                //         if (proposal?.[mainField]) {
+                //             let error = new Error('Requirement cannot be added twice');
+                //             throw error;
+                //         }
+                //     })
+                // }
+                // catch (err) {
+                //     if (!err.status) err.status = 406;
+                //     if (!err.message) err.message = 'Requirement cannot be added twice';
+                //     // console.log(err);
+                //     throw err;
+                // }
                 try {
-                    let requirementFields = ['workStation', 'cabin', 'meetingRooms'];
-                    requirementFields.forEach((mainField) => {
-                        if (proposal?.[mainField]) {
+                    let requirementField = ['workstationSize', 'workstationNumber', 'cabinSize', 'cabinNumber', 'meetingRoomSize', 'meetingRoomNumber', 'visitorMeetingRoomSize', 'visitorMeetingRoomNumber', 'collabArea', 'dryPantry', 'storeRoom', 'storeRoomNumber', 'cafeteria', 'cafeteriaNumber', 'reception', 'mailRoom', 'bmsRoom', 'compactor'];
+                    requirementField.forEach((field) => {
+                        if (proposal?.[field]) {
                             let error = new Error('Requirement cannot be added twice');
                             throw error;
                         }
@@ -132,22 +172,39 @@ const addProposalRequirement = (req, res, next) => {
                     if (result.acknowledged === true) {
                         if (result.modifiedCount > 0) {
                             Proposal.find()
-                                .where('workStation.workStationNumber').gte(data.workStation.workStationNumber - ((data.workStation.workStationNumber * 5) / 100)).lte(data.workStation.workStationNumber + ((data.workStation.workStationNumber * 5) / 100))
-                                .where('workStation.storageRoomNumber').gte(data.workStation.storageRoomNumber - ((data.workStation.storageRoomNumber * 5) / 100)).lte(data.workStation.storageRoomNumber - ((data.workStation.storageRoomNumber * 5) / 100))
-                                .where('workStation.cafeteriaNumber').gte(data.workStation.cafeteriaNumber - ((data.workStation.cafeteriaNumber * 5) / 100)).lte(data.workStation.cafeteriaNumber - ((data.workStation.cafeteriaNumber * 5) / 100))
-                                .where('cabin.cabinNumber').gte(data.cabin.cabinNumber - ((data.cabin.cabinNumber * 5) / 100)).lte(data.cabin.cabinNumber - ((data.cabin.cabinNumber * 5) / 100))
-                                .where('cabin.visitorMeetingRoom.visitorMeetingRoomNumber').gte(data.cabin.visitorMeetingRoom.visitorMeetingRoomNumber - ((data.cabin.visitorMeetingRoom.visitorMeetingRoomNumber * 5) / 100)).lte(data.cabin.visitorMeetingRoom.visitorMeetingRoomNumber - ((data.cabin.visitorMeetingRoom.visitorMeetingRoomNumber * 5) / 100))
-                                .where('meetingRooms.meetingRoomsNumber').gte(data.meetingRooms.meetingRoomsNumber - ((data.meetingRooms.meetingRoomsNumber * 5) / 100)).lte(data.meetingRooms.meetingRoomsNumber - ((data.meetingRooms.meetingRoomsNumber * 5) / 100))
-                                .where('center').equals(data.center)
-                                .where('location').equals(data.location)
+                                .where('location').equals(proposal.location).where('center').equals(proposal.center)
+                                .where('totalNoOfSeatsSelected').gte(proposal.totalNoOfSeatsSelected - ((proposal.totalNoOfSeatsSelected * 5) / 100)).lte(proposal.totalNoOfSeatsSelected + ((proposal.totalNoOfSeatsSelected * 5) / 100))
                                 .then((result) => {
-                                    console.log(result);
-                                }).catch((err) => {
-                                    console.log(err);
-                                });
-                            res.status(202).send({
-                                "Message": "Requirement added Successfully!"
-                            });
+                                    if (result.length > 1) {
+                                        res.status(202).send({
+                                            "Message": "Requirement added Successfully!",
+                                            "conflict": true
+                                        })
+                                    }
+                                    else {
+                                        res.status(202).send({
+                                            "Message": "Requirement added Successfully!",
+                                            "conflict": false
+                                        })
+                                    }
+                                })
+                            // Proposal.find()
+                            //     .where('workStation.workStationNumber').gte(data.workStation.workStationNumber - ((data.workStation.workStationNumber * 5) / 100)).lte(data.workStation.workStationNumber + ((data.workStation.workStationNumber * 5) / 100))
+                            //     .where('workStation.storageRoomNumber').gte(data.workStation.storageRoomNumber - ((data.workStation.storageRoomNumber * 5) / 100)).lte(data.workStation.storageRoomNumber - ((data.workStation.storageRoomNumber * 5) / 100))
+                            //     .where('workStation.cafeteriaNumber').gte(data.workStation.cafeteriaNumber - ((data.workStation.cafeteriaNumber * 5) / 100)).lte(data.workStation.cafeteriaNumber - ((data.workStation.cafeteriaNumber * 5) / 100))
+                            //     .where('cabin.cabinNumber').gte(data.cabin.cabinNumber - ((data.cabin.cabinNumber * 5) / 100)).lte(data.cabin.cabinNumber - ((data.cabin.cabinNumber * 5) / 100))
+                            //     .where('cabin.visitorMeetingRoom.visitorMeetingRoomNumber').gte(data.cabin.visitorMeetingRoom.visitorMeetingRoomNumber - ((data.cabin.visitorMeetingRoom.visitorMeetingRoomNumber * 5) / 100)).lte(data.cabin.visitorMeetingRoom.visitorMeetingRoomNumber - ((data.cabin.visitorMeetingRoom.visitorMeetingRoomNumber * 5) / 100))
+                            //     .where('meetingRooms.meetingRoomsNumber').gte(data.meetingRooms.meetingRoomsNumber - ((data.meetingRooms.meetingRoomsNumber * 5) / 100)).lte(data.meetingRooms.meetingRoomsNumber - ((data.meetingRooms.meetingRoomsNumber * 5) / 100))
+                            //     .where('center').equals(data.center)
+                            //     .where('location').equals(data.location)
+                            //     .then((result) => {
+                            //         console.log(result);
+                            //     }).catch((err) => {
+                            //         console.log(err);
+                            //     });
+                            // res.status(202).send({
+                            //     "Message": "Requirement added Successfully!"
+                            // });
                         }
                         else {
                             let error = new Error('Proposal not found with given Id');
@@ -184,43 +241,12 @@ const addProposalRequirement = (req, res, next) => {
 
         throw err;
     }
-    /////////////////////////////////////////////////
-    // Proposal.find().where("workStation").elemMatch((workstation) => {
-    //     workstation.where('workStationNumber').gt(data.workStation.workStationNumber - ((data.workStation.workStationNumber * 5) / 100)).lt(data.workStation.workStationNumber + ((data.workStation.workStationNumber * 5) / 100));
-    //     workstation.where('storageRoomNumber').gt(data.workStation.storageRoomNumber - ((data.workStation.storageRoomNumber * 5) / 100)).lt(data.workStation.storageRoomNumber + ((data.workStation.storageRoomNumber * 5) / 100));
-    //     workstation.where('cafeteriaNumber').gt((data.workStation.cafeteriaNumber - (data.workStation.cafeteriaNumber * 5) / 100)).lt((data.workStation.cafeteriaNumber + (data.workStation.cafeteriaNumber * 5) / 100));
-    // }).where("cabin").elemMatch((cabin) => {
-    //     cabin.where('cabinNumber').gt((data.cabin.cabinNumber * 5) / 100).lt((data.cabin.cabinNumber * 5) / 100);
-    //     cabin.where('visitorMeetingRoom').elemMatch((visitorMeetingRoom) => {
-    //         visitorMeetingRoom.where("visitorMeetingRoomNumber").gt((data.cabin.visitorMeetingRoom.visitorMeetingRoomNumber * 5) / 100).lt((data.cabin.visitorMeetingRoom.visitorMeetingRoomNumber * 5) / 100);
-    //     })
-    // }).where("meetingRooms").elemMatch((meetingRooms) => {
-    //     meetingRooms.where("meetingRoomsNumber").gt(data.meetingRooms.meetingRoomsNumber - ((data.meetingRooms.meetingRoomsNumber * 5) / 100)).lt(data.meetingRooms.meetingRoomsNumber + ((data.meetingRooms.meetingRoomsNumber * 5) / 100));
-    // }).countDocuments((err, count) => {
-    //     if (err) next(err);
-    //     if (count) res.send({
-    //         "count": count
-    //     });
-    //     else res.send('lasdjfa');
-    // })
-    // console.log(data.workStation.workStationNumber);
-    // Proposal.find().where('workStation').gt(0)
-    //     .then((data) => {
-    //     res.send({ 'count': data.length, "min": data.workStation.workStationNumber - ((data.workStation.workStationNumber * 5) / 100), "max": data.workStation.workStationNumber + ((data.workStation.workStationNumber * 5) / 100) });
-    // }).catch((err) => {
-    //     next(err);
-    // });
-    // Proposal.find({'workStation.workStationNumber'})
-    // Proposal.find({}).where("workStation").gt(data.workStation.workStationNumber - ((data.workStation.workStationNumber * 5) / 100)).lt(data.workStation.workStationNumber + ((data.workStation.workStationNumber * 5) / 100)).then((data) => {
-    //     res.send({ 'count': data.length, "min": data.workStation.workStationNumber - ((data.workStation.workStationNumber * 5) / 100), "max": data.workStation.workStationNumber + ((data.workStation.workStationNumber * 5) / 100) });
-    // }).catch((err) => {
-    //     next(err);
-    // })
 }
 
 const create = {
     init: initProposal,
     addClientInfo: addClientInfo,
+    checkRequiredNoOfSeats: checkRequiredNoOfSeats,
     addProposalRequirement: addProposalRequirement
 };
 

@@ -6,40 +6,31 @@ const proposalSchema = new Schema({
     salesHead: String,
     location: String,
     center: String,
-    broker: {
-        brokerType: String,
-        brokerCategory: String,
-        brokerCategoryOther: String
-    },
+    brokerType: String,
+    brokerCategory: String,
+    brokerCategoryOther: String,
     spocName: String,
     clientName: String,
-    workStation: new Schema({
-        workStationCategory: String,
-        workStationNumber: Number,
-        collabArea: String,
-        dryPantry: String,
-        storageRoom: String,
-        storageRoomNumber: Number,
-        cafeteria: String,
-        cafeteriaNumber: Number
-    }),
-    cabin: new Schema({
-        cabinCategory: String,
-        cabinNumber: Number,
-        reception: String,
-        visitorMeetingRoom: new Schema({
-            visitorMeetingRoomToggle: String,
-            visitorMeetingRoomCategory: String,
-            visitorMeetingRoomNumber: Number
-        })
-    }),
-    meetingRooms: new Schema({
-        meetingRoomsCategory: String,
-        meetingRoomsNumbers: Number,
-        mailRoom: String,
-        bmsRoom: String,
-        compactor: String
-    }),
+    workstationSize: String,
+    workstationNumber: Number,
+    cabinSize: String,
+    cabinNumber: Number,
+    meetingRoomSize: String,
+    meetingRoomNumber: Number,
+    visitorMeetingRoomSize: String,
+    visitorMeetingRoomNumber: Number,
+    collabArea: String,
+    dryPantry: String,
+    storeRoom: String,
+    storeRoomNumber: Number,
+    cafeteria: String,
+    cafeteriaNumber: Number,
+    reception: String,
+    mailRoom: String,
+    bmsRoom: String,
+    compactor: String,
+    totalNoOfSeatsSelected: Number,
+    OTP: Number,
     status: {
         type: String,
         default: "Pending"
