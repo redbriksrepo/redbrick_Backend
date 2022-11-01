@@ -34,7 +34,7 @@ const proposalSchema = new Schema({
     Tenure: Number,
     LockIn: Number, 
     NonStandardRequirement: String,
-    Serviced: Boolean,
+    Serviced: String,
     status: {
         type: String,
         default: "Pending"

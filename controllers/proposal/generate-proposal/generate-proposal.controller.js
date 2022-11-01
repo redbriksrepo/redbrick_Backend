@@ -4,6 +4,7 @@ const path = require('path');
 const Proposal = require('../../../models/proposal/proposal.model');
 const { default: mongoose } = require('mongoose');
 const fs = require('fs');
+const nodemailer = require('nodemailer')
 
 const generateProposal = (req, res, next) => {
     let data = req.body;
@@ -83,23 +84,23 @@ const generateProposalPDF = (req, res, next) => {
         }
         try {
             const doc = new PDFDocument({ size: [800, 566], margin: 0 });
-            doc.pipe(fs.createWriteStream(path.join('..','..','..','assets','proposal','image',`${proposal._id}.pdf`)));
+            doc.pipe(fs.createWriteStream(`./assets/proposal/generated/${proposal._id}.pdf`));
 
             // First Page ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            doc.image('../../../assets/proposal/image/proposal-layout__page1-background.png', 0, 0, { width: 800, height: 566 });
-            doc.image('../../../assets/proposal/image/proposal-layout__page1-logo.png', 200, 350, { scale: 0.25 });
+            doc.image('./assets/proposal/image/proposal-layout__page1-background.png', 0, 0, { width: 800, height: 566 });
+            doc.image('./assets/proposal/image/proposal-layout__page1-logo.png', 200, 350, { scale: 0.25 });
             doc.addPage();
 
             // Second Page /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-            doc.image('../../../assets/proposal/image/proposal-layout__page2-image.png', 0, 0, { width: 800, height: 566 });
+            doc.image('./assets/proposal/image/proposal-layout__page2-image.png', 0, 0, { width: 800, height: 566 });
             doc.addPage();
 
             // Third Page //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
             doc.fontSize(38).text('Our Clients', 0, 10, { width: 800, align: 'center' });
             doc.fontSize(16).fillColor('grey').text('Top clients rely on us for innovatice workspace solutions', 0, 50, { width: 800, align: 'center' }).fontSize(12);
-            doc.image('../../../assets/proposal/image/proposal-layout__page3-our_client.png', 20, 150, { width: 760 });
+            doc.image('./assets/proposal/image/proposal-layout__page3-our_client.png', 20, 150, { width: 760 });
             doc.addPage();
 
             // Generation of layout start from here ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -661,35 +662,33 @@ const generateProposalPDF = (req, res, next) => {
             doc.rect(300, 490, 480, 30).fillAndStroke('#dbdbdb', 'black').fillColor('black').text(`Approx ${proposal.totalNoOfSeatsSelected}ws`, 300, 500, { width: 480, align: 'center' });
             doc.rect(20, 520, 100, 30).fillAndStroke('#999999', 'black').fillColor('black').text('10', 20, 530, { width: 100, align: 'center' });
             doc.rect(120, 520, 180, 30).fillAndStroke('#999999', 'black').fillColor('black').text('Total Monthly Cost (+GST)', 120, 530, { width: 180, align: 'center' });
-            doc.rect(300, 520, 480, 30).fillAndStroke('#999999', 'black').fillColor('black').text(`INR ${proposal.totalNoOfSeatsSelected * 19500} + taxes per month`, 300, 530, { width: 480, align: 'center' });
+            doc.rect(300, 520, 480, 30).fillAndStroke('#999999', 'black').fillColor('black').text(`INR ${new Intl.NumberFormat('en-IN', { currency: 'INR' }).format(proposal.totalNoOfSeatsSelected * 19500) } + taxes per month`, 300, 530, { width: 480, align: 'center' });
             doc.addPage();
 
             // Page Six Started ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-            doc.image('../../../assets/proposal/image/proposal-layout__page6.png', 0, 0, { width: 800, height: 566 });
+            doc.image('./assets/proposal/image/proposal-layout__page6.png', 0, 0, { width: 800, height: 566 });
             doc.addPage();
 
             // Page Seven Started ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-            doc.image('../../../assets/proposal/image/proposal-layout__page7.png', 0, 0, { width: 800, height: 566 });
+            doc.image('./assets/proposal/image/proposal-layout__page7.png', 0, 0, { width: 800, height: 566 });
             doc.addPage();
 
             // Page Eight Started ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-            doc.image('../../../assets/proposal/image/proposal-layout__page8.png', 0, 0, { width: 800, height: 566 });
+            doc.image('./assets/proposal/image/proposal-layout__page8.png', 0, 0, { width: 800, height: 566 });
             doc.addPage();
 
             // Page Nine Started ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-            doc.image('../../../assets/proposal/image/proposal-layout__page9.png', 0, 0, { width: 800, height: 566 });
+            doc.image('./assets/proposal/image/proposal-layout__page9.png', 0, 0, { width: 800, height: 566 });
 
             // PDF generation Ends Here ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
             doc.end();
 
-            res.status(200).send({
-                "Message": 'Proposal Generated Successfully'
-            });
+            next();
         }
         catch (err) {
             if (!err.status) err.status = 500;
@@ -706,7 +705,46 @@ const generateProposalPDF = (req, res, next) => {
 
 }
 
+const sendProposalByEmail = (req, res, next) => {
+    let data = req.body;
+    let Id = req.params.Id;
+
+    const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: 'manpreet.mobicloud@gmail.com',
+            pass: 'wgysezoatzgbytrx'
+        }
+    });
+
+    let mailOptions = {
+        from: 'manpreet.mobicloud@gmail.com',
+        to: 'vikrant.mobicloud@gmail.com',
+        subject: 'Proposal Document From Redbrick Office',
+        text: 'Dear Sir/ma\'am, \n\n We are sending you the Document related to your proposal and location. All the documents attached to this email are computer generated the are not Fixed. Please contact relavent sales person if you have and query related you proposal\n \n Thanks and regards, \n Redbricks Office',
+        attachments: [
+            {
+                filename: 'Proposal.pdf',
+                path: path.join('assets','proposal','generated',`${Id}.pdf`)
+            },
+            {
+                filename: 'Standard_Offerings_Fitout_2022.pdf',
+                path: path.join('assets', 'proposal', 'pdf', 'Standard_Offerings_Fitout_2022.pdf')
+            }
+        ]
+    }
+
+    transporter.sendMail(mailOptions, (err, info) => {
+        if (err) throw err;
+        console.log('proposal send successfully');
+        res.status(200).send({
+            "Message": 'Proposal Generated Successfully'
+        });
+    })
+}
+
 module.exports = {
     generateProposal: generateProposal,
-    generateProposalPDF: generateProposalPDF
+    generateProposalPDF: generateProposalPDF,
+    sendProposalByEmail: sendProposalByEmail
 };

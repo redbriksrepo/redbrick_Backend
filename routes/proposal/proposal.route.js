@@ -18,7 +18,7 @@ proposalRoute.get('/getById');
 
 proposalRoute.get('/layout/:Id/:selectFrom', proposalController.layout);
 
-proposalRoute.post('/generate/:Id/:selectFrom',proposalController.generate.generateProposal, proposalController.generate.generateProposalPDF);
+proposalRoute.post('/generate/:Id/:selectFrom', proposalController.generate.generateProposal, proposalController.generate.generateProposalPDF, proposalController.generate.sendProposalByEmail);
 
 proposalRoute.post('/send-otp/:Id', proposalController.sendOtp);
 
