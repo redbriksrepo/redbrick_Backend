@@ -2,6 +2,7 @@
 const express = require('express');
 const databaseConnection = require('./utils/database.util');
 const cors = require('cors');
+const path = require('path');
 
 // Custome Imports
 const mainRoute = require('./routes/main.route');
@@ -18,6 +19,7 @@ app.use(express.json());
 
 // static file serving
 app.use('/uploads', express.static('uploads'));
+app.use('/generated-proposal',express.static(path.join('assets','proposal','generated')))
 
 // Routes
 app.use(mainRoute);

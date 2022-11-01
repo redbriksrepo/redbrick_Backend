@@ -31,6 +31,10 @@ const proposalSchema = new Schema({
     compactor: String,
     totalNoOfSeatsSelected: Number,
     OTP: Number,
+    Tenure: Number,
+    LockIn: Number, 
+    NonStandardRequirement: String,
+    Serviced: Boolean,
     status: {
         type: String,
         default: "Pending"

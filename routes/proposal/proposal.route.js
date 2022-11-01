@@ -18,11 +18,7 @@ proposalRoute.get('/getById');
 
 proposalRoute.get('/layout/:Id/:selectFrom', proposalController.layout);
 
-proposalRoute.get('/generate/:Id/:selectFrom', (req, res, next) => {
-    res.status(200).send({
-        "Message": "Proposal Generated Successfully"
-    })
-});
+proposalRoute.post('/generate/:Id/:selectFrom',proposalController.generate.generateProposal, proposalController.generate.generateProposalPDF);
 
 proposalRoute.post('/send-otp/:Id', proposalController.sendOtp);
 
