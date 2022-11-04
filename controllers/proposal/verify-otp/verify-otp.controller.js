@@ -4,7 +4,7 @@ const Proposal = require("../../../models/proposal/proposal.model");
 const verifyOtp = (req, res, next) => {
     let otp = req.body.otp;
     let Id = req.params.Id;
-    Proposal.findById(mongoose.Types.ObjectId(Id)).then((proposal) => {
+    Proposal.findById(Id).then((proposal) => {
         if (!proposal) {
             let error = new Error('Cannot find any proposal with given ID');
             error.status = 404;

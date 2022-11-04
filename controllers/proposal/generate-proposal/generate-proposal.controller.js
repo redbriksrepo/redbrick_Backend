@@ -10,14 +10,14 @@ const generateProposal = (req, res, next) => {
     let data = req.body;
     let Id = req.params.Id;
 
-    Proposal.findById(mongoose.Types.ObjectId(Id)).then((proposal) => {
+    Proposal.findById(Id).then((proposal) => {
         if (!proposal) {
             let error = new Error('Invalid Proposal Id');
             error.status = 400;
             throw error;
         }
 
-        Proposal.updateOne({ _id: mongoose.Types.ObjectId(Id) }, { $set: data }).then((result) => {
+        Proposal.updateOne({ _id: Id }, { $set: data }).then((result) => {
             if (result.acknowledged === true) {
                 if (result.modifiedCount > 0) {
                     next();
@@ -48,7 +48,7 @@ const generateProposalPDF = (req, res, next) => {
     // let location;
     // let requiredNoOfSeats;
 
-    Proposal.findById(mongoose.Types.ObjectId(Id)).then((proposal) => {
+    Proposal.findById(Id).then((proposal) => {
 
         if (!proposal) {
             let error = new Error('Invalid Proposal Id');

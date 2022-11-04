@@ -2,7 +2,7 @@ const proposalController = require('../../controllers/proposal/main.proposal.con
 
 const proposalRoute = require('express').Router();
 
-proposalRoute.get('/init', proposalController.create.init);
+proposalRoute.post('/init', proposalController.create.init);
 
 proposalRoute.post('/addClientInfo/:Id', proposalController.create.addClientInfo);
 

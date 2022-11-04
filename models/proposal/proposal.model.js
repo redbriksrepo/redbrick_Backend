@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const proposalSchema = new Schema({
+    _id: String,
     salesTeam: String,
     salesHead: String,
     location: String,

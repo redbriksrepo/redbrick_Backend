@@ -34,7 +34,7 @@ const sendOtp = (req, res, next) => {
         to: mobileNo
     }).then((message) => {
         console.log(message);
-        Proposal.updateOne({ _id: mongoose.Types.ObjectId(Id) }, { $set: { OTP: otp } }).then((result) => {
+        Proposal.updateOne({ _id: Id }, { $set: { OTP: otp } }).then((result) => {
             res.status(200).send({
                 "Message": "OTP Send Successfully"
             })

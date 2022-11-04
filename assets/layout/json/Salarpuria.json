@@ -1,5 +1,6 @@
 {
     "layout": "salarpuria.png",
+    "AvailableNoOfSeats": 428,
     "workstations": [
         {
             "_id": 1,

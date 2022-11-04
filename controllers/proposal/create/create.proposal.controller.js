@@ -1,8 +1,18 @@
 const mongoose = require("mongoose");
+// const ObjectId = require('mongoose')
 const Proposal = require("../../../models/proposal/proposal.model")
+const path = require('path');
+const LogController = require("../../log/main.log.controller");
 
 const initProposal = (req, res, next) => {
+    let date = new Date();
+    let data = req.body;
+    console.log(data);
+    // let layoutData = require(path.join('assets','layout','json',`${data.center}.json`))
+    let Id = `RBO${String(data.location).toUpperCase().slice(0, 2)}${String(data.center).toUpperCase().slice(0, 2)}${("0" + date.getDate()).slice(-2)}${("0" + (date.getMonth() + 1)).slice(-2)}${("0" + date.getHours()).slice(-2)}${("0" + date.getMinutes()).slice(-2)}`
+    // let Id = 'RBOHYSP02111251';
     let proposal = new Proposal();
+    proposal._id = Id;
     proposal.save().then((result) => {
         if (result) {
             res.status(202).send({
@@ -31,7 +41,7 @@ const addClientInfo = (req, res, next) => {
             error.status = 406;
             throw error;
         }
-        Proposal.findById(mongoose.Types.ObjectId(Id)).then((proposal) => {
+        Proposal.findById(Id).then((proposal) => {
             if (!proposal) {
                 let error = new Error('Proposal not found with given Id');
                 error.status = 404;
@@ -61,9 +71,10 @@ const addClientInfo = (req, res, next) => {
                     if (!err.message) err.message = 'Client Info cannot be added twice';
                     throw err;
                 }
-                Proposal.updateOne({ _id: mongoose.Types.ObjectId(Id) }, { $set: data }).then((result) => {
+                Proposal.updateOne({ _id: Id }, { $set: data }).then((result) => {
                     if (result.acknowledged === true) {
                         if (result.modifiedCount > 0) {
+                            LogController.proposal.create(Id, data.clientName);                                              // generation proposal Log
                             res.status(202).send({
                                 "Message": "Client Info added Successfully!"
                             });
@@ -99,7 +110,7 @@ const checkRequiredNoOfSeats = (req, res, next) => {
     let data = req.body;
     let Id = req.params.Id;
     let totalNoOfSeats = data.workstationNumber + data.cabinNumber + data.meetingRoomNumber + data.visitorMeetingRoomNumber;
-    Proposal.updateOne({ _id: mongoose.Types.ObjectId(Id) }, { $set: { totalNoOfSeatsSelected: totalNoOfSeats } }).then((result) => {
+    Proposal.updateOne({ _id: Id }, { $set: { totalNoOfSeatsSelected: totalNoOfSeats } }).then((result) => {
         if (result.acknowledged === true) {
             if (result.modifiedCount > 0) {
                 next();
@@ -130,7 +141,7 @@ const addProposalRequirement = (req, res, next) => {
             error.status = 406;
             throw error;
         }
-        Proposal.findById(mongoose.Types.ObjectId(Id)).then((proposal) => {
+        Proposal.findById(Id).then((proposal) => {
             if (!proposal) {
                 let error = new Error('Proposal not found with given Id');
                 error.status = 404;
@@ -168,9 +179,10 @@ const addProposalRequirement = (req, res, next) => {
                     throw err;
                 }
 
-                Proposal.updateOne({ _id: mongoose.Types.ObjectId(Id) }, { $set: data }).then((result) => {
+                Proposal.updateOne({ _id: Id }, { $set: data }).then((result) => {
                     if (result.acknowledged === true) {
                         if (result.modifiedCount > 0) {
+                            LogController.proposal.update(Id, 'Added Requirement Info');
                             Proposal.find()
                                 .where('location').equals(proposal.location).where('center').equals(proposal.center)
                                 .where('totalNoOfSeatsSelected').gte(proposal.totalNoOfSeatsSelected - ((proposal.totalNoOfSeatsSelected * 5) / 100)).lte(proposal.totalNoOfSeatsSelected + ((proposal.totalNoOfSeatsSelected * 5) / 100))
@@ -180,12 +192,14 @@ const addProposalRequirement = (req, res, next) => {
                                             "Message": "Requirement added Successfully!",
                                             "conflict": true
                                         })
+                                        console.log('conflict::true');
                                     }
                                     else {
                                         res.status(202).send({
                                             "Message": "Requirement added Successfully!",
                                             "conflict": false
                                         })
+                                        console.log('conflict::flase');
                                     }
                                 })
                             // Proposal.find()
