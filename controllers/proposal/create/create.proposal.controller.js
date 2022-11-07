@@ -5,92 +5,65 @@ const path = require('path');
 const LogController = require("../../log/main.log.controller");
 
 const initProposal = (req, res, next) => {
-    let date = new Date();
-    let data = req.body;
-    console.log(data);
-    // let layoutData = require(path.join('assets','layout','json',`${data.center}.json`))
-    let Id = `RBO${String(data.location).toUpperCase().slice(0, 2)}${String(data.center).toUpperCase().slice(0, 2)}${("0" + date.getDate()).slice(-2)}${("0" + (date.getMonth() + 1)).slice(-2)}${("0" + date.getHours()).slice(-2)}${("0" + date.getMinutes()).slice(-2)}`
-    // let Id = 'RBOHYSP02111251';
-    let proposal = new Proposal();
-    proposal._id = Id;
-    proposal.save().then((result) => {
-        if (result) {
-            res.status(202).send({
-                "Message": "Proposal Initiated Successfully",
-                "Id": result._id
-            })
-        }
-        else {
-            let error = new Error('Something went wrong while initiating Proposal');
-            error.status = 500;
-            throw error;
-        }
-    }).catch((err) => {
+    try {
+        let date = new Date();
+        let data = req.body;
+        // console.log(data);
+        // let layoutData = require(path.join('assets','layout','json',`${data.center}.json`))
+        let Id = `RBO${String(data.location).toUpperCase().slice(0, 2)}${String(data.center).toUpperCase().slice(0, 2)}${("0" + date.getDate()).slice(-2)}${("0" + (date.getMonth() + 1)).slice(-2)}${("0" + date.getHours()).slice(-2)}${("0" + date.getMinutes()).slice(-2)}`
+        // let Id = 'RBOHYSP02111251';
+        // let proposal = new Proposal();
+        // proposal._id = Id;
+        res.status(202).send({
+            "Message": "Proposal Initiated Successfully",
+            "Id": Id
+        })
+        // proposal.save().then((result) => {
+        //     if (result) {
+        // res.status(202).send({
+        //     "Message": "Proposal Initiated Successfully",
+        //     "Id": result._id
+        // })
+        //     }
+        //     else {
+        //         let error = new Error('Something went wrong while initiating Proposal');
+        //         error.status = 500;
+        //         throw error;
+        //     }
+        // }).catch((err) => {
+        //     if (!err.status) err.status = 500;
+        //     if (!err.message) err.message = 'Error while initiating Proposal';
+        //     next(err);
+        // })
+    }
+    catch (err) {
         if (!err.status) err.status = 500;
-        if (!err.message) err.message = 'Error while initiating Proposal';
-        next(err);
-    })
+        if (!err.message) err.message = 'Error while creating proposal Id';
+        throw err;
+    }
 };
 
 const addClientInfo = (req, res, next) => {
     let Id = req.params.Id;
     let data = req.body;
+    data = { ...data, _id: Id };
     try {
         if (!Id) {
             let error = new Error('Id not provided!');
             error.status = 406;
             throw error;
         }
-        Proposal.findById(Id).then((proposal) => {
+        let proposal = new Proposal(data);
+        proposal.save().then((proposal) => {
             if (!proposal) {
-                let error = new Error('Proposal not found with given Id');
-                error.status = 404;
+                let error = new Error('Error while adding Client Info');
+                error.status = 400;
                 throw error;
             }
             else {
-                try {
-                    let clientInfoField = ['salesTeam', 'salesHead', 'location', 'center', 'broker', 'spocName', 'clientName'];
-                    clientInfoField.forEach((key) => {
-                        if (typeof (proposal?.[key]) === 'object') {
-                            let subField = Object.keys(proposal?.[key]);
-                            subField.forEach((subKey) => {
-                                if (proposal?.[key]?.[subKey]) {
-                                    let error = new Error('Client Info cannot be added twice');
-                                    throw error;
-                                }
-                            })
-                        }
-                        else if (proposal?.[key]) {
-                            let error = new Error('Client Info cannot be added twice');
-                            throw error;
-                        }
-                    })
-                }
-                catch (err) {
-                    if (!err.status) err.status = 406;
-                    if (!err.message) err.message = 'Client Info cannot be added twice';
-                    throw err;
-                }
-                Proposal.updateOne({ _id: Id }, { $set: data }).then((result) => {
-                    if (result.acknowledged === true) {
-                        if (result.modifiedCount > 0) {
-                            LogController.proposal.create(Id, data.clientName);                                              // generation proposal Log
-                            res.status(202).send({
-                                "Message": "Client Info added Successfully!"
-                            });
-                        } else {
-                            let error = new Error('Proposal not found with given Id');
-                            error.status = 404;
-                            throw error;
-                        }
-                    } else {
-                        let error = new Error('Error when adding client Info');
-                        throw error;
-                    }
-                }).catch((err) => {
-                    if (!err.message) err.message = 'Error when adding client Info';
-                    if (!err.status) err.status = 400;
-                    next(err);
+                LogController.proposal.create(Id, data.clientName);
+                res.status(202).send({
+                    "Message": "Client Info added Successfully!"
                 })
             }
         }).catch((err) => {
@@ -100,11 +73,85 @@ const addClientInfo = (req, res, next) => {
         })
     }
     catch (err) {
+        if (!err.message) err.message = 'Error when adding client Info';
         if (!err.status) err.status = 400;
-        if (!err.message) err.message = 'Error while adding client Info';
-        throw err;
+        next(err);
     }
 }
+
+// const addClientInfo = (req, res, next) => {
+//     let Id = req.params.Id;
+//     let data = req.body;
+//     try {
+//         if (!Id) {
+//             let error = new Error('Id not provided!');
+//             error.status = 406;
+//             throw error;
+//         }
+//         Proposal.findById(Id).then((proposal) => {
+//             if (!proposal) {
+//                 let error = new Error('Proposal not found with given Id');
+//                 error.status = 404;
+//                 throw error;
+//             }
+//             else {
+//                 try {
+//                     let clientInfoField = ['salesTeam', 'salesHead', 'location', 'center', 'broker', 'spocName', 'clientName'];
+//                     clientInfoField.forEach((key) => {
+//                         if (typeof (proposal?.[key]) === 'object') {
+//                             let subField = Object.keys(proposal?.[key]);
+//                             subField.forEach((subKey) => {
+//                                 if (proposal?.[key]?.[subKey]) {
+//                                     let error = new Error('Client Info cannot be added twice');
+//                                     throw error;
+//                                 }
+//                             })
+//                         }
+//                         else if (proposal?.[key]) {
+//                             let error = new Error('Client Info cannot be added twice');
+//                             throw error;
+//                         }
+//                     })
+//                 }
+//                 catch (err) {
+//                     if (!err.status) err.status = 406;
+//                     if (!err.message) err.message = 'Client Info cannot be added twice';
+//                     throw err;
+//                 }
+//                 Proposal.updateOne({ _id: Id }, { $set: data }).then((result) => {
+//                     if (result.acknowledged === true) {
+//                         if (result.modifiedCount > 0) {
+//                             LogController.proposal.create(Id, data.clientName);                                              // generation proposal Log
+//                             res.status(202).send({
+//                                 "Message": "Client Info added Successfully!"
+//                             });
+//                         } else {
+//                             let error = new Error('Proposal not found with given Id');
+//                             error.status = 404;
+//                             throw error;
+//                         }
+//                     } else {
+//                         let error = new Error('Error when adding client Info');
+//                         throw error;
+//                     }
+//                 }).catch((err) => {
+// if (!err.message) err.message = 'Error when adding client Info';
+// if (!err.status) err.status = 400;
+// next(err);
+//                 })
+//             }
+//         }).catch((err) => {
+// if (!err.message) err.message = 'Error when adding client Info';
+// if (!err.status) err.status = 400;
+// next(err);
+//         })
+//     }
+//     catch (err) {
+//         if (!err.status) err.status = 400;
+//         if (!err.message) err.message = 'Error while adding client Info';
+//         throw err;
+//     }
+// }
 
 const checkRequiredNoOfSeats = (req, res, next) => {
     let data = req.body;
@@ -134,7 +181,8 @@ const checkRequiredNoOfSeats = (req, res, next) => {
 const addProposalRequirement = (req, res, next) => {
     let data = req.body;
     let Id = req.params.Id;
-    let response;
+    let consolidatedSeats = false;
+    let seatAvailability = true;
     try {
         if (!Id) {
             let error = new Error('Id not provided');
@@ -179,27 +227,79 @@ const addProposalRequirement = (req, res, next) => {
                     throw err;
                 }
 
+
+
+
+                // Deciding in which workstation seats should be selected
+
+                try {
+                    let location = proposal.center;
+                    let requiredNoOfSeats = proposal.totalNoOfSeatsSelected;
+                    let workStationId;
+                    let layoutData = require(path.join('..', '..', '..', 'assets', 'layout', 'json', `${location}.json`))
+                    let workStationToBeSelectedIn = [];
+                    let seatsToBeSelected = requiredNoOfSeats;
+                    
+                    layoutData.workstations.forEach((workStation) => {
+                        if (requiredNoOfSeats <= workStation.AvailableNoOfSeats && workStationToBeSelectedIn.length <= 0) {
+                            workStationId = workStation._id;
+                            workStationToBeSelectedIn = [...workStationToBeSelectedIn, { workStationId: workStation._id, seatesToBeSelectedInWorkstation: requiredNoOfSeats }]
+                        }
+                    });
+                    if (workStationToBeSelectedIn.length <= 0) {
+                        if (seatsToBeSelected <= layoutData.AvailableNoOfSeats) {
+                            layoutData.workstations.forEach((workStation) => {
+                                if (seatsToBeSelected !== 0) {
+                                    if (workStation.AvailableNoOfSeats <= seatsToBeSelected) {
+                                        seatsToBeSelected -= workStation.AvailableNoOfSeats;
+                                        workStationToBeSelectedIn = [...workStationToBeSelectedIn, { workStationId: workStation._id, seatesToBeSelectedInWorkstation: workStation.AvailableNoOfSeats }];
+
+                                    }
+                                    else if (workStation.AvailableNoOfSeats >= seatsToBeSelected) {
+                                        workStationToBeSelectedIn = [...workStationToBeSelectedIn, { workStationId: workStation._id, seatesToBeSelectedInWorkstation: seatsToBeSelected }];
+                                        seatsToBeSelected = 0;
+                                    }
+                                }
+                            })
+                                                        
+                            if (seatsToBeSelected !== 0) {
+                                seatAvailability = false;
+                            }
+                            if (seatAvailability === true) {
+                                consolidatedSeats = true;
+                            }
+                        }
+                    }
+                }
+                catch (err) {
+                    if (!err.message) err.message = 'Error while calculating seats';
+                    throw err;
+                }
+
                 Proposal.updateOne({ _id: Id }, { $set: data }).then((result) => {
                     if (result.acknowledged === true) {
                         if (result.modifiedCount > 0) {
                             LogController.proposal.update(Id, 'Added Requirement Info');
                             Proposal.find()
                                 .where('location').equals(proposal.location).where('center').equals(proposal.center)
+                                .where('clientName').equals(proposal.clientName)
                                 .where('totalNoOfSeatsSelected').gte(proposal.totalNoOfSeatsSelected - ((proposal.totalNoOfSeatsSelected * 5) / 100)).lte(proposal.totalNoOfSeatsSelected + ((proposal.totalNoOfSeatsSelected * 5) / 100))
                                 .then((result) => {
                                     if (result.length > 1) {
                                         res.status(202).send({
                                             "Message": "Requirement added Successfully!",
-                                            "conflict": true
+                                            "conflict": true,
+                                            "seatsAvailability": seatAvailability,
+                                            "consolidatedSeats": consolidatedSeats
                                         })
-                                        console.log('conflict::true');
                                     }
                                     else {
                                         res.status(202).send({
                                             "Message": "Requirement added Successfully!",
-                                            "conflict": false
+                                            "conflict": false,
+                                            "seatsAvailability": seatAvailability,
+                                            "consolidatedSeats": consolidatedSeats
                                         })
-                                        console.log('conflict::flase');
                                     }
                                 })
                             // Proposal.find()

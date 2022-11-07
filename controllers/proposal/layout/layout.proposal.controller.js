@@ -38,6 +38,7 @@ const generateLayout = (req, res, next) => {
                     workStationToBeSelectedIn = [...workStationToBeSelectedIn, { workStationId: workStation._id, seatesToBeSelectedInWorkstation: requiredNoOfSeats }]
                 }
             });
+            console.log(workStationToBeSelectedIn.length)
             if (workStationToBeSelectedIn.length <= 0) {
                 if (seatsToBeSelected <= layoutData.AvailableNoOfSeats) {
                     layoutData.workstations.forEach((workStation) => {
@@ -53,10 +54,14 @@ const generateLayout = (req, res, next) => {
                             }
                         }
                     })
+                    if (seatsToBeSelected !== 0) {
+                        let error = new Error('Space not Available!');
+                        error.status = 404;
+                        throw error;
+                    }
                 }
             }
-            // console.log(workStationToBeSelectedIn);
-            if (workStationToBeSelectedIn.length <= 0 || seatsToBeSelected !== 0) {
+            if (workStationToBeSelectedIn.length <= 0) {
                 let error = new Error('Space not available!');
                 error.status = 404;
                 throw error;

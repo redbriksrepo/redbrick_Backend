@@ -7,16 +7,12 @@ const updateProposalLog = (proposalId, logMessage) => {
     };
 
     ProposalLog.updateOne({ proposalId: proposalId }, proposalLogData).then((result) => {
-        console.log(result);
-        if (result.acknowledged === true) {
-            if (result.modifiedCount > 0) {
-                console.log(proposalLogData);
-            }
-        } else {
-            console.log('Id not mached');
-        }
-    }).catch((err) => {
-        console.log(err);
+        // console.log(result);
+        // if (result.acknowledged === true) {
+        //     if (result.modifiedCount > 0) {
+        //         console.log(proposalLogData);
+        //     }
+        // }
     })
 }
 
