@@ -3,7 +3,7 @@ const ProposalLog = require("../../../../models/proposal-log/proposal-log.model"
 const createProposalLog = (proposalId,ClientName) => {
     let proposalLogData = {
         proposalId: proposalId,
-        logMessage: 'Client Info Added',
+        logMessage: 'Initialized with client Info',
         clientName: ClientName,
         createdAt: new Date()
     }

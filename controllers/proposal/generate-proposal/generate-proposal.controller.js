@@ -4,7 +4,8 @@ const path = require('path');
 const Proposal = require('../../../models/proposal/proposal.model');
 const { default: mongoose } = require('mongoose');
 const fs = require('fs');
-const nodemailer = require('nodemailer')
+const nodemailer = require('nodemailer');
+const LogController = require('../../log/main.log.controller');
 
 const generateProposal = (req, res, next) => {
     let data = req.body;
@@ -716,6 +717,11 @@ const generateProposalPDF = (req, res, next) => {
 
             doc.end();
 
+            LogController.proposal.update(proposal._id, { logMessage: 'Proposal Generated', proposalGenerated: 'yes'})
+
+            res.status(200).send({
+                "Message": 'Proposal Generated Successfully'
+            });
             next();
         }
         catch (err) {
@@ -765,9 +771,6 @@ const sendProposalByEmail = (req, res, next) => {
     transporter.sendMail(mailOptions, (err, info) => {
         if (err) throw err;
         console.log('proposal send successfully');
-        res.status(200).send({
-            "Message": 'Proposal Generated Successfully'
-        });
     })
 }
 

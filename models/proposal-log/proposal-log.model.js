@@ -13,6 +13,10 @@ const proposalLogSchema = new Schema({
     clientName: {
         type: String,
         required: true
+    },
+    proposalGenerated: {
+        type: String,
+        default: 'no'
     }
 }, {
     timestamps: true

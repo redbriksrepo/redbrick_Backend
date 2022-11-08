@@ -53,17 +53,34 @@ const addClientInfo = (req, res, next) => {
             error.status = 406;
             throw error;
         }
-        let proposal = new Proposal(data);
-        proposal.save().then((proposal) => {
-            if (!proposal) {
-                let error = new Error('Error while adding Client Info');
+        Proposal.findById(Id).then((result) => {
+            if (result) {
+                let error = new Error('Client Info cannot be added twice');
                 error.status = 400;
                 throw error;
             }
             else {
-                LogController.proposal.create(Id, data.clientName);
-                res.status(202).send({
-                    "Message": "Client Info added Successfully!"
+                let proposal = new Proposal(data);
+                proposal.save().then((proposal) => {
+                    if (!proposal) {
+                        let error = new Error('Error while adding Client Info');
+                        error.status = 400;
+                        throw error;
+                    }
+                    else {
+                        // require('../../../assets/layout/json/Salarpuria.json')
+                        LogController.proposal.create(Id, data.clientName);
+                        let layoutData = require(path.join('..', '..', '..', 'assets', 'layout', 'json', `${proposal.center}.json`));
+                        res.status(202).send({
+                            "Message": "Client Info added Successfully!",
+                            "AvailableNoOfSeatsInLayout": layoutData.AvailableNoOfSeats,
+                            "TotalNoOfSeatsInLayout": layoutData.TotalNoOfSeats
+                        })
+                    }
+                }).catch((err) => {
+                    if (!err.message) err.message = 'Error when adding client Info';
+                    if (!err.status) err.status = 400;
+                    next(err);
                 })
             }
         }).catch((err) => {
@@ -235,7 +252,6 @@ const addProposalRequirement = (req, res, next) => {
                 try {
                     let location = proposal.center;
                     let requiredNoOfSeats = proposal.totalNoOfSeatsSelected;
-                    let workStationId;
                     let layoutData = require(path.join('..', '..', '..', 'assets', 'layout', 'json', `${location}.json`))
                     let workStationToBeSelectedIn = [];
                     let seatsToBeSelected = requiredNoOfSeats;
@@ -261,13 +277,12 @@ const addProposalRequirement = (req, res, next) => {
                                     }
                                 }
                             })
+
                                                         
-                            if (seatsToBeSelected !== 0) {
-                                seatAvailability = false;
-                            }
-                            if (seatAvailability === true) {
                                 consolidatedSeats = true;
-                            }
+                        }
+                        else {
+                            seatAvailability = false;
                         }
                     }
                 }
@@ -279,7 +294,7 @@ const addProposalRequirement = (req, res, next) => {
                 Proposal.updateOne({ _id: Id }, { $set: data }).then((result) => {
                     if (result.acknowledged === true) {
                         if (result.modifiedCount > 0) {
-                            LogController.proposal.update(Id, 'Added Requirement Info');
+                            LogController.proposal.update(Id, {logMessage:'Added Requirement Info'});
                             Proposal.find()
                                 .where('location').equals(proposal.location).where('center').equals(proposal.center)
                                 .where('clientName').equals(proposal.clientName)
