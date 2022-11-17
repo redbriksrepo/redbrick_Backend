@@ -113,8 +113,10 @@ const login = (req, res, next) => {
             .then((user) => {
                 if (user) {
                     let tokenPayload = {
-                        userName: data.userName,
+                        userName: user.userName,
                         deviceType: deviceType,
+                        _id: user._id,
+                        role: user.role
                     };
                     let token = jwt.sign(tokenPayload, process.env.AUTH_TOKEN_SECRET);
                     // let token = jwt.sign(tokenPayload, 'sdfkajsdfwf384*&^*^')

@@ -22,7 +22,7 @@ const userModel = new Schema(
       type: Date,
       required: true
     },
-    destination: {
+    designation: {
       type: String,
       required: true
     },
