@@ -14,7 +14,7 @@ mainRoute.use('/user', middleware.authentication, userRoute);
 
 mainRoute.use('/proposal', proposalRoute);
 
-mainRoute.use('/location', locationRoute);
+mainRoute.use('/location',middleware.authentication, locationRoute);
 
 mainRoute.use('/profile', middleware.authentication, profileRoute);
 

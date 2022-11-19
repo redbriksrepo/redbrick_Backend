@@ -11,9 +11,6 @@ const userModel = new Schema(
       type: String,
       required: true,
     },
-    userImage: {
-      type: String,
-    },
     mobileNo: {
       type: Number,
       required: true,
@@ -26,23 +23,7 @@ const userModel = new Schema(
       type: String,
       required: true
     },
-    aadharNo: {
-      type: Number,
-      required: true
-    },
-    panNo: {
-      type: String,
-      required: true
-    },
     role: {
-      type: String,
-      required: true,
-    },
-    address: {
-      type: String,
-      required: true,
-    },
-    city: {
       type: String,
       required: true,
     },
@@ -68,6 +49,7 @@ const userModel = new Schema(
       type: String,
       default: "None",
     },
+    salesHead: String
   },
   {
     timestamps: true,
