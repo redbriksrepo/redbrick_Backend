@@ -3,38 +3,41 @@ const mongoose = require("mongoose");
 const Proposal = require("../../../models/proposal/proposal.model")
 const path = require('path');
 const LogController = require("../../log/main.log.controller");
+const Location = require("../../../models/location/location.model");
 
 const initProposal = (req, res, next) => {
     try {
         let date = new Date();
-        let data = req.body;
-        // console.log(data);
-        // let layoutData = require(path.join('assets','layout','json',`${data.center}.json`))
-        let Id = `RBO${String(data.location).toUpperCase().slice(0, 2)}${String(data.center).toUpperCase().slice(0, 2)}${("0" + date.getDate()).slice(-2)}${("0" + (date.getMonth() + 1)).slice(-2)}${("0" + date.getHours()).slice(-2)}${("0" + date.getMinutes()).slice(-2)}`
-        // let Id = 'RBOHYSP02111251';
-        // let proposal = new Proposal();
-        // proposal._id = Id;
-        res.status(202).send({
-            "Message": "Proposal Initiated Successfully",
-            "Id": Id
-        })
-        // proposal.save().then((result) => {
-        //     if (result) {
-        // res.status(202).send({
-        //     "Message": "Proposal Initiated Successfully",
-        //     "Id": result._id
-        // })
-        //     }
-        //     else {
-        //         let error = new Error('Something went wrong while initiating Proposal');
-        //         error.status = 500;
-        //         throw error;
-        //     }
-        // }).catch((err) => {
-        //     if (!err.status) err.status = 500;
-        //     if (!err.message) err.message = 'Error while initiating Proposal';
-        //     next(err);
-        // })
+        let centerId = req.params.Id;
+        if (!centerId) {
+            let error = new Error('Id not provided');
+            error.status = 400;
+            throw error;
+        }
+        else {
+            if (mongoose.isValidObjectId(centerId)) {
+                Location.findById(mongoose.Types.ObjectId(centerId)).then((centerData) => {
+                    if (!centerData) {
+                        let error = new Error('Error while Initiating proposal');
+                        error.status = 503;
+                        throw error;
+                    }
+                    else {
+                        let Id = `RBO${String(centerData.location).toUpperCase().slice(0, 2)}${String(centerData.center).toUpperCase().slice(0, 2)}${("0" + date.getDate()).slice(-2)}${("0" + (date.getMonth() + 1)).slice(-2)}${("0" + date.getHours()).slice(-2)}${("0" + date.getMinutes()).slice(-2)}`
+                        res.status(202).send({
+                            "Message": "Proposal Initiated Successfully",
+                            "Id": Id
+                        })
+                    }
+                })
+            }
+            else {
+                let error = new Error('Id is Invalid');
+                error.status = 400;
+                throw error;
+            }
+        }
+        
     }
     catch (err) {
         if (!err.status) err.status = 500;

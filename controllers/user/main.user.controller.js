@@ -3,6 +3,7 @@ const updateUser = require('./update/update.user.controller');
 const deleteUser = require('./delete/delete.user.controller');
 const getByIdUser = require('./getById/getById.user.controller');
 const getAllUser = require('./getAll/getAll.user.controller');
+const getSalesHead = require('./salesHeadList/salesHeadList.user.controller');
 
 
 const userController = {
@@ -10,7 +11,8 @@ const userController = {
     update: updateUser,
     delete: deleteUser,
     getById: getByIdUser,
-    getAll: getAllUser
+    getAll: getAllUser,
+    getSalesHead: getSalesHead
 }
 
 module.exports = userController;

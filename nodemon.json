@@ -3,5 +3,8 @@
         "AUTH_TOKEN_SECRET": "sdfkajsdfwf384*&^*^",
         "MONGODB_URI": "mongodb://localhost:27017/Redbricks",
         "PORT" : 3000
-    }
+    },
+    "ignore": [
+        "uploads/*"
+    ]
 }

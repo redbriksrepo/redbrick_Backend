@@ -30,6 +30,8 @@ userRoute.delete('/delete/:id',userController.delete);
 
 userRoute.get('/getAll',userController.getAll);
 
-userRoute.get('/getById/:id',userController.getById);
+userRoute.get('/getById/:id', userController.getById);
+
+userRoute.get('/getSalesHead', userController.getSalesHead);
 
 module.exports = userRoute;
