@@ -1,8 +1,92 @@
 {
-    "layout": "layout.png",
+    "layout": "Hyderabad_Salarpuria.png",
+    "AvailableNoOfSeats": 428,
+    "TotalNoOfSeats": 428,
     "workstations": [
         {
             "_id": 1,
+            "AvailableNoOfSeats": 55,
+            "sizeOfSeat": {
+                "width": 13.75,
+                "height": 16.20
+            },
+            "startingXAxis": 261,
+            "startingXAxisOpposite": 401,
+            "startingYAxis": 153.9,
+            "lastYAxis": 219,
+            "selectedAreaXAxis": 261,
+            "selectedAreaXAxisOpposite": 401,
+            "selectedAreaYAxis": 153.9,
+            "partition": [],
+            "gapPosition": [
+                {
+                    "pillar": false,
+                    "startingPositon": 261,
+                    "startingPositonOpposite": 261,
+                    "pillarWidth": 5.4,
+                    "pillarHeight": 65
+                }
+            ],
+            "pillarPosition": [],
+            "subWorkStationArea": [
+                {
+                    "totalNoOfSeats": 40,
+                    "sizeOfSeat": {
+                        "width": 13.75,
+                        "height": 16.20
+                    },
+                    "tableAlignment": "horizentaly",
+                    "startingXAxis": 293.9,
+                    "startingXAxisOpposite": 374,
+                    "startingYAxis": 89,
+                    "AvailableNoOfSeats": 40,
+                    "lastYAxis": 219,
+                    "selectedAreaXAxis": 293.9,
+                    "selectedAreaXAxisOpposite": 374,
+                    "selectedAreaYAxis": 89,
+                    "partition": [],
+                    "gapPosition": [
+                        {
+                            "pillar": false,
+                            "startingPositon": 335,
+                            "startingPositonOpposite": 346.5,
+                            "pillarWidth": 11.5,
+                            "pillarHeight": 130
+                        }
+                    ],
+                    "pillarPosition": []
+                },
+                {
+                    "totalNoOfSeats": 7,
+                    "sizeOfSeat": {
+                        "width": 13.75,
+                        "height": 16.20
+                    },
+                    "tableAlignment": "horizentaly",
+                    "startingXAxis": 374,
+                    "startingXAxisOpposite": 401,
+                    "startingYAxis": 89,
+                    "AvailableNoOfSeats": 7,
+                    "lastYAxis": 153.79,
+                    "selectedAreaXAxis": 374,
+                    "selectedAreaXAxisOpposite": 401.5,
+                    "selectedAreaYAxis": 89,
+                    "partition": [],
+                    "gapPosition": [],
+                    "pillarPosition": [
+                        {
+                            "startingXPosition": 387.75,
+                            "startingXPositionOpposite": 401,
+                            "startingYPosition": 89,
+                            "pillarWidth": 13.75,
+                            "pillarHeight": 16.20
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "_id": 2,
             "startingXAxis": 78,
             "startingXAxisOpposite": 648.3,
             "startingYAxis": 174.5,
@@ -114,7 +198,7 @@
                         },
                         {
                             "startingPosition": 582,
-                            "startingPositionOpposite": 583.8,
+                            "startingPositionOpposite": 584,
                             "width": 1,
                             "height": 179
                         }

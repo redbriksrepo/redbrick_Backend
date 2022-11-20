@@ -5,6 +5,7 @@
         "PORT" : 3000
     },
     "ignore": [
-        "uploads/*"
+        "uploads/*",
+        "assets/*"
     ]
 }

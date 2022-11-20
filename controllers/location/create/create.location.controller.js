@@ -13,10 +13,21 @@ const createLocation = async (req,res,next) => {
         else {
             if (jsonFile) data.jsonFile = jsonFile.path;
             if (layoutImage) data.layoutImage = layoutImage.path;
-            data.imageLinks = Object.values(JSON.parse(data.imageLinks));
-            data.videoLinks = Object.values(JSON.parse(data.videoLinks));
+            console.log(data);
+            if (data.imageLinks === '{}') {
+                data.imageLinks = Object.values(JSON.parse(data.imageLinks));
+            }
+            else {
+                delete data.imageLinks;
+            }
+            if (data.videoLinks === '{}') {
+                data.videoLinks = Object.values(JSON.parse(data.videoLinks));
+            }
+            else {
+                delete data.videoLinks;
+            }
             Location.findOne().where('location').equals(data.location).where('center').equals(data.center).then((result) => {
-                if (!result) {
+                if (result) {
                     let error = new Error('Location Already Exists');
                     error.status = 400;
                     throw error;

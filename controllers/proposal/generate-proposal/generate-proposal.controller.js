@@ -61,7 +61,7 @@ const generateProposalPDF = (req, res, next) => {
         let workStationId;
         // let jsonPath = path.join()
 
-        let layoutData = require(path.join('..', '..', '..', 'assets', 'layout', 'json', `${location}.json`))
+        let layoutData = require(path.join('..', '..', '..', 'assets', 'layout', 'json', `${proposal.location}_${proposal.center}.json`))
         let workStationToBeSelectedIn = [];
         // let layoutData = require(`../../../assets/layout/json/${location}.json`);/
 
