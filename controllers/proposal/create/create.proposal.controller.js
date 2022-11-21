@@ -255,7 +255,7 @@ const addProposalRequirement = (req, res, next) => {
                 try {
                     let location = proposal.center;
                     let requiredNoOfSeats = proposal.totalNoOfSeatsSelected;
-                    let layoutData = require(path.join('..', '..', '..', 'assets', 'layout', 'json', `${location}.json`))
+                    let layoutData = require(path.join('..', '..', '..', 'assets', 'layout', 'json', `${proposal.location}_${proposal.center}.json`))
                     let workStationToBeSelectedIn = [];
                     let seatsToBeSelected = requiredNoOfSeats;
                     
