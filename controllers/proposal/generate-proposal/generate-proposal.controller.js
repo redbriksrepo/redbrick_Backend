@@ -129,7 +129,7 @@ const generateProposalPDF = (req, res, next) => {
             doc.fontSize(16).fillColor('grey').text('Top clients rely on us for innovatice workspace solutions', 0, 50, { width: 800, align: 'center' }).fontSize(12);
             doc.image('./assets/proposal/image/proposal-layout__page3-our_client.png', 20, 150, { width: 760 });
             doc.addPage();
-            doc.image(path.join(__dirname, '..', '..', '..', 'assets', 'layout', 'image', layoutData.layout), { height: 566, align: 'center', valign: 'center' });
+            doc.image(path.join(__dirname, '..', '..', '..', 'assets', 'layout', 'image', `${proposal.location}_${proposal.center}.png`), { height: 566, align: 'center', valign: 'center' });
 
             // Generation of layout start from here ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

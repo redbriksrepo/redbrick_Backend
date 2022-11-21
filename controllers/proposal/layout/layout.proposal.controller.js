@@ -74,7 +74,7 @@ const generateLayout = (req, res, next) => {
         try {
             const doc = new PDFDocument({ size: [800, 566], margin: 0 });
             doc.pipe(res);
-            doc.image(path.join(__dirname, '..', '..', '..', 'assets', 'layout', 'image', layoutData.layout), { height: 566, align: 'center', valign: 'center' });
+            doc.image(path.join(__dirname, '..', '..', '..', 'assets', 'layout', 'image', `${proposal.location}_${proposal.center}.png`), { height: 566, align: 'center', valign: 'center' });
             
             markSeatsOnLayout = (workstationToSelect) => {
                 if (workstationToSelect.workStationId) {

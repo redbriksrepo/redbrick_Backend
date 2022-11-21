@@ -73,7 +73,7 @@ const addClientInfo = (req, res, next) => {
                     else {
                         // require('../../../assets/layout/json/Salarpuria.json')
                         LogController.proposal.create(Id, data.clientName);
-                        let layoutData = require(path.join('..', '..', '..', 'assets', 'layout', 'json', `${proposal.center}.json`));
+                        let layoutData = require(path.join('..', '..', '..', 'assets', 'layout', 'json', `${proposal.location}_${proposal.center}.json`));
                         res.status(202).send({
                             "Message": "Client Info added Successfully!",
                             "AvailableNoOfSeatsInLayout": layoutData.AvailableNoOfSeats,
