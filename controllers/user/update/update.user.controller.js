@@ -4,7 +4,9 @@ const User = require("../../../models/user/user.model");
 
 const updateUser = (req, res, next) => {
     let data = req.body;
+    console.log(data);
     try {
+
         if (data.password) {
             bcrypt.hash(data.password, 10, async (err, encrypted) => {
                 if (err) {
@@ -24,9 +26,10 @@ const updateUser = (req, res, next) => {
     }
     finally {
         User.updateOne({ _id: mongoose.Types.ObjectId(data._id) }, { $set: data }).then((result) => {
+            console.log(result);
             if (result.acknowledged === true) {
                 if (result.modifiedCount > 0) {
-                    res.status(202).sent({
+                    res.status(202).send({
                         "Message": "User Updated Successfully!"
                     })
                 }
