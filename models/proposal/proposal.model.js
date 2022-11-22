@@ -12,6 +12,10 @@ const proposalSchema = new Schema({
     brokerCategoryOther: String,
     spocName: String,
     clientName: String,
+    salesPerson: {
+        type: String,
+        required: true
+    },
     workstationSize: String,
     workstationNumber: Number,
     cabinSize: String,

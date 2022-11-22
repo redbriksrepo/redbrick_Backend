@@ -29,7 +29,7 @@ const locationModel = new Schema({
     imageLinks: {
         type: Array,
     },
-    vedioLinks: {
+    videoLinks: {
         type: Array
     }
 },{

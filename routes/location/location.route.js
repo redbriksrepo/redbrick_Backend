@@ -37,9 +37,9 @@ const fileFilter = (req, file, cb) => {
 
 locationRoute.post('/create',middleware.checkAdminAuthorization, multer({ storage: fileStorage, fileFilter: fileFilter}).fields([{ name: 'jsonFile', maxCount: 1 },{name: 'layoutImage', maxCount: 1}]), locationController.create);
 
-locationRoute.post('/update');
+locationRoute.post('/update/:Id', middleware.checkAdminAuthorization, multer({ storage: fileStorage, fileFilter: fileFilter }).fields([{ name: 'jsonFile', maxCount: 1 }, { name: 'layoutImage', maxCount: 1 }]), locationController.update);
 
-locationRoute.post('/delete');
+locationRoute.delete('/delete/:Id', middleware.checkAdminAuthorization, locationController.delete);
 
 locationRoute.get('/getAll', middleware.checkAdminAuthorization, locationController.getAll);
 

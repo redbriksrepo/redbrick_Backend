@@ -1,27 +1,28 @@
 const proposalController = require('../../controllers/proposal/main.proposal.controller');
+const middleware = require('../../middlewares/main.middlewares');
 
 const proposalRoute = require('express').Router();
 
-proposalRoute.get('/init/:Id', proposalController.create.init);
+proposalRoute.get('/init/:Id',middleware.authentication, proposalController.create.init);
 
-proposalRoute.post('/addClientInfo/:Id', proposalController.create.addClientInfo);
+proposalRoute.post('/addClientInfo/:Id',middleware.authentication, proposalController.create.addClientInfo);
 
-proposalRoute.post('/addRequirement/:Id',proposalController.create.checkRequiredNoOfSeats, proposalController.create.addProposalRequirement);
+proposalRoute.post('/addRequirement/:Id',middleware.authentication,proposalController.create.checkRequiredNoOfSeats, proposalController.create.addProposalRequirement);
 
 proposalRoute.post('/update');
 
 proposalRoute.post('/delete');
 
-proposalRoute.get('/getAll', proposalController.getAll);
+proposalRoute.get('/getAll',middleware.authentication, proposalController.getAll);
 
 proposalRoute.get('/getById');
 
 proposalRoute.get('/layout/:Id/:selectFrom', proposalController.layout);
 
-proposalRoute.post('/generate/:Id/:selectFrom', proposalController.generate.generateProposal, proposalController.generate.generateProposalPDF, proposalController.generate.sendProposalByEmail);
+proposalRoute.post('/generate/:Id/:selectFrom',middleware.authentication, proposalController.generate.generateProposal, proposalController.generate.generateProposalPDF, proposalController.generate.sendProposalByEmail);
 
-proposalRoute.post('/send-otp/:Id', proposalController.sendOtp);
+proposalRoute.post('/send-otp/:Id',middleware.authentication, proposalController.sendOtp);
 
-proposalRoute.post('/verify-otp/:Id', proposalController.verifyOtp);
+proposalRoute.post('/verify-otp/:Id',middleware.authentication, proposalController.verifyOtp);
 
 module.exports = proposalRoute;

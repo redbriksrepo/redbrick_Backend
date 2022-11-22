@@ -1,8 +1,10 @@
 const getCentersInLocation = require("./centersInLocation/centersInLocation.loation.controller");
 const createLocation = require("./create/create.location.controller");
+const deleteLocationData = require("./delete/delete.location.controller");
 const getAllLocation = require("./getAll/getAll.location.controller");
 const getLocationById = require("./getById/getById.location.controller");
 const getLocationList = require("./location-list/location-list.location.controller");
+const updateLocationData = require("./update/update.location.controller");
 
 
 const locationController = {
@@ -10,7 +12,9 @@ const locationController = {
     getAll: getAllLocation,
     getById: getLocationById,
     getLoctionList: getLocationList,
-    getCentesInLocation: getCentersInLocation
+    getCentesInLocation: getCentersInLocation,
+    delete: deleteLocationData,
+    update: updateLocationData
 }
 
 module.exports = locationController;

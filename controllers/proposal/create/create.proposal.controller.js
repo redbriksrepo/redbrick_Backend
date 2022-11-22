@@ -49,7 +49,8 @@ const initProposal = (req, res, next) => {
 const addClientInfo = (req, res, next) => {
     let Id = req.params.Id;
     let data = req.body;
-    data = { ...data, _id: Id };
+    let salesPerson = req.user._id;
+    data = { ...data, _id: Id, salesPerson : salesPerson};
     try {
         if (!Id) {
             let error = new Error('Id not provided!');
@@ -72,7 +73,7 @@ const addClientInfo = (req, res, next) => {
                     }
                     else {
                         // require('../../../assets/layout/json/Salarpuria.json')
-                        LogController.proposal.create(Id, data.clientName);
+                        LogController.proposal.create(Id, data.clientName,req.user._id);
                         let layoutData = require(path.join('..', '..', '..', 'assets', 'layout', 'json', `${proposal.location}_${proposal.center}.json`));
                         res.status(202).send({
                             "Message": "Client Info added Successfully!",

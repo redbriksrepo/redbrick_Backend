@@ -10,6 +10,10 @@ const proposalLogSchema = new Schema({
         type: String,
         required: true
     },
+    salesPerson: {
+        type: String,
+        required: true
+    },
     clientName: {
         type: String,
         required: true

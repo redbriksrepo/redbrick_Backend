@@ -14,11 +14,11 @@ mainRoute.use('/user', middleware.authentication, userRoute);
 
 mainRoute.use('/proposal', proposalRoute);
 
-mainRoute.use('/location',middleware.authentication, locationRoute);
+mainRoute.use('/location', middleware.authentication, locationRoute);
 
 mainRoute.use('/profile', middleware.authentication, profileRoute);
 
-mainRoute.use('/logs', logsRoute);
+mainRoute.use('/logs',middleware.authentication, logsRoute);
 
 
 module.exports = mainRoute;

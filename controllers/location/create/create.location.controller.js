@@ -15,16 +15,16 @@ const createLocation = async (req,res,next) => {
             if (layoutImage) data.layoutImage = layoutImage.path;
             console.log(data);
             if (data.imageLinks === '{}') {
-                data.imageLinks = Object.values(JSON.parse(data.imageLinks));
-            }
-            else {
                 delete data.imageLinks;
             }
+            else {
+                data.imageLinks = Object.values(JSON.parse(data.imageLinks));
+            }
             if (data.videoLinks === '{}') {
-                data.videoLinks = Object.values(JSON.parse(data.videoLinks));
+                delete data.videoLinks;
             }
             else {
-                delete data.videoLinks;
+                data.videoLinks = Object.values(JSON.parse(data.videoLinks));
             }
             Location.findOne().where('location').equals(data.location).where('center').equals(data.center).then((result) => {
                 if (result) {

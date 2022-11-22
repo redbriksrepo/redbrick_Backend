@@ -2,8 +2,9 @@ const Proposal = require("../../../models/proposal/proposal.model");
 
 
 const getAllProposal = (req, res, next) => {
+    let salesPerson = req.user._id;
     try {
-        Proposal.find().then((allProposal) => {
+        Proposal.find().where('salesPerson').equals(salesPerson).then((allProposal) => {
             if (allProposal) {
                 res.status(200).send(allProposal);
             }
