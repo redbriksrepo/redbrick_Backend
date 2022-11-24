@@ -1,7 +1,7 @@
 {
     "env": {
         "AUTH_TOKEN_SECRET": "sdfkajsdfwf384*&^*^",
-        "MONGODB_URI": "mongodb://127.0.0.1:27017/Redbricks",
+        "MONGODB_URI": "mongodb+srv://Redbricks:Redbricks@nodemongo.ha7jdwu.mongodb.net/Redbricks?retryWrites=true&w=majority",
         "PORT" : 3000
     },
     "ignore": [
