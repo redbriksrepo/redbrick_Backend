@@ -48,7 +48,7 @@ const fileFilter = (req, file, cb) => {
 const uploads = multer({
     storage: multerS3({
         s3: s3,
-        bucket: 'cyclic-real-puce-fish-cape-ap-northeast-1',
+        bucket: 'cyclic-funny-flip-flops-bat-eu-central-1',
         key: (req, file, cb) => {
             if (file.mimetype === 'application/json') {
                 cb(null, path.join('layout', 'json', `${req.body.location}_${req.body.center}.json`))
