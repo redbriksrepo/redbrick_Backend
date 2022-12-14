@@ -11,7 +11,7 @@ const getRecentProposalData = (req, res, next) => {
                 return Proposal.find().select('salesPerson status').where('createdAt').gt(date).populate('salesPerson', 'firstName lastName');
             }
             else if (currentUser.role === 'sales head') {
-                return Proposal.find().select('salesPerson status').where('createdAt').gt(date).populate('salesPerson', 'firstName lastName salesHead').where('salesPerson').equals(currentUser._id);
+                return Proposal.find().select('salesPerson status').where('createdAt').gt(date).populate('salesPerson', 'firstName lastName').where('salesHead').equals(currentUser._id);
             }
             else {
                 let error = new Error('not Authorized');

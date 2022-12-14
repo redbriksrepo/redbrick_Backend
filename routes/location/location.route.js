@@ -41,7 +41,7 @@ locationRoute.post('/update/:Id', middleware.checkAdminAuthorization, multer({ s
 
 locationRoute.delete('/delete/:Id', middleware.checkAdminAuthorization, locationController.delete);
 
-locationRoute.get('/getAll', middleware.checkAdminAuthorization, locationController.getAll);
+locationRoute.get('/getAll', locationController.getAll);
 
 locationRoute.get('/getById/:Id', locationController.getById);
 
