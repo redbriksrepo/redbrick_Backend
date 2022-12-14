@@ -5,12 +5,24 @@ const getRecentProposalData = (req, res, next) => {
         let currentUser = req.user;
         let date = new Date().toDateString();
         date = new Date(date);
-        console.log(date);
-        if (currentUser.role === 'admin') {
-            Proposal.find().select('salesPerson status').where('createdAt').gt(date).populate('salesPerson', 'firstName lastName').then((proposal) => {
+
+        const recentProposal = () => {
+            if (currentUser.role === 'admin') {
+                return Proposal.find().select('salesPerson status').where('createdAt').gt(date).populate('salesPerson', 'firstName lastName');
+            }
+            else if (currentUser.role === 'sales head') {
+                return Proposal.find().select('salesPerson status').where('createdAt').gt(date).populate('salesPerson', 'firstName lastName salesHead').where('salesPerson').equals(currentUser._id);
+            }
+            else {
+                let error = new Error('not Authorized');
+                error.status = 401;
+                throw error;
+            }
+        }
+            recentProposal().then((proposal) => {
                 res.json(proposal);
             })
-        }
+
         // else if( )
     }
     catch (err) {
