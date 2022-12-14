@@ -13,8 +13,9 @@ const proposalSchema = new Schema({
     spocName: String,
     clientName: String,
     salesPerson: {
-        type: String,
-        required: true
+        type: Schema.Types.ObjectId,
+        required: true,
+        ref: 'User'
     },
     workstationSize: String,
     workstationNumber: Number,

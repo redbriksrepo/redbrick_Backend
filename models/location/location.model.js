@@ -31,6 +31,10 @@ const locationModel = new Schema({
     },
     videoLinks: {
         type: Array
+    },
+    salesHead: {
+        type: Schema.Types.ObjectId,
+        ref: 'User'
     }
 },{
     timestamps: true

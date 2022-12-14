@@ -11,8 +11,9 @@ const proposalLogSchema = new Schema({
         required: true
     },
     salesPerson: {
-        type: String,
-        required: true
+        type: Schema.Types.ObjectId,
+        required: true,
+        ref: 'User'
     },
     clientName: {
         type: String,

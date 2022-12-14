@@ -49,7 +49,13 @@ const userModel = new Schema(
       type: String,
       default: "None",
     },
-    salesHead: String
+    salesHead: String,
+    proposals: [
+      {
+        type: String,
+        ref: 'Proposal'
+      }
+    ]
   },
   {
     timestamps: true,

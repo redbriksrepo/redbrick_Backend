@@ -4,6 +4,7 @@ const Proposal = require("../../../models/proposal/proposal.model")
 const path = require('path');
 const LogController = require("../../log/main.log.controller");
 const Location = require("../../../models/location/location.model");
+const User = require("../../../models/user/user.model");
 
 const initProposal = (req, res, next) => {
     try {
@@ -73,7 +74,12 @@ const addClientInfo = (req, res, next) => {
                     }
                     else {
                         // require('../../../assets/layout/json/Salarpuria.json')
-                        LogController.proposal.create(Id, data.clientName,req.user._id);
+                        LogController.proposal.create(Id, data.clientName, req.user._id);
+                        User.findById(mongoose.Types.ObjectId(proposal.salesPerson)).then((user) => {
+                            User.updateOne({ _id: mongoose.Types.ObjectId(user._id) }, { $set: { proposals: [...user.proposals, Id] } }).then((updateResult) => {
+                                console.log('updateResult::', updateResult);
+                            })
+                        });
                         let layoutData = require(path.join('..', '..', '..', 'assets', 'layout', 'json', `${proposal.location}_${proposal.center}.json`));
                         res.status(202).send({
                             "Message": "Client Info added Successfully!",
