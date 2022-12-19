@@ -6,7 +6,7 @@ const brokerSchema = new Schema({
         type: String,
         required: true
     },
-    BrokerCategory: {
+    brokerCategory: {
         type: String,
         required: true
     },
@@ -16,7 +16,6 @@ const brokerSchema = new Schema({
     },
     SPOCNumber: {
         type: String,
-        required: true
     },
     SPOCEmail: {
         type: String,
