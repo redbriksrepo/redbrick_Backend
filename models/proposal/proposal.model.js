@@ -9,8 +9,10 @@ const proposalSchema = new Schema({
     center: String,
     brokerType: String,
     brokerCategory: String,
-    brokerCategoryOther: String,
-    spocName: String,
+    brokerCategoryOther: {
+        type: Schema.Types.ObjectId,
+        ref: 'Broker'
+    },
     clientName: String,
     salesPerson: {
         type: Schema.Types.ObjectId,

@@ -5,6 +5,7 @@ const path = require('path');
 const LogController = require("../../log/main.log.controller");
 const Location = require("../../../models/location/location.model");
 const User = require("../../../models/user/user.model");
+const Broker = require('../../../models/broker/broker.model');
 
 const initProposal = (req, res, next) => {
     try {
@@ -58,13 +59,41 @@ const addClientInfo = (req, res, next) => {
             error.status = 406;
             throw error;
         }
-        Proposal.findById(Id).then((result) => {
+        Proposal.findById(Id).then(async (result) => {
             if (result) {
                 let error = new Error('Client Info cannot be added twice');
                 error.status = 400;
                 throw error;
             }
             else {
+                if (['IPC', 'Non-IPC'].includes(data.brokerType)) {
+                    if (!data.clientName || data.clientName === "") {
+                        if (data.brokerCategory === 'other') data.clientName = data.brokerCategoryOther;
+                    };
+                    if (data.brokerCategory === 'other') {
+                        let newBroker = {
+                            brokerType: data.brokerTYpe,
+                            brokerCategory: data.brokerCategory,
+                            SPOCName: data.spocName,
+                            SPOCEmail: data.spocEmail,
+                            SPOCNumber: data.spocNumber || ''
+                        };
+                        const broker = new Broker(newBroker);
+                        await broker.save().then((savedBrokerData) => {
+                            data.brokerCategory = savedBrokerData._id;
+                        }).catch((err) => {
+                            return next(err);
+                        });
+                    }
+                    else {
+                        await Broker.findOne({ brokerType: data.brokerType, brokerCategory: data.brokerCategory }).then((brokerData) => {
+                            data.brokerCategory = brokerData._id;
+                            if (!data.clientName || data.clientName === "") data.clientName = brokerData.brokerCategory;
+                        }).catch((err) => {
+                            return next(err);
+                        })
+                    }
+                };
                 let proposal = new Proposal(data);
                 proposal.save().then((proposal) => {
                     if (!proposal) {
@@ -73,12 +102,10 @@ const addClientInfo = (req, res, next) => {
                         throw error;
                     }
                     else {
-                        // require('../../../assets/layout/json/Salarpuria.json')
+
                         LogController.proposal.create(Id, data.clientName, req.user._id);
                         User.findById(mongoose.Types.ObjectId(proposal.salesPerson)).then((user) => {
-                            User.updateOne({ _id: mongoose.Types.ObjectId(user._id) }, { $set: { proposals: [...user.proposals, Id] } }).then((updateResult) => {
-                                console.log('updateResult::', updateResult);
-                            })
+                            User.updateOne({ _id: mongoose.Types.ObjectId(user._id) }, { $set: { proposals: [...user.proposals, Id] } })
                         });
                         let layoutData = require(path.join('..', '..', '..', 'assets', 'layout', 'json', `${proposal.location}_${proposal.center}.json`));
                         res.status(202).send({
