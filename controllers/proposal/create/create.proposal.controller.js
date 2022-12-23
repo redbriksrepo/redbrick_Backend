@@ -48,11 +48,47 @@ const initProposal = (req, res, next) => {
     }
 };
 
+const addClientInfoWithGivenData = (Id, data, req, res,next) => {
+    let proposal = new Proposal(data);
+    proposal.save().then((proposal) => {
+        if (!proposal) {
+            let error = new Error('Error while adding Client Info');
+            error.status = 400;
+            throw error;
+        }
+        else {
+            const logData = {
+                proposalId: Id,
+                clientName: data.clientName,
+                salesPerson: req.user._id,
+                location: data.location,
+                center: data.center,
+                salesHead: req.user.salesHead
+            }
+            console.log(logData);
+            LogController.proposal.create(logData);
+            User.findById(mongoose.Types.ObjectId(proposal.salesPerson)).then((user) => {
+                User.updateOne({ _id: mongoose.Types.ObjectId(user._id) }, { $set: { proposals: [...user.proposals, Id] } })
+            });
+            let layoutData = require(path.join('..', '..', '..', 'assets', 'layout', 'json', `${proposal.location}_${proposal.center}.json`));
+            res.status(202).send({
+                "Message": "Client Info added Successfully!",
+                "AvailableNoOfSeatsInLayout": layoutData.AvailableNoOfSeats,
+                "TotalNoOfSeatsInLayout": layoutData.TotalNoOfSeats
+            })
+        }
+    }).catch((err) => {
+        if (!err.message) err.message = 'Error when adding client Info';
+        if (!err.status) err.status = 400;
+        next(err);
+    })
+}
+
 const addClientInfo = (req, res, next) => {
     let Id = req.params.Id;
     let data = req.body;
     let salesPerson = req.user._id;
-    data = { ...data, _id: Id, salesPerson : salesPerson};
+    data = { ...data, _id: Id, salesPerson : salesPerson, salesHead: req.user.salesHead};
     try {
         if (!Id) {
             let error = new Error('Id not provided!');
@@ -81,6 +117,7 @@ const addClientInfo = (req, res, next) => {
                         const broker = new Broker(newBroker);
                         await broker.save().then((savedBrokerData) => {
                             data.brokerCategory = savedBrokerData._id;
+                            addClientInfoWithGivenData(Id, data, req, res, next);
                         }).catch((err) => {
                             return next(err);
                         });
@@ -89,36 +126,12 @@ const addClientInfo = (req, res, next) => {
                         await Broker.findOne({ brokerType: data.brokerType, brokerCategory: data.brokerCategory }).then((brokerData) => {
                             data.brokerCategory = brokerData._id;
                             if (!data.clientName || data.clientName === "") data.clientName = brokerData.brokerCategory;
+                            addClientInfoWithGivenData(Id,data, req, res, next);
                         }).catch((err) => {
                             return next(err);
                         })
                     }
-                };
-                let proposal = new Proposal(data);
-                proposal.save().then((proposal) => {
-                    if (!proposal) {
-                        let error = new Error('Error while adding Client Info');
-                        error.status = 400;
-                        throw error;
-                    }
-                    else {
-
-                        LogController.proposal.create(Id, data.clientName, req.user._id);
-                        User.findById(mongoose.Types.ObjectId(proposal.salesPerson)).then((user) => {
-                            User.updateOne({ _id: mongoose.Types.ObjectId(user._id) }, { $set: { proposals: [...user.proposals, Id] } })
-                        });
-                        let layoutData = require(path.join('..', '..', '..', 'assets', 'layout', 'json', `${proposal.location}_${proposal.center}.json`));
-                        res.status(202).send({
-                            "Message": "Client Info added Successfully!",
-                            "AvailableNoOfSeatsInLayout": layoutData.AvailableNoOfSeats,
-                            "TotalNoOfSeatsInLayout": layoutData.TotalNoOfSeats
-                        })
-                    }
-                }).catch((err) => {
-                    if (!err.message) err.message = 'Error when adding client Info';
-                    if (!err.status) err.status = 400;
-                    next(err);
-                })
+                }
             }
         }).catch((err) => {
             if (!err.message) err.message = 'Error when adding client Info';
@@ -211,9 +224,11 @@ const checkRequiredNoOfSeats = (req, res, next) => {
     let data = req.body;
     let Id = req.params.Id;
     let totalNoOfSeats = data.workstationNumber + data.cabinNumber + data.meetingRoomNumber + data.visitorMeetingRoomNumber;
+    
     Proposal.updateOne({ _id: Id }, { $set: { totalNoOfSeatsSelected: totalNoOfSeats } }).then((result) => {
         if (result.acknowledged === true) {
             if (result.modifiedCount > 0) {
+                req.proposal = { totalNoOfSeats }
                 next();
             }
             else {
@@ -331,28 +346,40 @@ const addProposalRequirement = (req, res, next) => {
                 Proposal.updateOne({ _id: Id }, { $set: data }).then((result) => {
                     if (result.acknowledged === true) {
                         if (result.modifiedCount > 0) {
-                            LogController.proposal.update(Id, {logMessage:'Added Requirement Info'});
+                            const logData = { seatsSelected: req.proposal.totalNoOfSeats, logMessage: 'Added Requirement Info'}
+                            LogController.proposal.update(Id, logData);
                             Proposal.find()
                                 .where('location').equals(proposal.location).where('center').equals(proposal.center)
                                 .where('clientName').equals(proposal.clientName)
                                 .where('totalNoOfSeatsSelected').gte(proposal.totalNoOfSeatsSelected - ((proposal.totalNoOfSeatsSelected * 5) / 100)).lte(proposal.totalNoOfSeatsSelected + ((proposal.totalNoOfSeatsSelected * 5) / 100))
                                 .then((result) => {
-                                    if (result.length > 1) {
+                                    let conflict = (result.length > 1) ? true : false;
+                                    Proposal.updateOne({ _id: Id }, { $set: { seatAvailability, consolidatedSeats, status: conflict ? 'Conflict': 'In-Progress' } }).then((result) => {
                                         res.status(202).send({
                                             "Message": "Requirement added Successfully!",
                                             "conflict": true,
-                                            "seatsAvailability": seatAvailability,
-                                            "consolidatedSeats": consolidatedSeats
-                                        })
-                                    }
-                                    else {
-                                        res.status(202).send({
-                                            "Message": "Requirement added Successfully!",
-                                            "conflict": false,
-                                            "seatsAvailability": seatAvailability,
-                                            "consolidatedSeats": consolidatedSeats
-                                        })
-                                    }
+                                        });
+                                    }).catch((err) => {
+                                        if (!err.message) err.message = 'Something went wrong';
+                                        if (!err.status) err.status = 500;
+                                        return next(err);
+                                    })
+                                    // if (result.length > 1) {
+                                    //     res.status(202).send({
+                                    //         "Message": "Requirement added Successfully!",
+                                    //         "conflict": true,
+                                    //         "seatsAvailability": seatAvailability,
+                                    //         "consolidatedSeats": consolidatedSeats
+                                    //     })
+                                    // }
+                                    // else {
+                                    //     res.status(202).send({
+                                    //         "Message": "Requirement added Successfully!",
+                                    //         "conflict": false,
+                                    //         "seatsAvailability": seatAvailability,
+                                    //         "consolidatedSeats": consolidatedSeats
+                                    //     })
+                                    // }
                                 })
                             // Proposal.find()
                             //     .where('workStation.workStationNumber').gte(data.workStation.workStationNumber - ((data.workStation.workStationNumber * 5) / 100)).lte(data.workStation.workStationNumber + ((data.workStation.workStationNumber * 5) / 100))

@@ -4,12 +4,14 @@ const Schema = mongoose.Schema;
 const proposalSchema = new Schema({
     _id: String,
     salesTeam: String,
-    salesHead: String,
+    salesHead: {
+        type: Schema.Types.ObjectId,
+        required: true
+    },
     location: String,
     center: String,
     brokerType: String,
-    brokerCategory: String,
-    brokerCategoryOther: {
+    brokerCategory: {
         type: Schema.Types.ObjectId,
         ref: 'Broker'
     },
@@ -43,9 +45,29 @@ const proposalSchema = new Schema({
     LockIn: Number, 
     NonStandardRequirement: String,
     Serviced: String,
+    consolidatedSeats: {
+        type: Boolean,
+        default: false
+    },
+    seatAvailability: {
+        type: Boolean,
+        default: true
+    },
+    finalOfferAmmount: Number,
+    escalateForCloser: {
+        type: Boolean,
+        default: false
+    },
     status: {
         type: String,
-        default: "Pending"
+        default: "In-Progress"
+    },
+    finalOfferAmmount: Number,
+    previousFinalOfferAmmount: Number,
+    clientFinalOfferAmmount: Number,
+    selectFrom: {
+        type: String,
+        default: 'left'
     }
 }, {
     timestamps: true

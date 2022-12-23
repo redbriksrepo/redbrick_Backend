@@ -20,7 +20,8 @@ const authentication = (req,res,next) => {
         if(decode) {
             User.findOne({'userName': decode.userName }).then((user) => {
                 if(user) {
-                    if( user.activeDevice === deviceType){
+                    if (user.activeDevice === deviceType) {
+                        if(user.salesHead) decode.salesHead = user.salesHead
                         req.user = decode;
                         next();
                     }

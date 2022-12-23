@@ -7,6 +7,7 @@ const path = require('path');
 // Custome Imports
 const mainRoute = require('./routes/main.route');
 const errorHandler = require('./controllers/Error/error.controller');
+const startSheduledTasks = require('./sheduled/main.sheduled');
 
 // Local variable
 const app = express();
@@ -31,6 +32,7 @@ app.use(errorHandler);
 databaseConnection().then(() => {
     app.listen(port,() => {
         console.log(`Server is Running on port ${port}`);
+        startSheduledTasks();
     })
 }).catch((err) => {
     if (err) throw err;

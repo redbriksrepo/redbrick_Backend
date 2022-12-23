@@ -10,7 +10,7 @@ const locationModel = new Schema({
         type: String,
         required: true
     },
-    availableNoOfWorkstation:{
+    perSeatPrice:{
         type: Number,
         required: true
     },

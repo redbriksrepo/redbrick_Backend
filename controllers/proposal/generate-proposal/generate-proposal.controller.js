@@ -6,6 +6,8 @@ const { default: mongoose } = require('mongoose');
 const fs = require('fs');
 const nodemailer = require('nodemailer');
 const LogController = require('../../log/main.log.controller');
+const ProposalLog = require('../../../models/proposal-log/proposal-log.model');
+const Location = require('../../../models/location/location.model');
 
 const generateProposal = (req, res, next) => {
     let data = req.body;
@@ -18,24 +20,33 @@ const generateProposal = (req, res, next) => {
             throw error;
         }
 
-        Proposal.updateOne({ _id: Id }, { $set: data }).then((result) => {
-            if (result.acknowledged === true) {
-                if (result.modifiedCount > 0) {
-                    next();
+        Location.findOne({ location: proposal.location, center: proposal.center }).select('perSeatPrice').then((locationdata) => {
+
+            data.finalOfferAmmount = proposal.totalNoOfSeatsSelected * locationdata.perSeatPrice;
+
+            Proposal.updateOne({ _id: Id }, { $set: data }).then((result) => {
+                if (result.acknowledged === true) {
+                    if (result.modifiedCount > 0) {
+                        next();
+                    }
+                    else {
+                        let error = new Error('Error while generation proposal with additional Data');
+                        throw error;
+                    }
                 }
                 else {
-                    let error = new Error('Error while generation proposal with additional Data');
+                    let error = new Error('Error while generating Proposal');
                     throw error;
                 }
-            }
-            else {
-                let error = new Error('Error while generating Proposal');
-                throw error;
-            }
+            }).catch((err) => {
+                if (!err.message) err.message = 'Error while generatin propoasl';
+                throw err;
+            })
         }).catch((err) => {
             if (!err.message) err.message = 'Error while generatin propoasl';
             throw err;
         })
+
     }).catch((err) => {
         if (!err.message) err.message = 'Error while generatin propoasl';
         next(err);
@@ -44,18 +55,18 @@ const generateProposal = (req, res, next) => {
 
 const generateProposalPDF = (req, res, next) => {
     let Id = req.params.Id;
-    let selectFrom = req.params.selectFrom;
-
+    
     // let location;
     // let requiredNoOfSeats;
-
+    
     Proposal.findById(Id).then((proposal) => {
-
+        
         if (!proposal) {
             let error = new Error('Invalid Proposal Id');
             throw error;
         }
-
+        
+        let selectFrom = req.params.selectFrom || proposal.selectFrom;
         let location = proposal.center;
         let requiredNoOfSeats = proposal.totalNoOfSeatsSelected;
         let workStationId;
@@ -717,12 +728,28 @@ const generateProposalPDF = (req, res, next) => {
 
             doc.end();
 
-            LogController.proposal.update(proposal._id, { logMessage: 'Proposal Generated', proposalGenerated: 'yes'})
+            Proposal.updateOne({ _id: Id }, { $set: { status: 'Completed But not Esclated', selectFrom: selectFrom } }).then((updateResult) => {
+                if (updateResult.acknowledged && updateResult.modifiedCount > 0) {
+                    LogController.proposal.update(proposal._id, { logMessage: 'Proposal Generated', proposalGenerated: 'yes' }).then(() => {
+                        res.status(200).send({
+                            "Message": 'Proposal Generated Successfully'
+                        });
+                        next();
+                    }).catch((err) => {
+                        if (!err.message) err.message = 'Something went wrong';
+                        if (!err.status) err.status = 500;
+                        return next(err);
+                    })
+                }
+            }).catch((err) => {
+                if (!err.message) err.message = 'Something went wrong';
+                if (!err.status) err.status = 500;
+                return next(err);
+            })
 
-            res.status(200).send({
-                "Message": 'Proposal Generated Successfully'
-            });
-            next();
+            
+
+            
         }
         catch (err) {
             if (!err.status) err.status = 500;
@@ -744,16 +771,16 @@ const sendProposalByEmail = (req, res, next) => {
     let Id = req.params.Id;
 
     const transporter = nodemailer.createTransport({
-        service: 'gmail',
+        service: process.env.NODEMAILER_SERVICE,
         auth: {
-            user: 'manpreet.mobicloud@gmail.com',
-            pass: 'wgysezoatzgbytrx'
+            user: process.env.NODEMAILER_AUTH_USER,
+            pass: process.env.NODEMAILER_AUTH_PASSWORD
         }
     });
 
     let mailOptions = {
-        from: 'manpreet.mobicloud@gmail.com',
-        to: 'vikrant.mobicloud@gmail.com',
+        from: process.env.NODEMAILER_AUTH_USER,
+        to: req.user.userName,
         subject: 'Proposal Document From Redbrick Office',
         text: 'Dear Sir/ma\'am, \n\n We are sending you the Document related to your proposal and location. All the documents attached to this email are computer generated the are not Fixed. Please contact relavent sales person if you have and query related you proposal\n \n Thanks and regards, \n Redbricks Office',
         attachments: [
@@ -769,8 +796,8 @@ const sendProposalByEmail = (req, res, next) => {
     }
 
     transporter.sendMail(mailOptions, (err, info) => {
-        if (err) throw err;
-        console.log('proposal send successfully');
+        if (err) return;
+        ProposalLog.updateOne(Id, { logMessage: "Proposal Send on Email" });
     })
 }
 

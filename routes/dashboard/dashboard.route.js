@@ -8,4 +8,6 @@ dashboardRoute.get('/recentProposal', dashboardController.recentProposal);
 
 dashboardRoute.get('/locationData', dashboardController.getLocationData);
 
+dashboardRoute.get('/proposalWithConflict', dashboardController.proposalWithConflict);
+
 module.exports = dashboardRoute;

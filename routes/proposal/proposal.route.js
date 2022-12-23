@@ -19,10 +19,20 @@ proposalRoute.get('/getById');
 
 proposalRoute.get('/layout/:Id/:selectFrom', proposalController.layout);
 
-proposalRoute.post('/generate/:Id/:selectFrom',middleware.authentication, proposalController.generate.generateProposal, proposalController.generate.generateProposalPDF, proposalController.generate.sendProposalByEmail);
+proposalRoute.post('/generate/:Id/?:selectFrom',middleware.authentication, proposalController.generate.generateProposal, proposalController.generate.generateProposalPDF, proposalController.generate.sendProposalByEmail);
 
-proposalRoute.post('/send-otp/:Id',middleware.authentication, proposalController.sendOtp);
+// proposalRoute.post('/send-otp/:Id',middleware.authentication, proposalController.sendOtp);
 
-proposalRoute.post('/verify-otp/:Id',middleware.authentication, proposalController.verifyOtp);
+// proposalRoute.post('/verify-otp/:Id', middleware.authentication, proposalController.verifyOtp);
+
+proposalRoute.get('/checkSeatAvailabilityAndConsolidatedSeats/:Id', proposalController.checkSeatAvailabilityAndConsolidatedSeats);
+
+proposalRoute.get('/resolveConflict/:Id', proposalController.resolveConflict);
+
+proposalRoute.get('/finalOfferAmmount/:Id', proposalController.finalOfferAmmount);
+
+proposalRoute.post('/esclateToClosure/:Id', proposalController.updateFinalOfferAmmount);
+
+proposalRoute.post('/approveProposal/:Id', proposalController.approveProposal);
 
 module.exports = proposalRoute;

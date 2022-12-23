@@ -15,6 +15,10 @@ const proposalLogSchema = new Schema({
         required: true,
         ref: 'User'
     },
+    salesHead: {
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+    },
     clientName: {
         type: String,
         required: true
@@ -22,7 +26,17 @@ const proposalLogSchema = new Schema({
     proposalGenerated: {
         type: String,
         default: 'no'
+    },
+    seatsSelected: Number,
+    location: {
+        type: String,
+        required: true
+    },
+    center: {
+        type: String,
+        required: true
     }
+
 }, {
     timestamps: true
 });
