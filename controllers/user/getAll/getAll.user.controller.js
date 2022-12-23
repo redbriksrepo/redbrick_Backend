@@ -1,8 +1,20 @@
+const { default: mongoose } = require("mongoose");
 const User = require("../../../models/user/user.model");
 
 const getAllUser = (req, res, next) => {
     try {
-        User.find().then((allUser) => {
+        let currentUser = req.user;
+        console.log(currentUser);
+
+        const getUserQuery = () => {
+            if (currentUser.role === 'admin') {
+                return User.find().nor([{ _id: mongoose.Types.ObjectId(currentUser._id) }]);
+            }
+            else if (currentUser.role === 'sales head') {
+                return User.find().nor([{ _id: mongoose.Types.ObjectId(currentUser._id) }]).where('role').equals('sales').where('salesHead').equals(currentUser._id);
+            }
+        }
+        getUserQuery().then((allUser) => {
             if (allUser) {
                 res.status(200).send(allUser);
             }

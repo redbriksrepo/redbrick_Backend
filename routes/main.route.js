@@ -13,7 +13,7 @@ const mainRoute = require('express').Router();
 
 mainRoute.use('/auth', authRoute);
 
-mainRoute.use('/user', userRoute);
+mainRoute.use('/user',middleware.authentication, userRoute);
 
 mainRoute.use('/proposal', proposalRoute);
 
