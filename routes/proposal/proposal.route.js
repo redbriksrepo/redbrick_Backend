@@ -33,6 +33,6 @@ proposalRoute.get('/finalOfferAmmount/:Id', proposalController.finalOfferAmmount
 
 proposalRoute.post('/esclateToClosure/:Id', proposalController.updateFinalOfferAmmount);
 
-proposalRoute.post('/approveProposal/:Id', proposalController.approveProposal);
+proposalRoute.post('/approveProposal/:Id', proposalController.approveProposal, proposalController.generate.generateProposalPDF);
 
 module.exports = proposalRoute;

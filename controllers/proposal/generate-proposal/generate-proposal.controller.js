@@ -59,7 +59,7 @@ const generateProposalPDF = (req, res, next) => {
     // let location;
     // let requiredNoOfSeats;
     
-    Proposal.findById(Id).then((proposal) => {
+    Proposal.findById(Id).populate('salesPerson','userName').then((proposal) => {
         
         if (!proposal) {
             let error = new Error('Invalid Proposal Id');
@@ -734,6 +734,7 @@ const generateProposalPDF = (req, res, next) => {
                         res.status(200).send({
                             "Message": 'Proposal Generated Successfully'
                         });
+                        req.salesPersonEmail = proposal.salesPerson.userName;
                         next();
                     }).catch((err) => {
                         if (!err.message) err.message = 'Something went wrong';
@@ -780,7 +781,7 @@ const sendProposalByEmail = (req, res, next) => {
 
     let mailOptions = {
         from: process.env.NODEMAILER_AUTH_USER,
-        to: req.user.userName,
+        to: req.salesPerson.userName,
         subject: 'Proposal Document From Redbrick Office',
         text: 'Dear Sir/ma\'am, \n\n We are sending you the Document related to your proposal and location. All the documents attached to this email are computer generated the are not Fixed. Please contact relavent sales person if you have and query related you proposal\n \n Thanks and regards, \n Redbricks Office',
         attachments: [
