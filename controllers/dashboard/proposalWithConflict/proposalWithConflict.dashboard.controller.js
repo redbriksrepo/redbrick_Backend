@@ -5,7 +5,7 @@ const proposalWithConflict = (req, res, next) => {
     try {
         let currentUser = req.user;
         if (currentUser.role === 'sales head') {
-            Proposal.find().where('salesHead').equals(mongoose.Types.ObjectId(currentUser._id)).where('status').equals('Conflict').select('salesPerson clientName').then((proposalData) => {
+            Proposal.find().where('salesHead').equals(mongoose.Types.ObjectId(currentUser._id)).where('status').equals('Conflict').select('salesPerson clientName').populate('salesPerson','firstName lastName').then((proposalData) => {
                 if (!proposalData) throw new Error('Something went wrong').status = 500;
                 res.status(200).send(proposalData);
             }).catch((err) => {
