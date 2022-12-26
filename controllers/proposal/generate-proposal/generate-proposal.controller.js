@@ -55,17 +55,17 @@ const generateProposal = (req, res, next) => {
 
 const generateProposalPDF = (req, res, next) => {
     let Id = req.params.Id;
-    
+
     // let location;
     // let requiredNoOfSeats;
-    
-    Proposal.findById(Id).populate('salesPerson','userName').then((proposal) => {
-        
+
+    Proposal.findById(Id).populate('salesPerson', 'userName').then((proposal) => {
+
         if (!proposal) {
             let error = new Error('Invalid Proposal Id');
             throw error;
         }
-        
+
         let selectFrom = req.params.selectFrom || proposal.selectFrom;
         let location = proposal.center;
         let requiredNoOfSeats = proposal.totalNoOfSeatsSelected;
@@ -730,17 +730,12 @@ const generateProposalPDF = (req, res, next) => {
 
             Proposal.updateOne({ _id: Id }, { $set: { status: 'Completed But not Esclated', selectFrom: selectFrom } }).then((updateResult) => {
                 if (updateResult.acknowledged && updateResult.modifiedCount > 0) {
-                    LogController.proposal.update(proposal._id, { logMessage: 'Proposal Generated', proposalGenerated: 'yes' }).then(() => {
-                        res.status(200).send({
-                            "Message": 'Proposal Generated Successfully'
-                        });
-                        req.salesPersonEmail = proposal.salesPerson.userName;
-                        next();
-                    }).catch((err) => {
-                        if (!err.message) err.message = 'Something went wrong';
-                        if (!err.status) err.status = 500;
-                        return next(err);
-                    })
+                    LogController.proposal.update(proposal._id, { logMessage: 'Proposal Generated', proposalGenerated: 'yes' })
+                    res.status(200).send({
+                        "Message": 'Proposal Generated Successfully'
+                    });
+                    req.salesPersonEmail = proposal.salesPerson.userName;
+                    next();
                 }
             }).catch((err) => {
                 if (!err.message) err.message = 'Something went wrong';
@@ -748,9 +743,9 @@ const generateProposalPDF = (req, res, next) => {
                 return next(err);
             })
 
-            
 
-            
+
+
         }
         catch (err) {
             if (!err.status) err.status = 500;
@@ -781,7 +776,7 @@ const sendProposalByEmail = (req, res, next) => {
 
     let mailOptions = {
         from: process.env.NODEMAILER_AUTH_USER,
-        to: req.salesPerson.userName,
+        to: req.salesPersonEmail,
         subject: 'Proposal Document From Redbrick Office',
         text: 'Dear Sir/ma\'am, \n\n We are sending you the Document related to your proposal and location. All the documents attached to this email are computer generated the are not Fixed. Please contact relavent sales person if you have and query related you proposal\n \n Thanks and regards, \n Redbricks Office',
         attachments: [

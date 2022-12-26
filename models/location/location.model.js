@@ -14,6 +14,10 @@ const locationModel = new Schema({
         type: Number,
         required: true
     },
+    availableNoOfWorkstation: {
+        type: Number,
+        default: 0
+    },
     totalNoOfWorkstation: {
         type: Number,
         required: true
@@ -35,7 +39,8 @@ const locationModel = new Schema({
     salesHead: {
         type: Schema.Types.ObjectId,
         ref: 'User'
-    }
+    },
+    address: String
 },{
     timestamps: true
 });
