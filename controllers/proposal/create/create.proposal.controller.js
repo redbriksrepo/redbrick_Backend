@@ -60,6 +60,7 @@ const addClientInfoWithGivenData = (Id, data, req, res,next) => {
             const logData = {
                 proposalId: Id,
                 clientName: data.clientName,
+                clientEmail:data.clientEmail,
                 salesPerson: req.user._id,
                 location: data.location,
                 center: data.center,
@@ -68,7 +69,7 @@ const addClientInfoWithGivenData = (Id, data, req, res,next) => {
             console.log(logData);
             LogController.proposal.create(logData);
             User.findById(mongoose.Types.ObjectId(proposal.salesPerson)).then((user) => {
-                User.updateOne({ _id: mongoose.Types.ObjectId(user._id) }, { $set: { proposals: [...user.proposals, Id] } })
+                User.updateOne({ _id: mongoose.Types.ObjectId(user._id) }, { $set: { proposals: [...user.proposals, Id] } }).then()
             });
             let layoutData = require(path.join('..', '..', '..', 'assets', 'layout', 'json', `${proposal.location}_${proposal.center}.json`));
             res.status(202).send({
@@ -89,6 +90,7 @@ const addClientInfo = (req, res, next) => {
     let data = req.body;
     let salesPerson = req.user._id;
     data = { ...data, _id: Id, salesPerson : salesPerson, salesHead: req.user.salesHead};
+    console.log('\n\n\n\n\n\n',data);
     try {
         if (!Id) {
             let error = new Error('Id not provided!');
@@ -108,8 +110,8 @@ const addClientInfo = (req, res, next) => {
                     };
                     if (data.brokerCategory === 'other') {
                         let newBroker = {
-                            brokerType: data.brokerTYpe,
-                            brokerCategory: data.brokerCategory,
+                            brokerType: data.brokerType,
+                            brokerCategory: data.brokerCategoryOther,
                             SPOCName: data.spocName,
                             SPOCEmail: data.spocEmail,
                             SPOCNumber: data.spocNumber || ''
@@ -131,6 +133,10 @@ const addClientInfo = (req, res, next) => {
                             return next(err);
                         })
                     }
+                }
+                else{
+                    addClientInfoWithGivenData(Id,data, req, res, next);
+                    
                 }
             }
         }).catch((err) => {

@@ -20,13 +20,14 @@ const generateProposal = (req, res, next) => {
             throw error;
         }
 
-        Location.findOne({ location: proposal.location, center: proposal.center }).select('perSeatPrice').then((locationdata) => {
+        Location.findOne({ location: proposal.location, center: proposal.center }).then((locationdata) => {
 
             data.finalOfferAmmount = proposal.totalNoOfSeatsSelected * locationdata.perSeatPrice;
 
             Proposal.updateOne({ _id: Id }, { $set: data }).then((result) => {
                 if (result.acknowledged === true) {
                     if (result.modifiedCount > 0) {
+                        req.locationData = locationdata;
                         next();
                     }
                     else {
@@ -121,6 +122,7 @@ const generateProposalPDF = (req, res, next) => {
             throw err;
         }
         try {
+            const locationMetaData = req.locationData;
             const doc = new PDFDocument({ size: [800, 566], margin: 0 });
             doc.pipe(fs.createWriteStream(`./assets/proposal/generated/${proposal._id}.pdf`));
 
@@ -670,12 +672,12 @@ const generateProposalPDF = (req, res, next) => {
             doc.rect(20, 100, 100, 30).fillAndStroke('#5e5e5e', 'black').fillColor('white').text('Name of Client', 20, 110, { width: 100, align: 'center' })
             doc.rect(120, 100, 660, 30).fillAndStroke('#5e5e5e', 'black').fillColor('white').text(proposal.clientName, 120, 110, { width: 660, align: 'center' });
             doc.rect(20, 130, 100, 30).fillAndStroke('white', 'black').fillColor('black').text('Location', 20, 140, { width: 100, align: 'center' });
-            doc.rect(120, 130, 660, 30).fillAndStroke('white', 'black').fillColor('black').text('Meriegold, 301, opp. Solitaire Bussiness Hub, Viman Nagar, Pune, Maharastra 411014', 120, 140, { width: 660, align: 'center' });
+            doc.rect(120, 130, 660, 30).fillAndStroke('white', 'black').fillColor('black').text(locationMetaData.address, 120, 140, { width: 660, align: 'center' });
             doc.rect(20, 160, 100, 90).fillAndStroke('white', 'black').fillColor('black').text('Requirement Brief', 20, 210, { width: 100, align: 'center' });
             doc.rect(120, 160, 660, 90).fillAndStroke('white', 'black').fillColor('black').text(`As per layout - ${proposal.workstationNumber} ws (4*2 ) + ${proposal.cabinNumber}Nos - Manager Cabin + ${proposal.meetingRoomNumber}Nos - 8pax Meeting Room + 15-seater - Pantry`, 120, 210, { width: 660, align: 'center' });
             doc.rect(20, 250, 100, 30).fillAndStroke('#dbdbdb', 'black').fillColor('black').text('1', 20, 260, { width: 100, align: 'center' });
             doc.rect(120, 250, 180, 30).fillAndStroke('#dbdbdb', 'black').fillColor('black').text('Rent Commencement Date', 120, 260, { width: 180, align: 'center' });
-            doc.rect(300, 250, 480, 30).fillAndStroke('#dbdbdb', 'black').fillColor('black').text('1st Aug 2022', 300, 260, { width: 480, align: 'center' });
+            doc.rect(300, 250, 480, 30).fillAndStroke('#dbdbdb', 'black').fillColor('black').text(`${new Date().toLocaleDateString()}`, 300, 260, { width: 480, align: 'center' });
             doc.rect(20, 280, 100, 30).fillAndStroke('white', 'black').fillColor('black').text('2', 20, 290, { width: 100, align: 'center' });
             doc.rect(120, 280, 180, 30).fillAndStroke('white', 'black').fillColor('black').text('Term', 120, 290, { width: 180, align: 'center' });
             doc.rect(300, 280, 480, 30).fillAndStroke('white', 'black').fillColor('black').text(`${proposal.Tenure} months`, 300, 290, { width: 480, align: 'center' });
@@ -696,7 +698,7 @@ const generateProposalPDF = (req, res, next) => {
             doc.rect(300, 430, 480, 30).fillAndStroke('#dbdbdb', 'black').fillColor('black').text('INR 12000 + taxes per ws/ per month', 300, 440, { width: 480, align: 'center' });
             doc.rect(20, 460, 100, 30).fillAndStroke('white', 'black').fillColor('black').text('8', 20, 470, { width: 100, align: 'center' });
             doc.rect(120, 460, 180, 30).fillAndStroke('white', 'black').fillColor('black').text('Cost Per Seat', 120, 470, { width: 180, align: 'center' });
-            doc.rect(300, 460, 480, 30).fillAndStroke('white', 'black').fillColor('black').text('INR 19500 + taxes per month', 300, 470, { width: 480, align: 'center' });
+            doc.rect(300, 460, 480, 30).fillAndStroke('white', 'black').fillColor('black').text(`INR ${locationMetaData.perSeatPrice} + taxes per month`, 300, 470, { width: 480, align: 'center' });
             doc.rect(20, 490, 100, 30).fillAndStroke('#dbdbdb', 'black').fillColor('black').text('9', 20, 500, { width: 100, align: 'center' });
             doc.rect(120, 490, 180, 30).fillAndStroke('#dbdbdb', 'black').fillColor('black').text('Billable Seats', 120, 500, { width: 180, align: 'center' });
             doc.rect(300, 490, 480, 30).fillAndStroke('#dbdbdb', 'black').fillColor('black').text(`Approx ${proposal.totalNoOfSeatsSelected}ws`, 300, 500, { width: 480, align: 'center' });

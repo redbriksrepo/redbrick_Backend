@@ -31,8 +31,8 @@ proposalRoute.get('/resolveConflict/:Id', proposalController.resolveConflict);
 
 proposalRoute.get('/finalOfferAmmount/:Id', proposalController.finalOfferAmmount);
 
-proposalRoute.post('/esclateToClosure/:Id', proposalController.updateFinalOfferAmmount);
+proposalRoute.post('/esclateToClosure/:Id',middleware.authentication, proposalController.updateFinalOfferAmmount);
 
-proposalRoute.post('/approveProposal/:Id', proposalController.approveProposal, proposalController.generate.generateProposalPDF);
+proposalRoute.post('/approveProposal/:Id', middleware.authentication,proposalController.approveProposal, proposalController.generate.generateProposalPDF);
 
 module.exports = proposalRoute;

@@ -23,6 +23,9 @@ const proposalLogSchema = new Schema({
         type: String,
         required: true
     },
+    clientEmail:{
+        type: String
+    },
     proposalGenerated: {
         type: String,
         default: 'no'

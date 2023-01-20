@@ -16,8 +16,10 @@ const salesHeadWeeklyReport = cron.schedule('0 8 * * */Monday', () => {
     User.find().where('role').equals('sales head').then((salesHeadList) => {
         salesHeadList.forEach((salesHead) => {
             ProposalLog.find().where('salesHead').equals(mongoose.Types.ObjectId(salesHead._id)).where('updatedAt').gt(lastWeekDate).populate('salesPerson','firstName lastName').then(async(logData) => {
-                // console.log(logData);\
+                // console.log(logData);
                 logData = await JSON.parse(JSON.stringify(logData));
+                // console.log(logData);
+                
                 let temp = logData.map((log) => {
                     
                     log.salesPerson = `${log.salesPerson.firstName} ${log.salesPerson.lastName}`;
@@ -25,6 +27,7 @@ const salesHeadWeeklyReport = cron.schedule('0 8 * * */Monday', () => {
                     // console.log(log);
                     return log;
                 });
+                // console.log('Temp::',temp)
                 const workbook = new exceljs.Workbook();
                 const workSheet = workbook.addWorksheet('Weekly Report');
                 workSheet.columns = [
@@ -105,7 +108,7 @@ const salesHeadWeeklyReport = cron.schedule('0 8 * * */Monday', () => {
                     };
                     transporter.sendMail(mailOptions, (err, info) => {
                         if (err) return console.log(err);
-                        // console.log('Sales head weekly report send::', salesHead.firstName + salesHead.lastName);
+                        console.log('Sales head weekly report send::', salesHead.firstName + salesHead.lastName);
                     })
                 })
             })

@@ -16,6 +16,7 @@ const proposalSchema = new Schema({
         ref: 'Broker'
     },
     clientName: String,
+    clientEmail:String,
     salesPerson: {
         type: Schema.Types.ObjectId,
         required: true,
