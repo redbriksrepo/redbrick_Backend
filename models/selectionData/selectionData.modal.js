@@ -87,4 +87,6 @@ const selectionDataSchema = new Schema({
     ]
 })
 
-module.exports = selectionDataSchema; 
+const selectionData = mongoose.model('selectionData', selectionDataSchema);
+
+module.exports = selectionData; 

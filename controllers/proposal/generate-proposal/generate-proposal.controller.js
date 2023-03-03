@@ -8,6 +8,7 @@ const nodemailer = require('nodemailer');
 const LogController = require('../../log/main.log.controller');
 const ProposalLog = require('../../../models/proposal-log/proposal-log.model');
 const Location = require('../../../models/location/location.model');
+const selectionData = require('../../../models/selectionData/selectionData.modal');
 
 const generateProposal = (req, res, next) => {
     let data = req.body;
@@ -872,7 +873,11 @@ const generateProposalPDF = (req, res, next) => {
             ///  let selectedWorkstationData = []; save to Database////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             ///  let selectedWorkstationData = []; save to Database////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-            Proposal.updateOne({ _id: Id }, { $set: { status: 'Completed But not Esclated', selectFrom: selectFrom, selectionData: selectedWorkstationData } }).then((updateResult) => {
+            selectionData.insertMany(selectedWorkstationData).then((result) => {
+                console.log(result);
+            })
+
+            Proposal.updateOne({ _id: Id }, { $set: { status: 'Completed But not Esclated', selectFrom: selectFrom} }).then((updateResult) => {
                 if (updateResult.acknowledged && updateResult.modifiedCount > 0) {
                     LogController.proposal.update(proposal._id, { logMessage: 'Proposal Generated', proposalGenerated: 'yes' })
                     res.status(200).send({
