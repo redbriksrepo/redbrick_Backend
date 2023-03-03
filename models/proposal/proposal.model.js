@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const selectionDataScheme = require('');
 const selectionDataSchema = require('../selectionData/selectionData.modal');
 
 const proposalSchema = new Schema({
@@ -72,7 +71,93 @@ const proposalSchema = new Schema({
         type: String,
         default: 'left'
     },
-    selectionData: [selectionDataSchema]
+    selectionData: [
+        {
+            sizeOfSeat: {
+                width: Number,
+                height: Number
+            },
+            startingXAxis: Number,
+            startingXAxisOpposite: Number,
+            startingYAxis: Number,
+            lastYAxis: Number,
+            selectedAreaXAxis: Number,
+            selectedAreaXAxisOpposite: Number,
+            selectedAreaYAxis: Number,
+            totalNoOfSeats: Number,
+            AvailableNoOfSeats: Number,
+            partition: [
+                {
+                    startingPosition: Number,
+                    startingPositionOpposite: Number,
+                    width: Number,
+                    height: Number
+                }
+            ],
+            gapPosition: [
+                {
+                    pillar: Boolean,
+                    startingPositon: Number,
+                    startingPositonOpposite: Number,
+                    pillarWidth: Number,
+                    pillarHeight: Number
+                }
+            ],
+            pillarPosition: [
+                {
+                    startingXPosition: Number,
+                    startingXPositionOpposite: Number,
+                    startingYPosition: Number,
+                    pillarWidth: Number,
+                    pillarHeight: Number
+                }
+            ],
+            subWorkStationArea: [
+                {
+                    totalNoOfSeats: Number,
+                    AvailableNoOfSeats: Number,
+                    sizeOfSeat: {
+                        width: Number,
+                        height: Number
+                    },
+                    startingXAxis: Number,
+                    startingYAxis: Number,
+                    lastYAxis: Number,
+                    selectedAreaXAxis: Number,
+                    selectedAreaYAxis: Number,
+                    selectedAreaXAxisOpposite: Number,
+                    startingXAxisOpposite: Number,
+                    Partition: [
+                        {
+                            startingPosition: Number,
+                            startingPositionOpposite: Number,
+                            width: Number,
+                            height: Number
+                        }
+                    ],
+                    gapPosition: [
+                        {
+                            pillar: Boolean,
+                            startingPositon: Number,
+                            startingPositonOpposite: Number,
+                            pillarWidth: Number,
+                            pillarHeight: Number
+                        }
+                    ],
+                    pillarPosition: [
+                        {
+                            startingXPosition: Number,
+                            startingXPositionOpposite: Number,
+                            startingYPosition: Number,
+                            pillarWidth: Number,
+                            pillarHeight: Number
+                        }
+                    ]
+
+                }
+            ]
+        }
+    ]
 }, {
     timestamps: true
 });
