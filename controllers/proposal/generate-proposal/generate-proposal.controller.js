@@ -144,6 +144,8 @@ const generateProposalPDF = (req, res, next) => {
             doc.addPage();
             doc.image(path.join(__dirname, '..', '..', '..', 'assets', 'layout', 'image', `${proposal.location}_${proposal.center}.png`), { height: 566, align: 'center', valign: 'center' });
 
+            let selectedWorkstationData = [];
+
             // Generation of layout start from here ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
             markSeatsOnLayout = (workstationToSelect) => {
@@ -154,6 +156,23 @@ const generateProposalPDF = (req, res, next) => {
                     let rowComplete = false;
                     let subWorkStationStarted = false;
                     let subWorkStationData;
+
+                    let workStationSelectedData = {
+                        _id: workStationData._id,
+                        sizeOfSeat: { ...workStationData.sizeOfSeat },
+                        startingXAxis: workStationData.startingXAxis,
+                        startingXAxisOpposite: workStationData.startingXAxisOpposite,
+                        startingYAxis: workStationData.startingYAxis,
+                        lastYAxis: workStationData.lastYAxis,
+                        selectedAreaXAxis: workStationData.selectedAreaXAxis,
+                        selectedAreaXAxisOpposite: workStationData.selectedAreaXAxisOpposite,
+                        selectedAreaYAxis: workStationData.selectedAreaYAxis,
+                        partition: [],
+                        gapPosition: [],
+                        pillarPosition: [],
+                        subWorkStationArea: []
+                    }
+                    
 
                     // If it is defined to start the selection of seat from right then only it will only select from right otherwise from left side
                     if (selectFrom === 'right') {
@@ -415,6 +434,8 @@ const generateProposalPDF = (req, res, next) => {
                             if (rowComplete === true) {
                                 workStationData.selectedAreaXAxis += workStationData.sizeOfSeat.width;
                                 workStationData.selectedAreaYAxis = workStationData.startingYAxis;
+                                workStationSelectedData.selectedAreaXAxisOpposite = workStationData.selectedAreaXAxis + workStationData.sizeOfSeat.width;
+                                workStationSelectedData.startingXAxisOpposite = workStationData.selectedAreaXAxis + workStationData.sizeOfSeat.width;
                                 rowComplete = false;
                             }
                             // Checking for Pillar and drawing
@@ -432,6 +453,11 @@ const generateProposalPDF = (req, res, next) => {
                                         [workStationData.selectedAreaXAxis, workStationData.selectedAreaYAxis + pillar.pillarHeight],
                                     ).fillOpacity(0.4).fill('green');
                                     workStationData.selectedAreaYAxis += pillar.pillarHeight;
+
+                                    workStationSelectedData.pillarPosition = [
+                                        ...workStationSelectedData.pillarPosition,
+                                        pillar
+                                    ]
                                 }
                             })
                             // checking for partition and drawing
@@ -447,6 +473,11 @@ const generateProposalPDF = (req, res, next) => {
                                     rowComplete = false;
                                     workStationData.selectedAreaYAxis = workStationData.startingYAxis;
                                     workStationData.selectedAreaXAxis += gap.width;
+
+                                    workStationSelectedData.partition = [
+                                        ...workStationSelectedData.partition,
+                                        gap
+                                    ];
                                 }
                             });
                             // checking for gap between workstation and drawing it
@@ -462,6 +493,11 @@ const generateProposalPDF = (req, res, next) => {
                                     rowComplete = false;
                                     workStationData.selectedAreaYAxis = workStationData.startingYAxis;
                                     workStationData.selectedAreaXAxis += gap.pillarWidth;
+
+                                    workStationSelectedData.gapPosition = [
+                                        ...workStationSelectedData.gapPosition,
+                                        gap
+                                    ];
                                 }
                             });
                             // checking for partition and drawing
@@ -477,6 +513,11 @@ const generateProposalPDF = (req, res, next) => {
                                     rowComplete = false;
                                     workStationData.selectedAreaYAxis = workStationData.startingYAxis;
                                     workStationData.selectedAreaXAxis += gap.width;
+
+                                    workStationSelectedData.partition = [
+                                        ...workStationSelectedData.partition,
+                                        gap
+                                    ];
                                 }
                             });
                             // checking for pillar and drawing;
@@ -494,6 +535,11 @@ const generateProposalPDF = (req, res, next) => {
                                         [workStationData.selectedAreaXAxis, workStationData.selectedAreaYAxis + pillar.pillarHeight],
                                     ).fillOpacity(0.4).fill('green');
                                     workStationData.selectedAreaYAxis += pillar.pillarHeight;
+
+                                    workStationSelectedData.pillarPosition = [
+                                        ...workStationSelectedData.pillarPosition,
+                                        pillar
+                                    ];
                                 }
                             })
                             // checking if sub-Workstation started or not
@@ -533,6 +579,19 @@ const generateProposalPDF = (req, res, next) => {
                             if (subWorkStationStarted === true) {
                                 let subrowComplete;
                                 let subWorkStationLastCheck = false;
+                                let subWorkStationSelectedData = {
+                                    totalNoOfSeats: subWorkStationData.totalNoOfSeats,
+                                    AvailableNoOfSeats: subWorkStationData.AvailableNoOfSeats,
+                                    sizeOfSeat: { ...subWorkStationData.sizeOfSeat },
+                                    startingXAxis: subWorkStationData.startingXAxis,
+                                    startingYAxis: subWorkStationData.startingYAxis,
+                                    lastYAxis: subWorkStationData.lastYAxis,
+                                    selectedAreaXAxis: subWorkStationData.selectedAreaXAxis,
+                                    selectedAreaYAxis: subWorkStationData.selectedAreaYAxis,
+                                    partition: [],
+                                    gapPosition: [],
+                                    pillarPosition: []
+                                }
                                 for (let j = 1; j <= subWorkStationData.AvailableNoOfSeats; j++) {
                                     // if row completed in Sub-Workstation
                                     if (subrowComplete === true) {
@@ -554,6 +613,11 @@ const generateProposalPDF = (req, res, next) => {
                                                 [subWorkStationData.selectedAreaXAxis, subWorkStationData.selectedAreaYAxis + pillar.pillarHeight]
                                             ).fillOpacity(0.4).fill("green");
                                             subWorkStationData.selectedAreaYAxis += pillar.pillarHeight;
+
+                                            subWorkStationSelectedData.pillarPosition = [
+                                                ...subWorkStationSelectedData.pillarPosition,
+                                                pillar
+                                            ];
                                         }
                                     })
                                     // checking for partition in current Sub-Workstation
@@ -569,6 +633,11 @@ const generateProposalPDF = (req, res, next) => {
                                             rowComplete = false;
                                             subWorkStationData.selectedAreaYAxis = subWorkStationData.startingYAxis;
                                             subWorkStationData.selectedAreaXAxis += gap.width;
+
+                                            subWorkStationSelectedData.partition = [
+                                                ...subWorkStationSelectedData.partition,
+                                                gap
+                                            ];
                                         }
                                     });
                                     // checking for gap in current Sub-Workstation
@@ -584,6 +653,11 @@ const generateProposalPDF = (req, res, next) => {
                                             rowComplete = false;
                                             subWorkStationData.selectedAreaYAxis = subWorkStationData.startingYAxis;
                                             subWorkStationData.selectedAreaXAxis += gap.pillarWidth;
+
+                                            subWorkStationSelectedData.gapPosition = [
+                                                ...subWorkStationSelectedData.gapPosition,
+                                                gap
+                                            ];
                                         }
                                     });
                                     // checking for partition in current Sub-Workstation
@@ -599,6 +673,11 @@ const generateProposalPDF = (req, res, next) => {
                                             subrowComplete = false;
                                             subWorkStationData.selectedAreaYAxis = subWorkStationData.startingYAxis;
                                             subWorkStationData.selectedAreaXAxis += gap.width;
+
+                                            subWorkStationSelectedData.partition = [
+                                                ...subWorkStationSelectedData.partition,
+                                                gap
+                                            ];
                                         }
                                     });
                                     // checking for pillar in current Sub-Workstation
@@ -615,6 +694,11 @@ const generateProposalPDF = (req, res, next) => {
                                                 [subWorkStationData.selectedAreaXAxis, subWorkStationData.selectedAreaYAxis + pillar.pillarHeight]
                                             ).fillOpacity(0.4).fill("green");
                                             subWorkStationData.selectedAreaYAxis += pillar.pillarHeight;
+
+                                            subWorkStationSelectedData.pillarPosition = [
+                                                ...subWorkStationSelectedData.pillarPosition,
+                                                pillar
+                                            ];
                                         }
                                     })
                                     // checking if row is completed in Sub-Workstation or not;
@@ -653,17 +737,64 @@ const generateProposalPDF = (req, res, next) => {
                                         else {
                                             workStationData.selectedAreaXAxis = subWorkStationData.startingXAxisOpposite;
                                             subWorkStationLastCheck = false;
+                                            let xAxisDifference = subWorkStationData.selectedAreaXAxisOpposite - subWorkStationData.selectedAreaXAxis;
+                                            subWorkStationSelectedData = {
+                                                ...subWorkStationSelectedData,
+                                                totalNoOfSeats: j,
+                                                AvailableNoOfSeats: j,
+                                                selectedAreaXAxisOpposite: (xAxisDifference > 3) ? subWorkStationData.selectedAreaXAxis + subWorkStationData.sizeOfSeat.width : subWorkStationData.selectedAreaXAxisOpposite,
+                                                startingXAxisOpposite: (xAxisDifference > 3) ? subWorkStationData.selectedAreaXAxis + subWorkStationData.sizeOfSeat.width : subWorkStationData.startingXAxisOpposite
+                                            }
+                                            subWorkStationData.selectedAreaXAxisOpposite = subWorkStationData.selectedAreaXAxis + subWorkStationData.sizeOfSeat.width;
+                                            subWorkStationData.startingXAxisOpposite = subWorkStationData.selectedAreaXAxis + subWorkStationData.sizeOfSeat.width;
+                                            let yAxisDifference = subWorkStationData.lastYAxis - (subWorkStationData.selectedAreaYAxis - subWorkStationData.sizeOfSeat.height) 
+                                            if ((yAxisDifference > 3) && ((subWorkStationData.selectedAreaYAxis - subWorkStationData.sizeOfSeat.height) !== subWorkStationData.startingYAxis)) {
+                                                let pillarForRemainingSeatsInRow = {
+                                                    startingXPosition: subWorkStationData.selectedAreaXAxis,
+                                                    startingXPositionOpposite: subWorkStationData.selectedAreaXAxis + subWorkStationData.sizeOfSeat.width,
+                                                    startingYPosition: subWorkStationData.selectedAreaYAxis - subWorkStationData.sizeOfSeat.height,
+                                                    pillarWidth: subWorkStationData.sizeOfSeat.width,
+                                                    pillarHeight: yAxisDifference
+                                                }
+                                                subWorkStationSelectedData.pillarPosition.push(pillarForRemainingSeatsInRow);
+                                            }
                                             break;
                                         }
                                     }
                                     i++;
                                 }
+                                workStationSelectedData.selectedAreaXAxisOpposite = subWorkStationStarted ? subWorkStationData.selectedAreaXAxisOpposite : workStationData.selectedAreaXAxis + workStationData.sizeOfSeat.width;
+                                workStationSelectedData.startingXAxisOpposite = subWorkStationStarted ? subWorkStationData.startingXAxisOpposite : workStationData.selectedAreaXAxis + workStationData.sizeOfSeat.width;
+
+                                // workStationSelectedData.totalNoOfSeats = i;
+                                workStationSelectedData.subWorkStationArea = [
+                                    ...workStationSelectedData.subWorkStationArea,
+                                    subWorkStationSelectedData
+                                ];
                                 subWorkStationStarted = false;
                             }
+                            workStationSelectedData.totalNoOfSeats = i;
+                            workStationSelectedData.AvailableNoOfSeats = i;
+                        }
+                        let workStationYAxisDifference = workStationData.lastYAxis - workStationData.selectedAreaYAxis;
+                        if (workStationYAxisDifference > 3) {
+                            let pillarForRemainingSeatsInRow = {
+                                startingXPosition: workStationData.selectedAreaXAxis,
+                                startingXPositionOpposite: workStationData.selectedAreaXAxis + workStationData.sizeOfSeat.width,
+                                startingYPosition: workStationData.selectedAreaYAxis,
+                                pillarWidth: workStationData.sizeOfSeat.width,
+                                pillarHeight: workStationYAxisDifference
+                            }
+                            workStationSelectedData.pillarPosition.push(pillarForRemainingSeatsInRow);
                         }
                     }
+                    selectedWorkstationData = [
+                        ...selectedWorkstationData,
+                        workStationSelectedData
+                    ];
                 }
             }
+
             workStationToBeSelectedIn.forEach((element) => {
                 markSeatsOnLayout(element);
             })
@@ -730,7 +861,18 @@ const generateProposalPDF = (req, res, next) => {
 
             doc.end();
 
-            Proposal.updateOne({ _id: Id }, { $set: { status: 'Completed But not Esclated', selectFrom: selectFrom } }).then((updateResult) => {
+            ///  let selectedWorkstationData = []; save to Database////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            ///  let selectedWorkstationData = []; save to Database////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            ///  let selectedWorkstationData = []; save to Database////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            ///  let selectedWorkstationData = []; save to Database////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            ///  let selectedWorkstationData = []; save to Database////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            ///  let selectedWorkstationData = []; save to Database////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            ///  let selectedWorkstationData = []; save to Database////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            ///  let selectedWorkstationData = []; save to Database////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            ///  let selectedWorkstationData = []; save to Database////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            ///  let selectedWorkstationData = []; save to Database////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+            Proposal.updateOne({ _id: Id }, { $set: { status: 'Completed But not Esclated', selectFrom: selectFrom, selectionData: selectedWorkstationData } }).then((updateResult) => {
                 if (updateResult.acknowledged && updateResult.modifiedCount > 0) {
                     LogController.proposal.update(proposal._id, { logMessage: 'Proposal Generated', proposalGenerated: 'yes' })
                     res.status(200).send({

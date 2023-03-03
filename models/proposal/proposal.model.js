@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const selectionDataScheme = require('');
+const selectionDataSchema = require('../selectionData/selectionData.modal');
 
 const proposalSchema = new Schema({
     _id: String,
@@ -69,7 +71,8 @@ const proposalSchema = new Schema({
     selectFrom: {
         type: String,
         default: 'left'
-    }
+    },
+    selectionData: [selectionDataSchema]
 }, {
     timestamps: true
 });
