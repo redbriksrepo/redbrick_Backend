@@ -874,23 +874,29 @@ const generateProposalPDF = (req, res, next) => {
             ///  let selectedWorkstationData = []; save to Database////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
             selectionData.insertMany(selectedWorkstationData).then((result) => {
-                console.log(result);
-            })
-
-            Proposal.updateOne({ _id: Id }, { $set: { status: 'Completed But not Esclated', selectFrom: selectFrom} }).then((updateResult) => {
-                if (updateResult.acknowledged && updateResult.modifiedCount > 0) {
-                    LogController.proposal.update(proposal._id, { logMessage: 'Proposal Generated', proposalGenerated: 'yes' })
-                    res.status(200).send({
-                        "Message": 'Proposal Generated Successfully'
-                    });
-                    req.salesPersonEmail = proposal.salesPerson.userName;
-                    next();
-                }
+                let selectedWorkstationDataIds = [];
+                result.forEach((element) => selectedWorkstationDataIds.push(element._id));
+                Proposal.updateOne({ _id: Id }, { $set: { status: 'Completed But not Esclated', selectFrom: selectFrom, selectionData: selectedWorkstationDataIds } }).then((updateResult) => {
+                    if (updateResult.acknowledged && updateResult.modifiedCount > 0) {
+                        LogController.proposal.update(proposal._id, { logMessage: 'Proposal Generated', proposalGenerated: 'yes' })
+                        res.status(200).send({
+                            "Message": 'Proposal Generated Successfully'
+                        });
+                        req.salesPersonEmail = proposal.salesPerson.userName;
+                        next();
+                    }
+                }).catch((err) => {
+                    if (!err.message) err.message = 'Something went wrong';
+                    if (!err.status) err.status = 500;
+                    return next(err);
+                })
             }).catch((err) => {
                 if (!err.message) err.message = 'Something went wrong';
                 if (!err.status) err.status = 500;
                 return next(err);
             })
+
+            
 
 
 
