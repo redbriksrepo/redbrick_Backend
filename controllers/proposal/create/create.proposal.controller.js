@@ -229,9 +229,52 @@ const addClientInfo = (req, res, next) => {
 const checkRequiredNoOfSeats = (req, res, next) => {
     let data = req.body;
     let Id = req.params.Id;
-    let totalNoOfSeats = data.workstationNumber + data.cabinNumber + data.meetingRoomNumber + data.visitorMeetingRoomNumber;
-    
-    Proposal.updateOne({ _id: Id }, { $set: { totalNoOfSeatsSelected: totalNoOfSeats } }).then((result) => {
+    let totalNoOfSeats =
+    (data.workstation2x1 * 0.60) + 
+    (data.workstation3x2 * 0.75) + 
+    (data.workstation4x2 * 1.00) + 
+    (data.workstation5x2 * 1.25) + 
+    (data.workstation5x2_5 * 1.50) + 
+    (data.workstation4x4 * 1.25) + 
+    (data.workstation5x4 * 1.50) + 
+    (data.workstation5x5 * 1.75) + 
+    (data.cubicalCount * 3.75) + 
+    (data.cabinRegular * 4.50) + 
+    (data.cabinMedium * 5.00) + 
+    (data.cabinLarge * 6.50) + 
+    (data.cabinMD * 7.50) + 
+    (data.meeting6P * 6.50)+ 
+    (data.meeting8P * 12.00) + 
+    (data.meeting4P * 4.50) + 
+    (data.meeting16P * 25.00) + 
+    (data.meeting12P * 17.00) + 
+    (data.board20P * 30.00) + 
+    (data.board24P * 34.00) + 
+    (data.collab4P * 4.75) + 
+    (data.collab6P * 6.50) + 
+    (data.collab8P * 9.25) + 
+    (data.dryPantryNumber * 4.50) + 
+    (data.receptionSmall * 5.00) + 
+    (data.receptionMedium * 6.50)  + 
+    (data.receptionLarge * 7.50) + 
+    (data.storeRoomNumber * 4.50) + 
+    (data.phoneBoothNumber * 1.25) + 
+    (data.nicheSeat2Pax * 1.25) + 
+    (data.nicheSeat4Pax * 1.75) + 
+    (data.cafeteriaNumber * 1.2) + 
+    (data.server1Rack * 4.50) + 
+    (data.server2Rack * 7.00) + 
+    (data.server3Rack * 9.00) + 
+    (data.server4Rack * 10.50) + 
+    (data.prayerRoomNumber * 4.50) + 
+    (data.wellnessRoomNumber * 4.50)  + 
+    data.trainingRoomNumber   + 
+    data.gameRoomNumber ;
+    let circulation = totalNoOfSeats*0.1;
+    let netBillableSeat = totalNoOfSeats + circulation;
+    // console.log('data => ',data);
+    console.log('totalNoOfSeats => ',totalNoOfSeats, "netbillable Seat=>", netBillableSeat.toFixed(2));
+    Proposal.updateOne({ _id: Id }, { $set: { totalNoOfSeatsSelected: netBillableSeat } }).then((result) => {
         if (result.acknowledged === true) {
             if (result.modifiedCount > 0) {
                 req.proposal = { totalNoOfSeats }
@@ -254,6 +297,7 @@ const checkRequiredNoOfSeats = (req, res, next) => {
 }
 
 const addProposalRequirement = (req, res, next) => {
+    console.log("Requirement-------------",req.body)
     let data = req.body;
     let Id = req.params.Id;
     let consolidatedSeats = false;
@@ -363,7 +407,7 @@ const addProposalRequirement = (req, res, next) => {
                                     Proposal.updateOne({ _id: Id }, { $set: { seatAvailability, consolidatedSeats, status: conflict ? 'Conflict': 'In-Progress' } }).then((result) => {
                                         res.status(202).send({
                                             "Message": "Requirement added Successfully!",
-                                            "conflict": true,
+                                            "conflict": conflict,
                                         });
                                     }).catch((err) => {
                                         if (!err.message) err.message = 'Something went wrong';

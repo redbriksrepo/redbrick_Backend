@@ -3,6 +3,7 @@ const Location = require("../../../models/location/location.model");
 const createLocation = async (req,res,next) => {
     try {
         let data = req.body;
+        // console.log('Location added=>>',data)
         let jsonFile = req.files['jsonFile'][0];
         let layoutImage = req.files['layoutImage'][0];
         if (!jsonFile && !layoutImage) {
@@ -13,7 +14,7 @@ const createLocation = async (req,res,next) => {
         else {
             if (jsonFile) data.jsonFile = jsonFile.path;
             if (layoutImage) data.layoutImage = layoutImage.path;
-            console.log(data);
+            // console.log(data);
             if (data.imageLinks === '{}') {
                 delete data.imageLinks;
             }
@@ -25,6 +26,12 @@ const createLocation = async (req,res,next) => {
             }
             else {
                 data.videoLinks = Object.values(JSON.parse(data.videoLinks));
+            }
+            if(data.rentSheet === '{}'){
+                delete data.rentSheet;
+            }
+            else{
+                data.rentSheet = Object.values(JSON.parse(data.rentSheet));
             }
             Location.findOne().where('location').equals(data.location).where('center').equals(data.center).then((result) => {
                 if (result) {

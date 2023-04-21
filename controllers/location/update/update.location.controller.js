@@ -2,6 +2,7 @@ const { default: mongoose } = require("mongoose");
 const Location = require("../../../models/location/location.model");
 const fs = require('fs');
 const path = require('path');
+const { json } = require("express");
 
 
 const updateLocationData = (req, res, next) => {
@@ -65,6 +66,12 @@ const updateLocationData = (req, res, next) => {
                 }
                 else {
                     data.videoLinks = Object.values(JSON.parse(data.videoLinks));
+                }
+                if(data.rentSheet === '{}'){
+                    delete data.rentSheet;
+                }
+                else{
+                    data.rentSheet = Object.values(JSON.parse(data.rentSheet));
                 }
             }).then(() => {
                 console.log('Update Data::', data);

@@ -10,10 +10,6 @@ const locationModel = new Schema({
         type: String,
         required: true
     },
-    perSeatPrice:{
-        type: Number,
-        required: true
-    },
     availableNoOfWorkstation: {
         type: Number,
         default: 0
@@ -36,6 +32,18 @@ const locationModel = new Schema({
     videoLinks: {
         type: Array
     },
+    rentSheet:{
+        type:Array
+    },
+    // rent:{
+    //     type: Number
+    // },
+    // cam:{
+    //     type: Number
+    // },
+    // yearnew:{
+    //     type: Number
+    // },
     salesHead: {
         type: Schema.Types.ObjectId,
         ref: 'User'

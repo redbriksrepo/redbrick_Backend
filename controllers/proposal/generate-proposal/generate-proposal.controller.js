@@ -9,12 +9,21 @@ const LogController = require('../../log/main.log.controller');
 const ProposalLog = require('../../../models/proposal-log/proposal-log.model');
 const Location = require('../../../models/location/location.model');
 const selectionData = require('../../../models/selectionData/selectionData.modal');
-
+const costData =require('../../../models/cost/cost.model')
 const generateProposal = (req, res, next) => {
     let data = req.body;
     let Id = req.params.Id;
 
     Proposal.findById(Id).then((proposal) => {
+        var seatPrice;
+        costData.find({}).then((cost) => {
+            if(proposal.Serviced==='yes'){
+                seatPrice = cost[0].on80perDiversityFactor;
+            } else{
+                seatPrice = cost[1].on80perDiversityFactor;
+            }
+              
+           
         if (!proposal) {
             let error = new Error('Invalid Proposal Id');
             error.status = 400;
@@ -23,8 +32,10 @@ const generateProposal = (req, res, next) => {
 
         Location.findOne({ location: proposal.location, center: proposal.center }).then((locationdata) => {
 
-            data.finalOfferAmmount = proposal.totalNoOfSeatsSelected * locationdata.perSeatPrice;
-
+            data.finalOfferAmmount = proposal.totalNoOfSeatsSelected * seatPrice;
+            console.log(data.finalOfferAmmount)
+            console.log(proposal.totalNoOfSeatsSelected)
+            console.log(seatPrice)
             Proposal.updateOne({ _id: Id }, { $set: data }).then((result) => {
                 if (result.acknowledged === true) {
                     if (result.modifiedCount > 0) {
@@ -53,16 +64,28 @@ const generateProposal = (req, res, next) => {
         if (!err.message) err.message = 'Error while generatin propoasl';
         next(err);
     })
+})
 }
 
 const generateProposalPDF = (req, res, next) => {
     let Id = req.params.Id;
-
+    let finalCost;
+    
     // let location;
     // let requiredNoOfSeats;
 
     Proposal.findById(Id).populate('salesPerson', 'userName').then((proposal) => {
-
+        costData.find({}).then((cost) => {
+        if(proposal.Serviced==='yes'){
+            finalCost = cost[0].on80perDiversityFactor;
+            console.log(finalCost,"True")
+        } else{
+            finalCost = cost[1].on80perDiversityFactor;
+            console.log(finalCost,"False")
+        }
+          
+        
+        console.log(finalCost);
         if (!proposal) {
             let error = new Error('Invalid Proposal Id');
             throw error;
@@ -806,7 +829,7 @@ const generateProposalPDF = (req, res, next) => {
             doc.rect(20, 130, 100, 30).fillAndStroke('white', 'black').fillColor('black').text('Location', 20, 140, { width: 100, align: 'center' });
             doc.rect(120, 130, 660, 30).fillAndStroke('white', 'black').fillColor('black').text(locationMetaData.address, 120, 140, { width: 660, align: 'center' });
             doc.rect(20, 160, 100, 90).fillAndStroke('white', 'black').fillColor('black').text('Requirement Brief', 20, 210, { width: 100, align: 'center' });
-            doc.rect(120, 160, 660, 90).fillAndStroke('white', 'black').fillColor('black').text(`As per layout - ${proposal.workstationNumber} ws (4*2 ) + ${proposal.cabinNumber}Nos - Manager Cabin + ${proposal.meetingRoomNumber}Nos - 8pax Meeting Room + 15-seater - Pantry`, 120, 210, { width: 660, align: 'center' });
+            doc.rect(120, 160, 660, 90).fillAndStroke('white', 'black').fillColor('black').text(`As per layout - ${proposal.content}`, 120, 210, { width: 660, align: 'center' });
             doc.rect(20, 250, 100, 30).fillAndStroke('#dbdbdb', 'black').fillColor('black').text('1', 20, 260, { width: 100, align: 'center' });
             doc.rect(120, 250, 180, 30).fillAndStroke('#dbdbdb', 'black').fillColor('black').text('Rent Commencement Date', 120, 260, { width: 180, align: 'center' });
             doc.rect(300, 250, 480, 30).fillAndStroke('#dbdbdb', 'black').fillColor('black').text(`${new Date().toLocaleDateString()}`, 300, 260, { width: 480, align: 'center' });
@@ -830,13 +853,13 @@ const generateProposalPDF = (req, res, next) => {
             doc.rect(300, 430, 480, 30).fillAndStroke('#dbdbdb', 'black').fillColor('black').text('INR 12000 + taxes per ws/ per month', 300, 440, { width: 480, align: 'center' });
             doc.rect(20, 460, 100, 30).fillAndStroke('white', 'black').fillColor('black').text('8', 20, 470, { width: 100, align: 'center' });
             doc.rect(120, 460, 180, 30).fillAndStroke('white', 'black').fillColor('black').text('Cost Per Seat', 120, 470, { width: 180, align: 'center' });
-            doc.rect(300, 460, 480, 30).fillAndStroke('white', 'black').fillColor('black').text(`INR ${locationMetaData.perSeatPrice} + taxes per month`, 300, 470, { width: 480, align: 'center' });
+            doc.rect(300, 460, 480, 30).fillAndStroke('white', 'black').fillColor('black').text(`INR ${finalCost} + taxes per month`, 300, 470, { width: 480, align: 'center' });
             doc.rect(20, 490, 100, 30).fillAndStroke('#dbdbdb', 'black').fillColor('black').text('9', 20, 500, { width: 100, align: 'center' });
             doc.rect(120, 490, 180, 30).fillAndStroke('#dbdbdb', 'black').fillColor('black').text('Billable Seats', 120, 500, { width: 180, align: 'center' });
-            doc.rect(300, 490, 480, 30).fillAndStroke('#dbdbdb', 'black').fillColor('black').text(`Approx ${proposal.totalNoOfSeatsSelected}ws`, 300, 500, { width: 480, align: 'center' });
+            doc.rect(300, 490, 480, 30).fillAndStroke('#dbdbdb', 'black').fillColor('black').text(`Approx ${(proposal.totalNoOfSeatsSelected).toFixed(2)}ws`, 300, 500, { width: 480, align: 'center' });
             doc.rect(20, 520, 100, 30).fillAndStroke('#999999', 'black').fillColor('black').text('10', 20, 530, { width: 100, align: 'center' });
             doc.rect(120, 520, 180, 30).fillAndStroke('#999999', 'black').fillColor('black').text('Total Monthly Cost (+GST)', 120, 530, { width: 180, align: 'center' });
-            doc.rect(300, 520, 480, 30).fillAndStroke('#999999', 'black').fillColor('black').text(`INR ${new Intl.NumberFormat('en-IN', { currency: 'INR' }).format(proposal.totalNoOfSeatsSelected * 19500)} + taxes per month`, 300, 530, { width: 480, align: 'center' });
+            doc.rect(300, 520, 480, 30).fillAndStroke('#999999', 'black').fillColor('black').text(`INR ${new Intl.NumberFormat('en-IN', { currency: 'INR' }).format(proposal.totalNoOfSeatsSelected * finalCost)}  + taxes per month`, 300, 530, { width: 480, align: 'center' });
             doc.addPage();
 
             // Page Six Started ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -873,23 +896,27 @@ const generateProposalPDF = (req, res, next) => {
             ///  let selectedWorkstationData = []; save to Database////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             ///  let selectedWorkstationData = []; save to Database////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+            selectedWorkstationData.forEach((element) => {
+                delete element._id;
+            })
+
             selectionData.insertMany(selectedWorkstationData).then((result) => {
                 let selectedWorkstationDataIds = [];
                 result.forEach((element) => selectedWorkstationDataIds.push(element._id));
                 Proposal.updateOne({ _id: Id }, { $set: { status: 'Completed But not Esclated', selectFrom: selectFrom, selectionData: selectedWorkstationDataIds } }).then((updateResult) => {
-                    if (updateResult.acknowledged && updateResult.modifiedCount > 0) {
-                        LogController.proposal.update(proposal._id, { logMessage: 'Proposal Generated', proposalGenerated: 'yes' })
-                        res.status(200).send({
-                            "Message": 'Proposal Generated Successfully'
-                        });
-                        req.salesPersonEmail = proposal.salesPerson.userName;
-                        next();
-                    }
-                }).catch((err) => {
-                    if (!err.message) err.message = 'Something went wrong';
-                    if (!err.status) err.status = 500;
-                    return next(err);
-                })
+                if (updateResult.acknowledged && updateResult.modifiedCount > 0) {
+                    LogController.proposal.update(proposal._id, { logMessage: 'Proposal Generated', proposalGenerated: 'yes' })
+                    res.status(200).send({
+                        "Message": 'Proposal Generated Successfully'
+                    });
+                    req.salesPersonEmail = proposal.salesPerson.userName;
+                    next();
+                }
+            }).catch((err) => {
+                if (!err.message) err.message = 'Something went wrong';
+                if (!err.status) err.status = 500;
+                return next(err);
+            })
             }).catch((err) => {
                 if (!err.message) err.message = 'Something went wrong';
                 if (!err.status) err.status = 500;
@@ -914,7 +941,7 @@ const generateProposalPDF = (req, res, next) => {
 
 
 
-
+})
 }
 
 const sendProposalByEmail = (req, res, next) => {
