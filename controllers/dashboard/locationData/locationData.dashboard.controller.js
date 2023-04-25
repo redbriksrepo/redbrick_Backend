@@ -28,7 +28,7 @@ const getLocationData = (req, res, next) => {
                 locations = JSON.parse(JSON.stringify(locations));
                 locations.forEach((element) => {
                     let position = locationData.findIndex((e) => e.location === element.location);
-                    console.log(position)
+                    // console.log(position)
                     if (position >= 0) {
                         let i = locationData.findIndex((e) => e.location === element.location);
                         locationData[i] = {

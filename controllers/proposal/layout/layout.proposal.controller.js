@@ -19,7 +19,7 @@ const generateLayout = (req, res, next) => {
         }
         
         let location = proposal.center;
-        let requiredNoOfSeats = proposal.totalNoOfSeatsSelected;
+        let requiredNoOfSeats = proposal.totalNumberOfSeats;
         let workStationId;
         // let jsonPath = path.join()
 

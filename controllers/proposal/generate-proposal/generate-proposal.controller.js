@@ -13,17 +13,7 @@ const costData =require('../../../models/cost/cost.model')
 const generateProposal = (req, res, next) => {
     let data = req.body;
     let Id = req.params.Id;
-
     Proposal.findById(Id).then((proposal) => {
-        var seatPrice;
-        costData.find({}).then((cost) => {
-            if(proposal.Serviced==='yes'){
-                seatPrice = cost[0].on80perDiversityFactor;
-            } else{
-                seatPrice = cost[1].on80perDiversityFactor;
-            }
-              
-           
         if (!proposal) {
             let error = new Error('Invalid Proposal Id');
             error.status = 400;
@@ -31,11 +21,6 @@ const generateProposal = (req, res, next) => {
         }
 
         Location.findOne({ location: proposal.location, center: proposal.center }).then((locationdata) => {
-
-            data.finalOfferAmmount = proposal.totalNoOfSeatsSelected * seatPrice;
-            console.log(data.finalOfferAmmount)
-            console.log(proposal.totalNoOfSeatsSelected)
-            console.log(seatPrice)
             Proposal.updateOne({ _id: Id }, { $set: data }).then((result) => {
                 if (result.acknowledged === true) {
                     if (result.modifiedCount > 0) {
@@ -64,43 +49,38 @@ const generateProposal = (req, res, next) => {
         if (!err.message) err.message = 'Error while generatin propoasl';
         next(err);
     })
-})
+
 }
 
 const generateProposalPDF = (req, res, next) => {
     let Id = req.params.Id;
-    let finalCost;
-    
+   let data= req.body;
+//    console.log("pdf genrate data=>",data)
+   
     // let location;
     // let requiredNoOfSeats;
 
     Proposal.findById(Id).populate('salesPerson', 'userName').then((proposal) => {
-        costData.find({}).then((cost) => {
-        if(proposal.Serviced==='yes'){
-            finalCost = cost[0].on80perDiversityFactor;
-            console.log(finalCost,"True")
-        } else{
-            finalCost = cost[1].on80perDiversityFactor;
-            console.log(finalCost,"False")
-        }
-          
-        
-        console.log(finalCost);
+        console.log(proposal)
+        // proposal.finalOfferAmmount = proposal.totalNumberOfSeats * data.serviceCosts;
+        // console.log(proposal.finalOfferAmmount)
+    //    console.log(proposal.serviceCosts, "ali value");
+    //    console.log("after data Proposal=>",proposal)
         if (!proposal) {
             let error = new Error('Invalid Proposal Id');
             throw error;
         }
-
+        
         let selectFrom = req.params.selectFrom || proposal.selectFrom;
         let location = proposal.center;
-        let requiredNoOfSeats = proposal.totalNoOfSeatsSelected;
+        let requiredNoOfSeats = proposal.totalNumberOfSeats.toFixed(0);
         let workStationId;
         // let jsonPath = path.join()
 
         let layoutData = require(path.join('..', '..', '..', 'assets', 'layout', 'json', `${proposal.location}_${proposal.center}.json`))
         let workStationToBeSelectedIn = [];
         // let layoutData = require(`../../../assets/layout/json/${location}.json`);/
-
+        
 
         // Deciding in which workstation seats should be selected
 
@@ -146,7 +126,8 @@ const generateProposalPDF = (req, res, next) => {
             throw err;
         }
         try {
-            const locationMetaData = req.locationData;
+            console.log('locationMetaData => ',req.locationData);
+            const locationMetaData = req.locationData ;
             const doc = new PDFDocument({ size: [800, 566], margin: 0 });
             doc.pipe(fs.createWriteStream(`./assets/proposal/generated/${proposal._id}.pdf`));
 
@@ -853,14 +834,286 @@ const generateProposalPDF = (req, res, next) => {
             doc.rect(300, 430, 480, 30).fillAndStroke('#dbdbdb', 'black').fillColor('black').text('INR 12000 + taxes per ws/ per month', 300, 440, { width: 480, align: 'center' });
             doc.rect(20, 460, 100, 30).fillAndStroke('white', 'black').fillColor('black').text('8', 20, 470, { width: 100, align: 'center' });
             doc.rect(120, 460, 180, 30).fillAndStroke('white', 'black').fillColor('black').text('Cost Per Seat', 120, 470, { width: 180, align: 'center' });
-            doc.rect(300, 460, 480, 30).fillAndStroke('white', 'black').fillColor('black').text(`INR ${finalCost} + taxes per month`, 300, 470, { width: 480, align: 'center' });
+            doc.rect(300, 460, 480, 30).fillAndStroke('white', 'black').fillColor('black').text(`INR ${proposal.serviceCosts} + taxes per month`, 300, 470, { width: 480, align: 'center' });
             doc.rect(20, 490, 100, 30).fillAndStroke('#dbdbdb', 'black').fillColor('black').text('9', 20, 500, { width: 100, align: 'center' });
             doc.rect(120, 490, 180, 30).fillAndStroke('#dbdbdb', 'black').fillColor('black').text('Billable Seats', 120, 500, { width: 180, align: 'center' });
-            doc.rect(300, 490, 480, 30).fillAndStroke('#dbdbdb', 'black').fillColor('black').text(`Approx ${(proposal.totalNoOfSeatsSelected).toFixed(2)}ws`, 300, 500, { width: 480, align: 'center' });
+            doc.rect(300, 490, 480, 30).fillAndStroke('#dbdbdb', 'black').fillColor('black').text(`Approx ${(proposal.totalNumberOfSeats).toFixed(2)}ws`, 300, 500, { width: 480, align: 'center' });
             doc.rect(20, 520, 100, 30).fillAndStroke('#999999', 'black').fillColor('black').text('10', 20, 530, { width: 100, align: 'center' });
             doc.rect(120, 520, 180, 30).fillAndStroke('#999999', 'black').fillColor('black').text('Total Monthly Cost (+GST)', 120, 530, { width: 180, align: 'center' });
-            doc.rect(300, 520, 480, 30).fillAndStroke('#999999', 'black').fillColor('black').text(`INR ${new Intl.NumberFormat('en-IN', { currency: 'INR' }).format(proposal.totalNoOfSeatsSelected * finalCost)}  + taxes per month`, 300, 530, { width: 480, align: 'center' });
+            doc.rect(300, 520, 480, 30).fillAndStroke('#999999', 'black').fillColor('black').text(`INR ${new Intl.NumberFormat('en-IN', { currency: 'INR' }).format(proposal.finalOfferAmmount)}  + taxes per month`, 300, 530, { width: 480, align: 'center' });
             doc.addPage();
+            //image add of selected content
+            if(proposal.cubicalCount>0){
+                doc.image('./assets/proposal/image/cubical.jpg', 0, 0, { width: 800, height: 566 });
+            doc.addPage();
+            }
+            
+            
+
+            if(proposal.workstation2x1>0){
+                doc.image('./assets/proposal/image/workstation2x1.jpg', 0, 0, { width: 800, height: 566 });
+            doc.addPage();
+            }
+            
+            
+
+            if(proposal.workstation3x2>0){
+                doc.image('./assets/proposal/image/workstation3x2.jpg', 0, 0, { width: 800, height: 566 });
+            doc.addPage();
+            }
+            
+            
+
+            if(proposal.workstation4x2>0){
+                doc.image('./assets/proposal/image/workstation4x2.jpg', 0, 0, { width: 800, height: 566 });
+            doc.addPage();
+            }
+            
+            
+
+            if(proposal.workstation5x2>0){
+                doc.image('./assets/proposal/image/workstation5x2.jpg', 0, 0, { width: 800, height: 566 });
+            doc.addPage();
+            }
+            
+            
+
+            if(proposal.workstation5x2_5>0){
+              doc.text("In Development");
+            doc.addPage();
+            }
+            
+            
+
+            if(proposal.workstation4x4>0){
+                doc.text("In Development");
+            doc.addPage();
+            }
+            
+            
+
+            if(proposal.workstation5x4>0){
+                doc.image('./assets/proposal/image/workstation5x4.jpg', 0, 0, { width: 800, height: 566 });
+            doc.addPage();
+            }
+            
+            
+
+            if(proposal.workstation5x5>0){
+                doc.text("In Development");
+            doc.addPage();
+            }
+            
+            
+
+            if(proposal.cabinRegular>0){
+                doc.image('./assets/proposal/image/small_cabin.jpg', 0, 0, { width: 800, height: 566 });
+            doc.addPage();
+            }
+            
+            
+
+            if(proposal.cabinMedium>0){
+                doc.image('./assets/proposal/image/md_cabin.jpg', 0, 0, { width: 800, height: 566 });
+            doc.addPage();
+            }
+            
+            
+
+            if(proposal.cabinLarge>0){
+                doc.text("In Development");
+            doc.addPage();
+            }
+            
+            
+
+            if(proposal.cabinMD>0){
+                doc.image('./assets/proposal/image/md_cabin.jpg', 0, 0, { width: 800, height: 566 });
+            doc.addPage();
+            }
+            
+            
+
+            if(proposal.meeting4P>0){
+                doc.image('./assets/proposal/image/meeting_room_4p.jpg', 0, 0, { width: 800, height: 566 });
+            doc.addPage();
+            }
+            
+            
+
+            if(proposal.meeting6P>0){
+                doc.image('./assets/proposal/image/meeting_room_6p.jpg', 0, 0, { width: 800, height: 566 });
+            doc.addPage();
+            }
+            
+            
+
+            if(proposal.meeting8P>0){
+                doc.image('./assets/proposal/image/meeting_room_8p.jpg', 0, 0, { width: 800, height: 566 });
+            doc.addPage();
+            }
+            
+            
+
+            if(proposal.meeting12P>0){
+                doc.text("In Development",0, 0);
+            doc.addPage();
+            }
+            
+            
+
+            if(proposal.meeting16P>0){
+                doc.text("In Development",0, 0);
+            doc.addPage();
+            }
+            
+            
+
+            if(proposal.board20P>0){
+                doc.image('./assets/proposal/image/conference_room_20p.jpg', 0, 0, { width: 800, height: 566 });
+            doc.addPage();
+            }
+            
+            
+
+            if(proposal.board24P>0){
+                doc.image('./assets/proposal/image/conference_room_24p.jpg', 0, 0, { width: 800, height: 566 });
+            doc.addPage();
+            }
+            
+            
+
+            if(proposal.collab4P>0){
+                doc.image('./assets/proposal/image/collab_area.jpg', 0, 0, { width: 800, height: 566 });
+            doc.addPage();
+            }
+            
+            
+
+            if(proposal.collab6P>0){
+                doc.image('./assets/proposal/image/collab_area_medium.jpg', 0, 0, { width: 800, height: 566 });
+            doc.addPage();
+            }
+            
+            
+            if(proposal.collab8P>0){
+                doc.image('./assets/proposal/image/collab_area_large.jpg', 0, 0, { width: 800, height: 566 });
+            doc.addPage();
+            }
+            
+            
+
+            if(proposal.dryPantryNumber>0){
+                doc.image('./assets/proposal/image/dry_pantry.jpg', 0, 0, { width: 800, height: 566 });
+            doc.addPage();
+            }
+            
+            
+            if(proposal.receptionSmall>0){
+                doc.image('./assets/proposal/image/reception_small.jpg', 0, 0, { width: 800, height: 566 });
+            doc.addPage();
+            }
+            
+            
+
+            if(proposal.receptionMedium>0){
+                doc.image('./assets/proposal/image/reception_medium.jpg', 0, 0, { width: 800, height: 566 });
+            doc.addPage();
+            }
+            
+            
+
+            if(proposal.receptionLarge>0){
+                doc.image('./assets/proposal/image/reception_large.jpg', 0, 0, { width: 800, height: 566 });
+            doc.addPage();
+            }
+            
+            
+
+            if(proposal.storeRoomNumber>0){
+                doc.image('./assets/proposal/image/store_room.jpg', 0, 0, { width: 800, height: 566 });
+            doc.addPage();
+            }
+            
+            
+            if(proposal.phoneBoothNumber>0){
+                doc.image('./assets/proposal/image/phone_booth.jpg', 0, 0, { width: 800, height: 566 });
+            doc.addPage();
+            }
+            
+            
+
+            if(proposal.nicheSeat2Pax>0){
+                doc.image('./assets/proposal/image/niche_seating.jpg', 0, 0, { width: 800, height: 566 });
+            doc.addPage();
+            }
+            
+            
+            if(proposal.nicheSeat4Pax>0){
+                doc.image('./assets/proposal/image/niche_seating_2.jpg', 0, 0, { width: 800, height: 566 });
+            doc.addPage();
+            }
+            
+            
+            if(proposal.cafeteriaNumber>0){
+                doc.image('./assets/proposal/image/cafeteria.jpg', 0, 0, { width: 800, height: 566 });
+            doc.addPage();
+            }
+            
+            
+
+            if(proposal.server1Rack>0 || proposal.server2Rack>0 || proposal.server3Rack>0 || proposal.server4Rack>0){
+                doc.image('./assets/proposal/image/server_room.jpg', 0, 0, { width: 800, height: 566 });
+            doc.addPage();
+            }
+            
+            
+
+            // if(proposal.server2Rack>0){
+            //     doc.image('./assets/proposal/image/cubical.jpg', 0, 0, { width: 800, height: 566 });
+            // }
+            
+            // doc.addPage();
+
+            // if(proposal.server3Rack>0){
+            //     doc.image('./assets/proposal/image/cubical.jpg', 0, 0, { width: 800, height: 566 });
+            // }
+            
+            // doc.addPage();
+
+            // if(proposal.server4Rack>0){
+            //     doc.image('./assets/proposal/image/cubical.jpg', 0, 0, { width: 800, height: 566 });
+            // }
+            
+            // doc.addPage();
+
+            if(proposal.prayerRoomNumber>0){
+                doc.text("In Development",0, 0);
+            doc.addPage();
+            }
+            
+            
+
+            if(proposal.wellnessRoomNumber>0){
+                doc.image('./assets/proposal/image/wellness_room.jpg', 0, 0, { width: 800, height: 566 });
+            doc.addPage();
+            }
+            
+            
+
+            if(proposal.trainingRoomNumber>0){
+                doc.image('./assets/proposal/image/training_room.jpg', 0, 0, { width: 800, height: 566 });
+            doc.addPage();
+            }
+            
+            
+
+            if(proposal.gameRoomNumber>0){
+                doc.image('./assets/proposal/image/game_room.jpg', 0, 0, { width: 800, height: 566 });
+            doc.addPage();
+            }
+            
+            
 
             // Page Six Started ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -900,28 +1153,37 @@ const generateProposalPDF = (req, res, next) => {
                 delete element._id;
             })
 
-            selectionData.insertMany(selectedWorkstationData).then((result) => {
-                let selectedWorkstationDataIds = [];
-                result.forEach((element) => selectedWorkstationDataIds.push(element._id));
-                Proposal.updateOne({ _id: Id }, { $set: { status: 'Completed But not Esclated', selectFrom: selectFrom, selectionData: selectedWorkstationDataIds } }).then((updateResult) => {
-                if (updateResult.acknowledged && updateResult.modifiedCount > 0) {
-                    LogController.proposal.update(proposal._id, { logMessage: 'Proposal Generated', proposalGenerated: 'yes' })
-                    res.status(200).send({
-                        "Message": 'Proposal Generated Successfully'
-                    });
-                    req.salesPersonEmail = proposal.salesPerson.userName;
-                    next();
-                }
-            }).catch((err) => {
-                if (!err.message) err.message = 'Something went wrong';
-                if (!err.status) err.status = 500;
-                return next(err);
-            })
-            }).catch((err) => {
-                if (!err.message) err.message = 'Something went wrong';
-                if (!err.status) err.status = 500;
-                return next(err);
-            })
+            if(proposal.status === 'Completed and approved'){
+                res.status(200).send({
+                    "Message": 'Proposal Generated Successfully'
+                });
+            }
+            else{
+                selectionData.insertMany(selectedWorkstationData).then((result) => {
+                    let selectedWorkstationDataIds = [];
+                    result.forEach((element) => selectedWorkstationDataIds.push(element._id));
+                    Proposal.updateOne({ _id: Id }, { $set: { status: 'Completed But not Esclated', selectFrom: selectFrom, selectionData: selectedWorkstationDataIds } }).then((updateResult) => {
+                    if (updateResult.acknowledged && updateResult.modifiedCount > 0) {
+                        LogController.proposal.update(proposal._id, { logMessage: 'Proposal Generated', proposalGenerated: 'yes' })
+                        res.status(200).send({
+                            "Message": 'Proposal Generated Successfully'
+                        });
+                        req.salesPersonEmail = proposal.salesPerson.userName;
+                        next();
+                    }
+                }).catch((err) => {
+                    if (!err.message) err.message = 'Something went wrong';
+                    if (!err.status) err.status = 500;
+                    return next(err);
+                })
+                }).catch((err) => {
+                    if (!err.message) err.message = 'Something went wrong';
+                    if (!err.status) err.status = 500;
+                    return next(err);
+                })
+            }
+
+            
 
             
 
@@ -941,7 +1203,6 @@ const generateProposalPDF = (req, res, next) => {
 
 
 
-})
 }
 
 const sendProposalByEmail = (req, res, next) => {

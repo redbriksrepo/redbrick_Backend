@@ -9,7 +9,7 @@ const getCentersInLocation = (req, res, next) => {
             error.status = 400;
             throw error;
         }
-        console.log(location);
+        // console.log(location);
         Location.find().select('center').where('location').equals(location).then((centersInLocation) => {
             if (!centersInLocation) {
                 let error = new Error('Error while getting all the centers in selected location');

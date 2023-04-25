@@ -49,4 +49,6 @@ locationRoute.get('/getLocationList',locationController.getLoctionList);
 
 locationRoute.get('/getCentersInLocation/:location',locationController.getCentesInLocation);
 
+locationRoute.post('/getRentSheet',locationController.getRentSheet);
+
 module.exports = locationRoute;

@@ -10,10 +10,16 @@ const approveClouser = (req, res, next) => {
         if (currentUser.role === 'sales head') {
             Proposal.findById(Id).then((proposal) => {
                 Proposal.updateOne({ _id: proposal._id }, { $set: { finalOfferAmmount: data.finalOfferAmmount || proposal.clientFinalOfferAmmount || proposal.previousFinalOfferAmmount, status: 'Completed and approved' } }).then((updateResult) => {
+                   console.log("Approve",proposal.address)
                     if (updateResult.acknowledged && updateResult.modifiedCount > 0) {
-                        res.status(202).send({
-                            "Message": "Proposal Approved!"
-                        })
+                        // res.status(202).send({
+                        //     "Message": "Proposal Approved!"
+                        // })
+                        // console.log("Approve if",proposal.address);
+                        req.locationData = {
+                            address: proposal.address
+                        }
+                        next();
                     }
                     else throw new Error('Something went wrong').status = 400;
                 }).catch((err) => {

@@ -5,7 +5,7 @@ const Cost = require("../../../models/cost/cost.model");
 
 const updateCostSheet = (req, res, next) => {
    let data = req.body;
-   console.log(data);
+//    console.log(data);
    Cost.updateOne({servicedOrNonService:'yes'},{$set:data}).then(updateResult=>{
     if(updateResult.acknowledged && (updateResult.modifiedCount > 0)){
         res.send({
