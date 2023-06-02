@@ -24,7 +24,9 @@ app.use('/generated-proposal',express.static(path.join('assets','proposal','gene
 
 // Routes
 app.use(mainRoute);
-
+app.use('/',(req, res)=>{
+    res.send('Hello')
+})
 // Error Handler
 app.use(errorHandler);
 
@@ -32,7 +34,7 @@ app.use(errorHandler);
 databaseConnection().then(() => {
     app.listen(port,() => {
         console.log(`Server is Running on port ${port}`);
-        startSheduledTasks();
+        // startSheduledTasks();
     })
 }).catch((err) => {
     if (err) throw err;

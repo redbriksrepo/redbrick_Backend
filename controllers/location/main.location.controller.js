@@ -6,6 +6,7 @@ const getLocationById = require("./getById/getById.location.controller");
 const getRent = require("./getRent/getRent.location.controller");
 const getLocationList = require("./location-list/location-list.location.controller");
 const updateLocationData = require("./update/update.location.controller");
+const updateRackValue = require('./updateRackValue/updateRackValue.location.controller');
 
 
 const locationController = {
@@ -16,7 +17,9 @@ const locationController = {
     getCentesInLocation: getCentersInLocation,
     delete: deleteLocationData,
     update: updateLocationData,
-    getRentSheet:getRent
+    getRentSheet:getRent,
+    updateRackValue
+    
 }
 
 module.exports = locationController;

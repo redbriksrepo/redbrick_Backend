@@ -19,8 +19,14 @@ const generateProposal = (req, res, next) => {
             error.status = 400;
             throw error;
         }
-
+    
         Location.findOne({ location: proposal.location, center: proposal.center }).then((locationdata) => {
+            // Location.updateOne({ location: proposal.location, center: proposal.center }, { $set: { selectedNoOfSeats: locationdata.selectedNoOfSeats+proposal.totalNumberOfSeats, totalProposals: locationdata.totalProposals + 1}}).then((result)=>{
+            //     if (result.acknowledged === true) {
+            //         result.message='Succesfully updated';
+            //     }
+            //     else throw Error('Problem while updating');
+            // });
             Proposal.updateOne({ _id: Id }, { $set: data }).then((result) => {
                 if (result.acknowledged === true) {
                     if (result.modifiedCount > 0) {
@@ -61,8 +67,36 @@ const generateProposalPDF = (req, res, next) => {
     // let requiredNoOfSeats;
 
     Proposal.findById(Id).populate('salesPerson', 'userName').then((proposal) => {
-        console.log(proposal)
-        // proposal.finalOfferAmmount = proposal.totalNumberOfSeats * data.serviceCosts;
+        Location.findOne({ location: proposal.location, center: proposal.center }).then((locationdata) => {
+            let finalAmount;
+            let perSeatPrice;
+            if(proposal.Serviced==='no'){
+                 finalAmount = locationdata.rackRateNS * proposal.totalNumberOfSeats;
+                 perSeatPrice = locationdata.rackRateNS
+            }else{
+                if(locationdata.futureRackRate>0){
+                    finalAmount = locationdata.futureRackRate * proposal.totalNumberOfSeats;
+                perSeatPrice = locationdata.futureRackRate;
+                }else{
+                    finalAmount = locationdata.rackRate * proposal.totalNumberOfSeats;
+                    perSeatPrice = locationdata.rackRate;
+                }
+                
+            }
+            
+            // console.log(finalAmount,"asdddddddddddddddddddddddddddd")
+            let previousAmount = finalAmount || proposal.previousFinalOfferAmmount;
+            // console.log(previousAmount,"asdddddddddddddddddddddddddddd")
+            
+        // console.log("Before Updateeeeee",proposal);
+        Proposal.updateOne({ _id:proposal._id }, { $set: { finalOfferAmmount: finalAmount}}).then((result)=>{
+            // console.log(result,"asddddddddddddddddddddddddddddddddddddddddddd")
+            // console.log("After Updateeeeee",proposal)
+            if (result.acknowledged === true) {
+                result.message='Succesfully updated';
+            }
+            else throw Error('Problem while updating');
+       
         // console.log(proposal.finalOfferAmmount)
     //    console.log(proposal.serviceCosts, "ali value");
     //    console.log("after data Proposal=>",proposal)
@@ -73,7 +107,7 @@ const generateProposalPDF = (req, res, next) => {
         
         let selectFrom = req.params.selectFrom || proposal.selectFrom;
         let location = proposal.center;
-        let requiredNoOfSeats = proposal.totalNumberOfSeats.toFixed(0);
+        let requiredNoOfSeats = proposal.totalNumberOfSeats;
         let workStationId;
         // let jsonPath = path.join()
 
@@ -805,41 +839,44 @@ const generateProposalPDF = (req, res, next) => {
             })
 
             doc.addPage();
-            doc.rect(20, 100, 100, 30).fillAndStroke('#5e5e5e', 'black').fillColor('white').text('Name of Client', 20, 110, { width: 100, align: 'center' })
-            doc.rect(120, 100, 660, 30).fillAndStroke('#5e5e5e', 'black').fillColor('white').text(proposal.clientName, 120, 110, { width: 660, align: 'center' });
-            doc.rect(20, 130, 100, 30).fillAndStroke('white', 'black').fillColor('black').text('Location', 20, 140, { width: 100, align: 'center' });
-            doc.rect(120, 130, 660, 30).fillAndStroke('white', 'black').fillColor('black').text(locationMetaData.address, 120, 140, { width: 660, align: 'center' });
-            doc.rect(20, 160, 100, 90).fillAndStroke('white', 'black').fillColor('black').text('Requirement Brief', 20, 210, { width: 100, align: 'center' });
-            doc.rect(120, 160, 660, 90).fillAndStroke('white', 'black').fillColor('black').text(`As per layout - ${proposal.content}`, 120, 210, { width: 660, align: 'center' });
-            doc.rect(20, 250, 100, 30).fillAndStroke('#dbdbdb', 'black').fillColor('black').text('1', 20, 260, { width: 100, align: 'center' });
-            doc.rect(120, 250, 180, 30).fillAndStroke('#dbdbdb', 'black').fillColor('black').text('Rent Commencement Date', 120, 260, { width: 180, align: 'center' });
-            doc.rect(300, 250, 480, 30).fillAndStroke('#dbdbdb', 'black').fillColor('black').text(`${new Date().toLocaleDateString()}`, 300, 260, { width: 480, align: 'center' });
-            doc.rect(20, 280, 100, 30).fillAndStroke('white', 'black').fillColor('black').text('2', 20, 290, { width: 100, align: 'center' });
-            doc.rect(120, 280, 180, 30).fillAndStroke('white', 'black').fillColor('black').text('Term', 120, 290, { width: 180, align: 'center' });
-            doc.rect(300, 280, 480, 30).fillAndStroke('white', 'black').fillColor('black').text(`${proposal.Tenure} months`, 300, 290, { width: 480, align: 'center' });
-            doc.rect(20, 310, 100, 30).fillAndStroke('#dbdbdb', 'black').fillColor('black').text('3', 20, 320, { width: 100, align: 'center' });
-            doc.rect(120, 310, 180, 30).fillAndStroke('#dbdbdb', 'black').fillColor('black').text('Lock-in Period', 120, 320, { width: 180, align: 'center' });
-            doc.rect(300, 310, 480, 30).fillAndStroke('#dbdbdb', 'black').fillColor('black').text(`${proposal.LockIn} months`, 300, 320, { width: 480, align: 'center' });
-            doc.rect(20, 340, 100, 30).fillAndStroke('white', 'black').fillColor('black').text('4', 20, 350, { width: 100, align: 'center' });
-            doc.rect(120, 340, 180, 30).fillAndStroke('white', 'black').fillColor('black').text('Notice Period (post lock-in)', 120, 350, { width: 180, align: 'center' });
-            doc.rect(300, 340, 480, 30).fillAndStroke('white', 'black').fillColor('black').text('6 months', 300, 350, { width: 480, align: 'center' });
-            doc.rect(20, 370, 100, 30).fillAndStroke('#dbdbdb', 'black').fillColor('black').text('5', 20, 380, { width: 100, align: 'center' });
-            doc.rect(120, 370, 180, 30).fillAndStroke('#dbdbdb', 'black').fillColor('black').text('Escalation (Per annum)', 120, 380, { width: 180, align: 'center' });
-            doc.rect(300, 370, 480, 30).fillAndStroke('#dbdbdb', 'black').fillColor('black').text('6% p.a - post completion of 12 months', 300, 380, { width: 480, align: 'center' });
-            doc.rect(20, 400, 100, 30).fillAndStroke('white', 'black').fillColor('black').text('6', 20, 410, { width: 100, align: 'center' });
-            doc.rect(120, 400, 180, 30).fillAndStroke('white', 'black').fillColor('black').text('Interest-free Service Retainer', 120, 410, { width: 180, align: 'center' });
-            doc.rect(300, 400, 480, 30).fillAndStroke('white', 'black').fillColor('black').text('6 months', 300, 410, { width: 480, align: 'center' });
-            doc.rect(20, 430, 100, 30).fillAndStroke('#dbdbdb', 'black').fillColor('black').text('7', 20, 440, { width: 100, align: 'center' });
-            doc.rect(120, 430, 180, 30).fillAndStroke('#dbdbdb', 'black').fillColor('black').text('Car Parking Charges', 120, 440, { width: 180, align: 'center' });
-            doc.rect(300, 430, 480, 30).fillAndStroke('#dbdbdb', 'black').fillColor('black').text('INR 12000 + taxes per ws/ per month', 300, 440, { width: 480, align: 'center' });
-            doc.rect(20, 460, 100, 30).fillAndStroke('white', 'black').fillColor('black').text('8', 20, 470, { width: 100, align: 'center' });
-            doc.rect(120, 460, 180, 30).fillAndStroke('white', 'black').fillColor('black').text('Cost Per Seat', 120, 470, { width: 180, align: 'center' });
-            doc.rect(300, 460, 480, 30).fillAndStroke('white', 'black').fillColor('black').text(`INR ${proposal.serviceCosts} + taxes per month`, 300, 470, { width: 480, align: 'center' });
-            doc.rect(20, 490, 100, 30).fillAndStroke('#dbdbdb', 'black').fillColor('black').text('9', 20, 500, { width: 100, align: 'center' });
-            doc.rect(120, 490, 180, 30).fillAndStroke('#dbdbdb', 'black').fillColor('black').text('Billable Seats', 120, 500, { width: 180, align: 'center' });
-            doc.rect(300, 490, 480, 30).fillAndStroke('#dbdbdb', 'black').fillColor('black').text(`Approx ${(proposal.totalNumberOfSeats).toFixed(2)}ws`, 300, 500, { width: 480, align: 'center' });
-            doc.rect(20, 520, 100, 30).fillAndStroke('#999999', 'black').fillColor('black').text('10', 20, 530, { width: 100, align: 'center' });
-            doc.rect(120, 520, 180, 30).fillAndStroke('#999999', 'black').fillColor('black').text('Total Monthly Cost (+GST)', 120, 530, { width: 180, align: 'center' });
+            doc.rect(20, 70, 100, 30).fillAndStroke('#5e5e5e', 'black').fillColor('white').text('Name of Client', 20, 80, { width: 100, align: 'center' })
+            doc.rect(120, 70, 660, 30).fillAndStroke('#5e5e5e', 'black').fillColor('white').text(proposal.clientName, 120, 80, { width: 660, align: 'center' });
+            doc.rect(20, 100, 100, 30).fillAndStroke('white', 'black').fillColor('black').text('Location', 20, 110, { width: 100, align: 'center' });
+            doc.rect(120, 100, 660, 30).fillAndStroke('white', 'black').fillColor('black').text(locationMetaData.address, 120, 110, { width: 660, align: 'center' });
+            doc.rect(20, 130, 100, 90).fillAndStroke('white', 'black').fillColor('black').text('Requirement Brief', 20, 160, { width: 100, align: 'center' });
+            doc.rect(120, 130, 660, 90).fillAndStroke('white', 'black').fillColor('black').text(`As per layout - ${proposal.content}`, 120, 130, { width: 660, align: 'left' });
+            doc.rect(20, 220, 100, 30).fillAndStroke('#dbdbdb', 'black').fillColor('black').text('1', 20, 230, { width: 100, align: 'center' });
+            doc.rect(120, 220, 180, 30).fillAndStroke('#dbdbdb', 'black').fillColor('black').text('Rent Commencement Date', 120, 230, { width: 180, align: 'center' });
+            doc.rect(300, 220, 480, 30).fillAndStroke('#dbdbdb', 'black').fillColor('black').text(`${new Date().toLocaleDateString()}`, 300, 230, { width: 480, align: 'center' });
+            doc.rect(20, 250, 100, 30).fillAndStroke('white', 'black').fillColor('black').text('2', 20, 260, { width: 100, align: 'center' });
+            doc.rect(120, 250, 180, 30).fillAndStroke('white', 'black').fillColor('black').text('Term', 120, 260, { width: 180, align: 'center' });
+            doc.rect(300, 250, 480, 30).fillAndStroke('white', 'black').fillColor('black').text(`${proposal.Tenure} months`, 300, 260, { width: 480, align: 'center' });
+            doc.rect(20, 280, 100, 30).fillAndStroke('#dbdbdb', 'black').fillColor('black').text('3', 20, 290, { width: 100, align: 'center' });
+            doc.rect(120, 280, 180, 30).fillAndStroke('#dbdbdb', 'black').fillColor('black').text('Lock-in Period', 120, 290, { width: 180, align: 'center' });
+            doc.rect(300, 280, 480, 30).fillAndStroke('#dbdbdb', 'black').fillColor('black').text(`${proposal.LockIn} months`, 300, 290, { width: 480, align: 'center' });
+            doc.rect(20, 310, 100, 30).fillAndStroke('white', 'black').fillColor('black').text('4', 20, 320, { width: 100, align: 'center' });
+            doc.rect(120, 310, 180, 30).fillAndStroke('white', 'black').fillColor('black').text('Notice Period (post lock-in)', 120, 320, { width: 180, align: 'center' });
+            doc.rect(300, 310, 480, 30).fillAndStroke('white', 'black').fillColor('black').text('6 months', 300, 320, { width: 480, align: 'center' });
+            doc.rect(20, 340, 100, 30).fillAndStroke('#dbdbdb', 'black').fillColor('black').text('5', 20, 350, { width: 100, align: 'center' });
+            doc.rect(120, 340, 180, 30).fillAndStroke('#dbdbdb', 'black').fillColor('black').text('Escalation (Per annum)', 120, 350, { width: 180, align: 'center' });
+            doc.rect(300, 340, 480, 30).fillAndStroke('#dbdbdb', 'black').fillColor('black').text('6% p.a - post completion of 12 months', 300, 350, { width: 480, align: 'center' });
+            doc.rect(20, 370, 100, 30).fillAndStroke('white', 'black').fillColor('black').text('6', 20, 380, { width: 100, align: 'center' });
+            doc.rect(120, 370, 180, 30).fillAndStroke('white', 'black').fillColor('black').text('Interest-free Service Retainer', 120, 380, { width: 180, align: 'center' });
+            doc.rect(300, 370, 480, 30).fillAndStroke('white', 'black').fillColor('black').text('6 months', 300, 380, { width: 480, align: 'center' });
+            doc.rect(20, 400, 100, 30).fillAndStroke('#dbdbdb', 'black').fillColor('black').text('7', 20, 410, { width: 100, align: 'center' });
+            doc.rect(120, 400, 180, 30).fillAndStroke('#dbdbdb', 'black').fillColor('black').text('Car Parking Charges', 120, 410, { width: 180, align: 'center' });
+            doc.rect(300, 400, 480, 30).fillAndStroke('#dbdbdb', 'black').fillColor('black').text(`INR ${locationdata.carParkCharge} + taxes per ws/ per month`, 300, 410, { width: 480, align: 'center' });
+            doc.rect(20, 430, 100, 30).fillAndStroke('white', 'black').fillColor('black').text('8', 20, 440, { width: 100, align: 'center' });
+            doc.rect(120, 430, 180, 30).fillAndStroke('white', 'black').fillColor('black').text('Cost Per Seat', 120, 440, { width: 180, align: 'center' });
+            doc.rect(300, 430, 480, 30).fillAndStroke('white', 'black').fillColor('black').text(`INR ${perSeatPrice} + taxes per month`, 300, 440, { width: 480, align: 'center' });
+            doc.rect(20, 460, 100, 30).fillAndStroke('#dbdbdb', 'black').fillColor('black').text('9', 20, 470, { width: 100, align: 'center' });
+            doc.rect(120, 460, 180, 30).fillAndStroke('#dbdbdb', 'black').fillColor('black').text('Billable Seats', 120, 470, { width: 180, align: 'center' });
+            doc.rect(300, 460, 480, 30).fillAndStroke('#dbdbdb', 'black').fillColor('black').text(`Approx ${(proposal.totalNumberOfSeats).toFixed(2)}ws`, 300, 470, { width: 480, align: 'center' });
+            doc.rect(20, 490, 100, 30).fillAndStroke('#999999', 'black').fillColor('black').text('10', 20, 500, { width: 100, align: 'center' });
+            doc.rect(120, 490, 180, 30).fillAndStroke('#999999', 'black').fillColor('black').text('System Total Cost (+GST)', 120, 500, { width: 180, align: 'center' });
+            doc.rect(300, 490, 480, 30).fillAndStroke('#999999', 'black').fillColor('black').text(`INR ${new Intl.NumberFormat('en-IN', { currency: 'INR' }).format(previousAmount)}  + taxes per month`, 300, 500, { width: 480, align: 'center' });
+            doc.rect(20, 520, 100, 30).fillAndStroke('#999999', 'black').fillColor('black').text('11', 20, 530, { width: 100, align: 'center' });
+            doc.rect(120, 520, 180, 30).fillAndStroke('#999999', 'black').fillColor('black').text('Final Total Cost (+GST)', 120, 530, { width: 180, align: 'center' });
             doc.rect(300, 520, 480, 30).fillAndStroke('#999999', 'black').fillColor('black').text(`INR ${new Intl.NumberFormat('en-IN', { currency: 'INR' }).format(proposal.finalOfferAmmount)}  + taxes per month`, 300, 530, { width: 480, align: 'center' });
             doc.addPage();
             //image add of selected content
@@ -907,7 +944,7 @@ const generateProposalPDF = (req, res, next) => {
             
 
             if(proposal.cabinRegular>0){
-                doc.image('./assets/proposal/image/small_cabin.jpg', 0, 0, { width: 800, height: 566 });
+                doc.image('./assets/proposal/image/regular_cabin.jpg', 0, 0, { width: 800, height: 566 });
             doc.addPage();
             }
             
@@ -1056,7 +1093,7 @@ const generateProposalPDF = (req, res, next) => {
             
             
             if(proposal.cafeteriaNumber>0){
-                doc.image('./assets/proposal/image/cafeteria.jpg', 0, 0, { width: 800, height: 566 });
+                doc.image('./assets/proposal/image/cafeteria_seating.jpg', 0, 0, { width: 800, height: 566 });
             doc.addPage();
             }
             
@@ -1196,6 +1233,8 @@ const generateProposalPDF = (req, res, next) => {
             if (!err.message) err.message = 'Server Error';
             throw err;
         }
+    })
+    })
     }).catch((err) => {
         if (!err.message) err.message = 'Error while Generating proposal';
         next(err);

@@ -33,6 +33,10 @@ proposalRoute.get('/finalOfferAmmount/:Id', proposalController.finalOfferAmmount
 
 proposalRoute.post('/esclateToClosure/:Id',middleware.authentication, proposalController.updateFinalOfferAmmount);
 
+proposalRoute.get('/getProposalById/:Id',proposalController.getProposalById);
+
 proposalRoute.post('/approveProposal/:Id', middleware.authentication,proposalController.approveProposal, proposalController.generate.generateProposalPDF);
+
+proposalRoute.post('/lockProposal/:Id', middleware.authentication,proposalController.lockProposal, proposalController.generate.generateProposalPDF);
 
 module.exports = proposalRoute;

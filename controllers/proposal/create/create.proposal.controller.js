@@ -234,7 +234,7 @@ const checkRequiredNoOfSeats = (req, res, next) => {
     // let netBillableSeat = totalNoOfSeats + circulation;
     // console.log('data => ',data);
     console.log('totalNoOfSeats => ',totalNoOfSeats);
-    Proposal.updateOne({ _id: Id }, { $set: { totalNoOfSeatsSelected: totalNoOfSeats * 0.1 } }).then((result) => {
+    Proposal.updateOne({ _id: Id }, { $set: { totalNumberOfSeats: totalNoOfSeats } }).then((result) => {
         if (result.acknowledged === true) {
             if (result.modifiedCount > 0) {
                 req.proposal = { totalNoOfSeats }
@@ -291,21 +291,21 @@ const addProposalRequirement = (req, res, next) => {
                 //     // console.log(err);
                 //     throw err;
                 // }
-                try {
-                    let requirementField = ['workstationSize', 'workstationNumber', 'cabinSize', 'cabinNumber', 'meetingRoomSize', 'meetingRoomNumber', 'visitorMeetingRoomSize', 'visitorMeetingRoomNumber', 'collabArea', 'dryPantry', 'storeRoom', 'storeRoomNumber', 'cafeteria', 'cafeteriaNumber', 'reception', 'mailRoom', 'bmsRoom', 'compactor'];
-                    requirementField.forEach((field) => {
-                        if (proposal?.[field]) {
-                            let error = new Error('Requirement cannot be added twice');
-                            throw error;
-                        }
-                    })
-                }
-                catch (err) {
-                    if (!err.status) err.status = 406;
-                    if (!err.message) err.message = 'Requirement cannot be added twice';
-                    // console.log(err);
-                    throw err;
-                }
+                // try {
+                //     let requirementField = ['workstation2x1', 'workstation3x2', 'workstation4x2', 'workstation5x2', 'workstation5x2_5', 'workstation4x4', 'workstation5x4', 'workstation5x5', 'cubicalCount', 'cabinRegular', 'cabinMedium', 'cabinLarge', 'cabinMD', 'meeting4P', 'meeting6P', 'meeting8P', 'meeting10P', 'meeting12P','meeting16P','board20P','board24P','collab4P','collab6P','collab8P','dryPantryNumber','receptionSmall','receptionMedium','receptionLarge','storeRoomNumber','phoneBoothNumber','nicheSeat2Pax','nicheSeat4Pax','cafeteriaNumber','server1Rack','server2Rack','server3Rack','server4Rack','prayerRoomNumber','wellnessRoomNumber','trainingRoomNumber','gameRoomNumber','totalNumberOfSeats','content'];
+                //     // requirementField.forEach((field) => {
+                //     //     if (proposal?.[field]) {
+                //     //         let error = new Error('Requirement cannot be added twice');
+                //     //         throw error;
+                //     //     }
+                //     // })
+                // }
+                // catch (err) {
+                //     if (!err.status) err.status = 406;
+                //     if (!err.message) err.message = 'Requirement cannot be added twice';
+                //     // console.log(err);
+                //     throw err;
+                // }
 
 
 
@@ -314,7 +314,7 @@ const addProposalRequirement = (req, res, next) => {
 
                 try {
                     let location = proposal.center;
-                    let requiredNoOfSeats = proposal.totalNoOfSeatsSelected;
+                    let requiredNoOfSeats = proposal.totalNumberOfSeats;
                     let layoutData = require(path.join('..', '..', '..', 'assets', 'layout', 'json', `${proposal.location}_${proposal.center}.json`))
                     let workStationToBeSelectedIn = [];
                     let seatsToBeSelected = requiredNoOfSeats;
@@ -362,7 +362,7 @@ const addProposalRequirement = (req, res, next) => {
                             Proposal.find()
                                 .where('location').equals(proposal.location).where('center').equals(proposal.center)
                                 .where('clientName').equals(proposal.clientName)
-                                .where('totalNoOfSeatsSelected').gte(proposal.totalNoOfSeatsSelected - ((proposal.totalNoOfSeatsSelected * 5) / 100)).lte(proposal.totalNoOfSeatsSelected + ((proposal.totalNoOfSeatsSelected * 5) / 100))
+                                .where('totalNumberOfSeats').gte(proposal.totalNumberOfSeats - ((proposal.totalNumberOfSeats * 5) / 100)).lte(proposal.totalNumberOfSeats + ((proposal.totalNumberOfSeats * 5) / 100))
                                 .then((result) => {
                                     let conflict = (result.length > 1) ? true : false;
                                     Proposal.updateOne({ _id: Id }, { $set: { seatAvailability, consolidatedSeats,totalNumberOfSeats, status: conflict ? 'Conflict': 'In-Progress' } }).then((result) => {

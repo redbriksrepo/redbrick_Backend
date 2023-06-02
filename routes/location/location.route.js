@@ -51,4 +51,6 @@ locationRoute.get('/getCentersInLocation/:location',locationController.getCentes
 
 locationRoute.post('/getRentSheet',locationController.getRentSheet);
 
+locationRoute.post('/updateRackValue',locationController.updateRackValue);
+
 module.exports = locationRoute;

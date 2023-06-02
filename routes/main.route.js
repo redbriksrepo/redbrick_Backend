@@ -9,7 +9,7 @@ const profileRoute = require('./profile/profile.route');
 const proposalRoute = require('./proposal/proposal.route');
 const userRoute = require('./user/user.route');
 const costRoute = require('./cost/cost.route')
-
+const reportRoute = require('./report/weeklyReport.route')
 const mainRoute = require('express').Router();
 
 mainRoute.use('/auth', authRoute);
@@ -29,6 +29,8 @@ mainRoute.use('/dashboard', middleware.authentication, dashboardRoute);
 mainRoute.use('/broker', brokerRoute);
 
 mainRoute.use('/cost', costRoute);
+
+mainRoute.use('/report',reportRoute);
 
 
 module.exports = mainRoute;

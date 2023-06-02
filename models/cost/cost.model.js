@@ -10,10 +10,10 @@ const costModel = new Schema({
         type: Number,
         required: true
     },
-    amortizedFitOutRent3Years: {
-        type: Number,
-        required: true
-    },
+    // amortizedFitOutRent3Years: {
+    //     type: Number,
+    //     required: true
+    // },
     costOfElectricity:{
         type: Number,
         required: true
@@ -30,42 +30,42 @@ const costModel = new Schema({
         type: Number,
         required: true
     },
-    total_1: {
-        type: Number,
-        required: true
-    },
-    adminMarketing: {
-        type: Number,
-        required: true
-    },
-    brokerage: {
-        type: Number,
-        required: true
-    },
-    total_2:{
-        type: Number,
-        required: true
-    },
-    profitBeforeTax:{
-        type: Number,
-        required: true
-    },
-    total_3:{
-        type: Number,
-        required: true
-    },
-    rateOfInventoryOnLeaseArea: {
-        type: Number,
-        required: true
-    },
-    includeCommonsAmenities:{
-        type: Number,
-        required: true
-    },
-    on80perDiversityFactor:{
-        type: Number,
-        required: true
-    }
+    // total_1: {
+    //     type: Number,
+    //     required: true
+    // },
+    // adminMarketing: {
+    //     type: Number,
+    //     required: true
+    // },
+    // brokerage: {
+    //     type: Number,
+    //     required: true
+    // },
+    // total_2:{
+    //     type: Number,
+    //     required: true
+    // },
+    // profitBeforeTax:{
+    //     type: Number,
+    //     required: true
+    // },
+    // total_3:{
+    //     type: Number,
+    //     required: true
+    // },
+    // rateOfInventoryOnLeaseArea: {
+    //     type: Number,
+    //     required: true
+    // },
+    // includeCommonsAmenities:{
+    //     type: Number,
+    //     required: true
+    // },
+    // on80perDiversityFactor:{
+    //     type: Number,
+    //     required: true
+    // }
 },{
     timestamps: true
 });

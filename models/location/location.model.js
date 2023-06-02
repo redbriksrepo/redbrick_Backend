@@ -10,6 +10,24 @@ const locationModel = new Schema({
         type: String,
         required: true
     },
+    perSeatPrice:{
+        type:Number,
+    },
+    selectedNoOfSeats:{
+        type: Number,
+        default: 0
+    },
+    lockedSeats:{
+        type: Number,
+    },
+    systemPrice:{
+        type:Number
+        // default: 1490
+    },
+    systemPriceNS:{
+        type:Number
+        // default: 14900
+    },
     availableNoOfWorkstation: {
         type: Number,
         default: 0
@@ -34,6 +52,37 @@ const locationModel = new Schema({
     },
     rentSheet:{
         type:Array
+    },
+    rentAndCamTotal:{
+        type:Number
+    },
+    carParkCharge:{
+        type: Number
+    },
+    futureRackRate:{
+        type:Number,
+        default:0
+    },
+    currentRackRate:{
+        type:Number,
+        default:0
+    },
+    rackRate:{
+        type:Number
+    },
+    rackRateNS:{
+        type:Number
+    },
+    bookingPriceUptilNow:{
+        type:Number,
+        default:0
+    },
+    seatPriceAsPerSales:{
+        type:Number,
+    },
+    totalProposals:{
+        type: Number,
+        default:0
     },
     // rent:{
     //     type: Number

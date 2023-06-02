@@ -10,7 +10,7 @@ const getCentersInLocation = (req, res, next) => {
             throw error;
         }
         // console.log(location);
-        Location.find().select('center').where('location').equals(location).then((centersInLocation) => {
+        Location.find().select('center totalNoOfWorkstation selectedNoOfSeats').where('location').equals(location).then((centersInLocation) => {
             if (!centersInLocation) {
                 let error = new Error('Error while getting all the centers in selected location');
                 error.status = 503;

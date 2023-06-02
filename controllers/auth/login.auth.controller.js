@@ -108,6 +108,7 @@ const forceLogin = (req, res, next) => {
 const login = (req, res, next) => {
     try {
         let data = req.body;
+        console.log(data,"asdasds")
         let deviceType = req.headers.devicetype;
         User.findOne({ userName: data.userName })
             .then((user) => {

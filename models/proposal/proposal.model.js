@@ -11,6 +11,7 @@ const proposalSchema = new Schema({
     },
     location: String,
     center: String,
+    address:String,
     brokerType: String,
     brokerCategory: {
         type: Schema.Types.ObjectId,
@@ -23,6 +24,7 @@ const proposalSchema = new Schema({
         required: true,
         ref: 'User'
     },
+    areaOfSelectedSeat:Number,
     workstation2x1: Number,
     workstation3x2: Number,
     workstation4x2: Number,
@@ -39,6 +41,7 @@ const proposalSchema = new Schema({
     meeting4P: Number,
     meeting6P: Number,
     meeting8P: Number,
+    meeting10P: Number,
     meeting12P: Number,
     meeting16P: Number,
     board20P: Number,
@@ -64,12 +67,13 @@ const proposalSchema = new Schema({
     trainingRoomNumber: Number,
     gameRoomNumber: Number,
     content:String,
-    totalNoOfSeatsSelected: Number,
+    totalNumberOfSeats:Number,
     OTP: Number,
     Tenure: Number,
     LockIn: Number, 
     NonStandardRequirement: String,
     Serviced: String,
+    serviceCosts: Number,
     consolidatedSeats: {
         type: Boolean,
         default: false
@@ -78,16 +82,25 @@ const proposalSchema = new Schema({
         type: Boolean,
         default: true
     },
-    finalOfferAmmount: Number,
     escalateForCloser: {
         type: Boolean,
+        default: false
+    },
+    lockedProposal:{
+        type:Boolean,
         default: false
     },
     status: {
         type: String,
         default: "In-Progress"
     },
+    systemValue:Number,
+    salesHeadFinalOfferAmmount:{
+        type:Number,
+        default:0
+    },
     finalOfferAmmount: Number,
+    rackValue:Number,
     previousFinalOfferAmmount: Number,
     clientFinalOfferAmmount: Number,
     selectFrom: {

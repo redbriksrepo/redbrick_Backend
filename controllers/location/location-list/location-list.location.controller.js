@@ -2,7 +2,7 @@ const Location = require("../../../models/location/location.model")
 
 
 const getLocationList = (req, res, next) => {
-    Location.find({}, 'location').distinct('location').then((locationList) => {
+    Location.find({}, 'location ').distinct('location').then((locationList) => {
         if (!locationList) {
             let error = new Error('Error while getting location list');
             error.status = 503;

@@ -9,10 +9,12 @@ const resolveConflict = require('./resolveConflict/resolveConflict.proposal.cont
 const getFinalOfferAmmount = require('./getFinalOfferAmmount/getFinalOfferAmmount.proposal.controller');
 const updateFinalOfferAmmount = require('./esclateToClosure/esclateToClosure.proposal.controller');
 const approveProposal = require('./approveProposal/approveProposal.proposal.controller');
-
+const getProposalById = require('./getProposalById/getProposalById.controller')
+const lockProposal = require('./lockProposal/lockProposal.proposal.controller')
 const proposalController = {
     create: create,
     getAll: getAll,
+    getProposalById:getProposalById,
     layout: generateLayout,
     sendOtp: sendOtp,
     verifyOtp: verifyOtp,
@@ -21,7 +23,8 @@ const proposalController = {
     resolveConflict,
     finalOfferAmmount: getFinalOfferAmmount,
     updateFinalOfferAmmount,
-    approveProposal
+    approveProposal,
+    lockProposal
 };
 
 module.exports = proposalController;

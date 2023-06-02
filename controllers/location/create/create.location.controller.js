@@ -49,6 +49,7 @@ const createLocation = async (req,res,next) => {
                         }
                         else {
                             res.status(202).send({
+                                "data": result,
                                 "Message": "Location added Successfully"
                             })
                         }
