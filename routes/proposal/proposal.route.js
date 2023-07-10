@@ -39,4 +39,6 @@ proposalRoute.post('/approveProposal/:Id', middleware.authentication,proposalCon
 
 proposalRoute.post('/lockProposal/:Id', middleware.authentication,proposalController.lockProposal, proposalController.generate.generateProposalPDF);
 
+proposalRoute.post('/updateProposalId/:Id',proposalController.updateProposalId);
+
 module.exports = proposalRoute;

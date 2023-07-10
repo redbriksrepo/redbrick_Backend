@@ -4,6 +4,10 @@ const selectionDataSchema = require('../selectionData/selectionData.modal');
 
 const proposalSchema = new Schema({
     _id: String,
+    revised:{
+        type:Number,
+        default:0
+    },
     salesTeam: String,
     salesHead: {
         type: Schema.Types.ObjectId,
@@ -12,6 +16,7 @@ const proposalSchema = new Schema({
     location: String,
     center: String,
     address:String,
+    floor:String,
     brokerType: String,
     brokerCategory: {
         type: Schema.Types.ObjectId,
@@ -24,7 +29,12 @@ const proposalSchema = new Schema({
         required: true,
         ref: 'User'
     },
-    areaOfSelectedSeat:Number,
+    areaOfCoreSelectedSeat:Number,
+    areaOfUsableSelectedSeat:Number,
+    createWithArea:{
+        type:String,
+        // default:true
+    },
     workstation2x1: Number,
     workstation3x2: Number,
     workstation4x2: Number,
@@ -71,6 +81,9 @@ const proposalSchema = new Schema({
     OTP: Number,
     Tenure: Number,
     LockIn: Number, 
+    depositTerm:Number,
+    noticePeriod:Number, 
+    rentCommencmentDate:Date,
     NonStandardRequirement: String,
     Serviced: String,
     serviceCosts: Number,

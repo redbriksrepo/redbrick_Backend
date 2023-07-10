@@ -4,16 +4,17 @@ const Location = require('../../../models/location/location.model');
 const updateRackValueController = (req, res, nex) => {
     try {
 
-        let { systemPrice, rackRate, _id, systemPriceNS, rackRateNS } = req.body;
+        let { systemPrice, rackRate, _id, systemPriceNS, rackRateNS, costOfStandardInteriors,amortizedFitOutRentFor3Years, total_1,adminMarketingAndOverHeads,brokerage,total_2,profitBeforeTax,total_3,rateOfInventoryOnLeaseArea,includeCommonsAmenities, on80perDiversityFactor,costOfElectricity, costOfOps, efficiency} = req.body;
+
         if (!systemPrice && !rackRate, !_id) {
-            let error = new Error('systemPrice and rackRate and id field is required');
+            let error = new Error('All fields are required');
             error.status = 400;
             throw error;
         }
-        Location.findByIdAndUpdate(mongoose.Types.ObjectId(_id), { $set: { systemPrice, rackRate, systemPriceNS, rackRateNS  } }, { rawResult: true }).then((updateResult) => {
+        Location.findByIdAndUpdate(mongoose.Types.ObjectId(_id), { $set: { systemPrice, rackRate, systemPriceNS, rackRateNS,costOfStandardInteriors,amortizedFitOutRentFor3Years, total_1,adminMarketingAndOverHeads,brokerage,total_2,profitBeforeTax,total_3,rateOfInventoryOnLeaseArea,includeCommonsAmenities, on80perDiversityFactor,costOfElectricity, costOfOps, efficiency  } }, { rawResult: true }).then((updateResult) => {
             if (updateResult.lastErrorObject.updatedExisting) {
                 res.status(200).send({
-                    "Message": "Rent and Cam value added successfully"
+                    "Message": "Cost Sheet Added Successfully"
                 });
             }
             else {

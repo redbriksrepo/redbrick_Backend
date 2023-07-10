@@ -4,19 +4,19 @@ const lockProposal = (req, res, next) => {
     try {
         let Id = req.params.Id;
         let currentUser = req.user;
-        console.log(currentUser);
+        // console.log(currentUser);
         let data = req.body;
 
         if (!Id) throw new Error('Id not Provided').status = 400;
         if (currentUser.role === 'admin') {
 
             Proposal.findById(Id).then((proposal) => {
-                console.log('\n\n\n\n\n\n\n\n\nFindById => ')
+   
                 Proposal.updateOne({ _id: proposal._id }, { $set: { status: 'Completed and Locked', lockedProposal: true } }).then((updateResult) => {
-                    console.log('\n\n\n\n\n\n\n\n Update One => ')
+        
                     if (updateResult.acknowledged && updateResult.modifiedCount > 0) {
                         Location.findOne({ location: proposal.location, center: proposal.center }).then((locationdata) => {
-                            console.log('\n\n\n\n\n\n\n\n Find One => ')
+            
                             let rackRate = locationdata.rackRate
                             let setValueofFutureRackRate;
                             let setCurrentRackRate;
@@ -24,17 +24,17 @@ const lockProposal = (req, res, next) => {
                             let selectedNoOfSeats = locationdata.selectedNoOfSeats + proposal.totalNumberOfSeats;
                             setCurrentRackRate = Math.round(bookingPriceUptilNow / selectedNoOfSeats)
                             let profitLoss = setCurrentRackRate - rackRate
-                            console.log("\n\n\n\n ProfitLoss =>",profitLoss)
+                 
                           
                                 if (profitLoss < 0) {
-                                    console.log(profitLoss, "Profit Loss")
+                               
                                     let lossInRackRate = locationdata.rackRate - profitLoss;
                                     setValueofFutureRackRate = Math.ceil(lossInRackRate / 500) * 500;
                                 } else {
                                     setValueofFutureRackRate = locationdata.rackRate
                                 }
                             
-                            console.log(setValueofFutureRackRate, "Rack Value setting");
+             
 
                             let updateData = {
                                 selectedNoOfSeats:selectedNoOfSeats,
@@ -44,7 +44,7 @@ const lockProposal = (req, res, next) => {
                                 currentRackRate: setCurrentRackRate
                             }
 
-                            console.log('AFTER LOCKED LOCATION VALUE => ',updateData);
+                            // console.log('AFTER LOCKED LOCATION VALUE => ',updateData);
 
                             Location.updateOne({ location: proposal.location, center: proposal.center }, { $set: updateData }).then((result) => {
 
@@ -60,7 +60,7 @@ const lockProposal = (req, res, next) => {
                         res.status(202).send({
                             "Message": "Locked Successfully!"
                         })
-                        console.log("Approve if", proposal.address);
+                        // console.log("Approve if", proposal.address);/
 
 
                     }

@@ -39,14 +39,14 @@ const updateLocationData = (req, res, next) => {
                     }
                 }
                 
-                    if (data.location !== locationData.location || data.center !== locationData.center) {
+                    if (data.location !== locationData.location || data.center !== locationData.center || data.floor !== locationData.floor) {
                         if (!jsonUpdated) {
-                            fs.renameSync(locationData.jsonFile, path.join('assets', 'layout', 'json', `${data.location}_${data.center}.json`));
-                            data.jsonFile = path.join('assets', 'layout', 'json', `${data.location}_${data.center}.json`);                            
+                            fs.renameSync(locationData.jsonFile, path.join('assets', 'layout', 'json', `${data.location}_${data.center}_${data.floor}.json`));
+                            data.jsonFile = path.join('assets', 'layout', 'json', `${data.location}_${data.center}_${data.floor}.json`);                            
                         }
                         if (!layoutImageUpdated) {
-                            fs.renameSync(locationData.layoutImage, path.join('assets', 'layout', 'image', `${data.location}_${data.center}.png`));
-                            data.layoutImage = path.join('assets', 'layout', 'image', `${data.location}_${data.center}.png`);
+                            fs.renameSync(locationData.layoutImage, path.join('assets', 'layout', 'image', `${data.location}_${data.center}_${data.floor}.png`));
+                            data.layoutImage = path.join('assets', 'layout', 'image', `${data.location}_${data.center}_${data.floor}.png`);
                         }
                         
                         // fs.rename(locationData.layoutImage, path.join('assets', 'layout', 'image', `${data.location}_${data.center}.png`), (err) => {
@@ -74,7 +74,7 @@ const updateLocationData = (req, res, next) => {
                     data.rentSheet = Object.values(JSON.parse(data.rentSheet));
                 }
             }).then(() => {
-                console.log('Update Data::', data);
+                // console.log('Update Data::', data);
                 Location.updateOne({ _id: mongoose.Types.ObjectId(Id) }, { $set: data }).then((result) => {
                     if (result.acknowledged) {
                         if (result.modifiedCount > 0) {

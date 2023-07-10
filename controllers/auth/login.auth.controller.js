@@ -108,14 +108,14 @@ const forceLogin = (req, res, next) => {
 const login = (req, res, next) => {
     try {
         let data = req.body;
-        console.log(data,"asdasds")
-        let deviceType = req.headers.devicetype;
+        // console.log(data,"asdasds")
+        // let deviceType = req.headers.devicetype;
         User.findOne({ userName: data.userName })
             .then((user) => {
                 if (user) {
                     let tokenPayload = {
                         userName: user.userName,
-                        deviceType: deviceType,
+                        // deviceType: deviceType,
                         _id: user._id,
                         role: user.role
                     };
@@ -130,14 +130,16 @@ const login = (req, res, next) => {
                     }
 
                     // First Login From Desktop;
-                    else if (user.desktopId === undefined && deviceType === "Desktop") {
+                    else if (user.deviceId === undefined  )
+                        //&& deviceType === "Desktop") 
+                    {
                         User.updateOne(
                             { userName: data.userName },
                             {
                                 $set: {
-                                    desktopId: data.deviceId,
+                                    deviceId: data.deviceId,
                                     userActive: true,
-                                    activeDevice: "Desktop",
+                                    // activeDevice: "Desktop",
                                 },
                             }
                         )
@@ -162,43 +164,47 @@ const login = (req, res, next) => {
                     }
 
                     // First Login from Mobile
-                    else if (user.mobileId === undefined && deviceType === "Mobile") {
-                        User.updateOne(
-                            { userName: data.userName },
-                            {
-                                $set: {
-                                    mobileId: data.deviceId,
-                                    userActive: true,
-                                    activeDevice: "Mobile",
-                                },
-                            }
-                        )
-                            .then((data) => {
-                                if (data.modifiedCount > 0) {
-                                    res.status(202).send({
-                                        Message: "User Login Successfull!",
-                                        Token: token,
-                                    });
-                                } else {
-                                    let error = new Error("Error while adding authorized mobile");
-                                    error.status = 500;
-                                    throw error;
-                                }
-                            })
-                            .catch((err) => {
-                                if (!err.status) err.status = 400;
-                                next(err);
-                            });
-                    }
+                    // else if (user.mobileId === undefined)
+                    //     //  && deviceType === "Mobile") 
+                    //      {
+                    //     User.updateOne(
+                    //         { userName: data.userName },
+                    //         {
+                    //             $set: {
+                    //                 mobileId: data.deviceId,
+                    //                 userActive: true,
+                    //                 // activeDevice: "Mobile",
+                    //             },
+                    //         }
+                    //     )
+                    //         .then((data) => {
+                    //             if (data.modifiedCount > 0) {
+                    //                 res.status(202).send({
+                    //                     Message: "User Login Successfull!",
+                    //                     Token: token,
+                    //                 });
+                    //             } else {
+                    //                 let error = new Error("Error while adding authorized mobile");
+                    //                 error.status = 500;
+                    //                 throw error;
+                    //             }
+                    //         })
+                    //         .catch((err) => {
+                    //             if (!err.status) err.status = 400;
+                    //             next(err);
+                    //         });
+                    // }
 
                     // Login for Other than first time from any device
                     else if (
-                        user.desktopId === data.deviceId ||
-                        user.mobileId === data.deviceId
+                        user.deviceId === data.deviceId 
+                        // ||
+                        // user.mobileId === data.deviceId
                     ) {
                         User.updateOne(
                             { userName: data.userName },
-                            { $set: { userActive: true, activeDevice: deviceType } }
+                            { $set: { userActive: true,}}
+                                //  activeDevice: deviceType } }
                         )
                             .then((data) => {
                                 if (data.modifiedCount > 0) {

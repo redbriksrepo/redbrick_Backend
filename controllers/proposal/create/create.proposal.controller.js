@@ -66,12 +66,12 @@ const addClientInfoWithGivenData = (Id, data, req, res,next) => {
                 center: data.center,
                 salesHead: req.user.salesHead
             }
-            console.log("logData",logData);
+            // console.log("logData",logData);
             LogController.proposal.create(logData);
             User.findById(mongoose.Types.ObjectId(proposal.salesPerson)).then((user) => {
                 User.updateOne({ _id: mongoose.Types.ObjectId(user._id) }, { $set: { proposals: [...user.proposals, Id] } }).then()
             });
-            let layoutData = require(path.join('..', '..', '..', 'assets', 'layout', 'json', `${proposal.location}_${proposal.center}.json`));
+            let layoutData = require(path.join('..', '..', '..', 'assets', 'layout', 'json', `${proposal.location}_${proposal.center}_${proposal.floor}.json`));
             res.status(202).send({
                 "Message": "Client Info added Successfully!",
                 "AvailableNoOfSeatsInLayout": layoutData.AvailableNoOfSeats,
@@ -233,7 +233,7 @@ const checkRequiredNoOfSeats = (req, res, next) => {
     // let circulation = totalNoOfSeats*0.1;
     // let netBillableSeat = totalNoOfSeats + circulation;
     // console.log('data => ',data);
-    console.log('totalNoOfSeats => ',totalNoOfSeats);
+    // console.log('totalNoOfSeats => ',totalNoOfSeats);
     Proposal.updateOne({ _id: Id }, { $set: { totalNumberOfSeats: totalNoOfSeats } }).then((result) => {
         if (result.acknowledged === true) {
             if (result.modifiedCount > 0) {
@@ -257,7 +257,7 @@ const checkRequiredNoOfSeats = (req, res, next) => {
 }
 
 const addProposalRequirement = (req, res, next) => {
-    console.log("Requirement-------------",req.body)
+    // console.log("Requirement-------------",req.body)
     let data = req.body;
     let Id = req.params.Id;
     let consolidatedSeats = false;
@@ -315,7 +315,7 @@ const addProposalRequirement = (req, res, next) => {
                 try {
                     let location = proposal.center;
                     let requiredNoOfSeats = proposal.totalNumberOfSeats;
-                    let layoutData = require(path.join('..', '..', '..', 'assets', 'layout', 'json', `${proposal.location}_${proposal.center}.json`))
+                    let layoutData = require(path.join('..', '..', '..', 'assets', 'layout', 'json', `${proposal.location}_${proposal.center}_${proposal.floor}.json`))
                     let workStationToBeSelectedIn = [];
                     let seatsToBeSelected = requiredNoOfSeats;
                     
@@ -424,7 +424,7 @@ const addProposalRequirement = (req, res, next) => {
                 }).catch((err) => {
                     if (!err.message) err.message = 'Error when adding requirement to proposal';
                     if (!err.status) err.status = 400;
-                    console.log(err);
+                    // console.log(err);
 
                     next(err);
                 })
@@ -433,7 +433,7 @@ const addProposalRequirement = (req, res, next) => {
         }).catch((err) => {
             if (!err.message) err.message = 'Error when adding requirement to proposal';
             if (!err.status) err.status = 400;
-            console.log(err);
+            // console.log(err);
 
             next(err);
         })
@@ -441,7 +441,7 @@ const addProposalRequirement = (req, res, next) => {
     catch (err) {
         if (!err.status) err.status = 400;
         if (!err.message) err.message = 'Error while adding Requirement To Proposal';
-        console.log(err);
+        // console.log(err);
 
         throw err;
     }

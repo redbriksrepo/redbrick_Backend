@@ -35,12 +35,15 @@ const userModel = new Schema(
       type: String,
       required: true,
     },
-    desktopId: {
-      type: String,
+    deviceId:{
+      type:String
     },
-    mobileId: {
-      type: String,
-    },
+    // desktopId: {
+    //   type: String,
+    // },
+    // mobileId: {
+    //   type: String,
+    // },
     userActive: {
       type: Boolean,
       default: false,

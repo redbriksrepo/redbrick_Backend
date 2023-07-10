@@ -11,6 +11,7 @@ const updateFinalOfferAmmount = require('./esclateToClosure/esclateToClosure.pro
 const approveProposal = require('./approveProposal/approveProposal.proposal.controller');
 const getProposalById = require('./getProposalById/getProposalById.controller')
 const lockProposal = require('./lockProposal/lockProposal.proposal.controller')
+const updateProposalId = require('./updateProposalId/update-proposalID.controller')
 const proposalController = {
     create: create,
     getAll: getAll,
@@ -24,7 +25,8 @@ const proposalController = {
     finalOfferAmmount: getFinalOfferAmmount,
     updateFinalOfferAmmount,
     approveProposal,
-    lockProposal
+    lockProposal,
+    updateProposalId
 };
 
 module.exports = proposalController;

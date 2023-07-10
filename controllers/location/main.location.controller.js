@@ -7,7 +7,7 @@ const getRent = require("./getRent/getRent.location.controller");
 const getLocationList = require("./location-list/location-list.location.controller");
 const updateLocationData = require("./update/update.location.controller");
 const updateRackValue = require('./updateRackValue/updateRackValue.location.controller');
-
+const getFloorsInCenter = require('./floorsInCenter/floorInCenters.location.controller')
 
 const locationController = {
     create: createLocation,
@@ -15,6 +15,7 @@ const locationController = {
     getById: getLocationById,
     getLoctionList: getLocationList,
     getCentesInLocation: getCentersInLocation,
+    getFloorsInCenter:getFloorsInCenter,
     delete: deleteLocationData,
     update: updateLocationData,
     getRentSheet:getRent,

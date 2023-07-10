@@ -51,11 +51,11 @@ const salesHeadWeeklyReport = cron.schedule('0 8 * * */Monday', () => {
                         key: 'clientName',
                         width: 20
                     },
-                    {
-                        header: 'Proposal Generated\n(Yes/No)',
-                        key: 'proposalGenerated',
-                        width: 30
-                    },
+                    // {
+                    //     header: 'Proposal Generated\n(Yes/No)',
+                    //     key: 'proposalGenerated',
+                    //     width: 30
+                    // },
                     {
                         header: 'Selected workstation count',
                         key: 'seatsSelected',
@@ -108,7 +108,7 @@ const salesHeadWeeklyReport = cron.schedule('0 8 * * */Monday', () => {
                     };
                     transporter.sendMail(mailOptions, (err, info) => {
                         if (err) return console.log(err);
-                        console.log('Sales head weekly report send::', salesHead.firstName + salesHead.lastName);
+                        // console.log('Sales head weekly report send::', salesHead.firstName + salesHead.lastName);
                     })
                 })
             })

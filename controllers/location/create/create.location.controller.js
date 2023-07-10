@@ -33,7 +33,7 @@ const createLocation = async (req,res,next) => {
             else{
                 data.rentSheet = Object.values(JSON.parse(data.rentSheet));
             }
-            Location.findOne().where('location').equals(data.location).where('center').equals(data.center).then((result) => {
+            Location.findOne().where('location').equals(data.location).where('center').equals(data.center).where('floor').equals(data.floor).then((result) => {
                 if (result) {
                     let error = new Error('Location Already Exists');
                     error.status = 400;

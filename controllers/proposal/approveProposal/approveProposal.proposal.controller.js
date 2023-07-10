@@ -4,7 +4,7 @@ const approveClouser = (req, res, next) => {
     try {
         let Id = req.params.Id;
         let currentUser = req.user;
-        console.log(currentUser);
+        // console.log(currentUser);
         let data = req.body;
        
         if (!Id) throw new Error('Id not Provided').status = 400;

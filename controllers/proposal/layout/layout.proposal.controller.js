@@ -23,7 +23,7 @@ const generateLayout = (req, res, next) => {
         let workStationId;
         // let jsonPath = path.join()
 
-        let layoutData = require(path.join('..', '..', '..', 'assets', 'layout', 'json', `${proposal.location}_${proposal.center}.json`))
+        let layoutData = require(path.join('..', '..', '..', 'assets', 'layout', 'json', `${proposal.location}_${proposal.center}_${proposal.floor}.json`))
         let workStationToBeSelectedIn = [];
         // let layoutData = require(`../../../assets/layout/json/${location}.json`);/
 
@@ -38,7 +38,7 @@ const generateLayout = (req, res, next) => {
                     workStationToBeSelectedIn = [...workStationToBeSelectedIn, { workStationId: workStation._id, seatesToBeSelectedInWorkstation: requiredNoOfSeats }]
                 }
             });
-            console.log(workStationToBeSelectedIn.length)
+            // console.log(workStationToBeSelectedIn.length)
             if (workStationToBeSelectedIn.length <= 0) {
                 if (seatsToBeSelected <= layoutData.AvailableNoOfSeats) {
                     layoutData.workstations.forEach((workStation) => {
@@ -74,7 +74,7 @@ const generateLayout = (req, res, next) => {
         try {
             const doc = new PDFDocument({ size: [800, 566], margin: 0 });
             doc.pipe(res);
-            doc.image(path.join(__dirname, '..', '..', '..', 'assets', 'layout', 'image', `${proposal.location}_${proposal.center}.png`), { height: 566, align: 'center', valign: 'center' });
+            doc.image(path.join(__dirname, '..', '..', '..', 'assets', 'layout', 'image', `${proposal.location}_${proposal.center}_${proposal.floor}.png`), { height: 566, align: 'center', valign: 'center' });
             
             markSeatsOnLayout = (workstationToSelect) => {
                 if (workstationToSelect.workStationId) {

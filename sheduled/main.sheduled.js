@@ -3,7 +3,7 @@ const salesHeadWeeklyReport = require("./shalesHeadWeaklyreport/shalesHeadWeekly
 
 const startSheduledTasks = () => {
     salesHeadWeeklyReport.start(); // sales head weekly report start;
-    salesHeadCentersReport.start(); 
+    // salesHeadCentersReport.start(); 
 }
 
 module.exports = startSheduledTasks;

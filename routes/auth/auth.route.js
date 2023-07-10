@@ -7,4 +7,5 @@ authRoute.post('/login',loginController.checkUserStatus, loginController.forceLo
 
 authRoute.get('/logout',logoutController.logout);
 
+
 module.exports = authRoute;

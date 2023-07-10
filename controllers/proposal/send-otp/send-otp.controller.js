@@ -7,7 +7,7 @@ const auth = '538195922a3f371f388e65bda555458f';
 const twillio = require('twilio')(accountSid, auth);
 
 const sendOtp = (req, res, next) => {
-    console.log('otp send::');
+    // console.log('otp send::');
     let mobileNo = req.body.mobileNo;
     let Id = req.params.Id;
     let otp = 0;
@@ -33,7 +33,7 @@ const sendOtp = (req, res, next) => {
         from: '+16292769821',
         to: mobileNo
     }).then((message) => {
-        console.log(message);
+        // console.log(message);
         Proposal.updateOne({ _id: Id }, { $set: { OTP: otp } }).then((result) => {
             res.status(200).send({
                 "Message": "OTP Send Successfully"
@@ -44,7 +44,7 @@ const sendOtp = (req, res, next) => {
         })
     }).catch((err) => {
         if (!err.message) err.message = 'Error while Generating OTP';
-        console.log(err);
+        // console.log(err);
         next(err);
     })
 }

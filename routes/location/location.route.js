@@ -13,10 +13,12 @@ const fileStorage = multer.diskStorage({
         else if (file.mimetype === 'image/png') {
             cb(null, path.join('assets','layout','image'));
         };
+        // console.log(req.body.location,req.body.center,req.body.floor,file.mimetype)\
     },
     filename: (req, file, cb) => {
-        cb(null, `${req.body.location}_${req.body.center}.${file.mimetype.split('/')[1]}`);
+        cb(null, `${req.body.location}_${req.body.center}_${req.body.floor}.${file.mimetype.split('/')[1]}`);
     }
+    
 });
 
 const fileFilter = (req, file, cb) => {
@@ -53,4 +55,5 @@ locationRoute.post('/getRentSheet',locationController.getRentSheet);
 
 locationRoute.post('/updateRackValue',locationController.updateRackValue);
 
+locationRoute.get('/getFloorsInLocation/:floor', locationController.getFloorsInCenter)
 module.exports = locationRoute;

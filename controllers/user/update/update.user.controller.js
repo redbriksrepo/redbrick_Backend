@@ -2,9 +2,9 @@ const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
 const User = require("../../../models/user/user.model");
 
-const UpdateUserWithGivenData = (data,next) => {
+const UpdateUserWithGivenData = (data,res,next) => {
     User.updateOne({ _id: mongoose.Types.ObjectId(data._id) }, { $set: data }).then((result) => {
-        console.log(result);
+        // console.log(result);
         if (result.acknowledged === true) {
             if (result.modifiedCount > 0) {
                 res.status(202).send({
@@ -31,7 +31,7 @@ const UpdateUserWithGivenData = (data,next) => {
 
 const updateUser = (req, res, next) => {
     let data = req.body;
-    console.log(data);
+    // console.log(data);
     try {
 
         if (data.password) {
@@ -42,12 +42,12 @@ const updateUser = (req, res, next) => {
                 }
                 else {
                     data = { ...data, password: encrypted };
-                    UpdateUserWithGivenData(data,next);
+                    UpdateUserWithGivenData(data,res,next);
                 }
             })
         }
         else {
-            UpdateUserWithGivenData(data,next);
+            UpdateUserWithGivenData(data,res,next);
         }
     }
     catch (err) {

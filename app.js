@@ -16,8 +16,7 @@ const port = process.env.PORT || 3000;
 // Middlewares
 app.use(cors());
 app.use(express.json());
-
-
+app.use('/images', express.static(path.join(__dirname, '')));
 // static file serving
 app.use('/uploads', express.static('uploads'));
 app.use('/generated-proposal',express.static(path.join('assets','proposal','generated')))
@@ -25,7 +24,7 @@ app.use('/generated-proposal',express.static(path.join('assets','proposal','gene
 // Routes
 app.use(mainRoute);
 app.use('/',(req, res)=>{
-    res.send('Hello')
+    res.send('Hello');
 })
 // Error Handler
 app.use(errorHandler);

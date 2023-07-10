@@ -10,6 +10,13 @@ const locationModel = new Schema({
         type: String,
         required: true
     },
+    floorAvailable:{
+        type:Boolean,
+        default:false
+    },
+    floor:{
+        type: String,
+    },
     perSeatPrice:{
         type:Number,
     },
@@ -84,6 +91,21 @@ const locationModel = new Schema({
         type: Number,
         default:0
     },
+    // adding cost sheet values
+    costOfStandardInteriors:Number,
+    amortizedFitOutRentFor3Years:Number,
+    total_1:Number,
+    adminMarketingAndOverHeads:Number,
+    brokerage:Number,
+    total_2:Number,
+    profitBeforeTax:Number,
+    total_3:Number,
+    rateOfInventoryOnLeaseArea:Number,
+    includeCommonsAmenities:Number,
+    on80perDiversityFactor:Number,
+    costOfElectricity:Number,
+    costOfOps:Number,
+    efficiency:Number,
     // rent:{
     //     type: Number
     // },

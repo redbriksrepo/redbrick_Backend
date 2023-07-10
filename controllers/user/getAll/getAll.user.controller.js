@@ -4,7 +4,7 @@ const User = require("../../../models/user/user.model");
 const getAllUser = (req, res, next) => {
     try {
         let currentUser = req.user;
-        console.log(currentUser);
+        // console.log(currentUser);
 
         const getUserQuery = () => {
             if (currentUser.role === 'admin') {
