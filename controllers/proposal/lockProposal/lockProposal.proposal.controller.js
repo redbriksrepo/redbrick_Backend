@@ -1,5 +1,7 @@
 const Proposal = require("../../../models/proposal/proposal.model");
-const Location = require("../../../models/location/location.model")
+const Location = require("../../../models/location/location.model");
+const LayoutData = require("../../../models/layoutData/layoutData.modal");
+const selectionData = require("../../../models/selectionData/selectionData.modal");
 const lockProposal = (req, res, next) => {
     try {
         let Id = req.params.Id;
@@ -43,10 +45,11 @@ const lockProposal = (req, res, next) => {
                                 futureRackRate: setValueofFutureRackRate,
                                 currentRackRate: setCurrentRackRate
                             }
+                          
 
                             // console.log('AFTER LOCKED LOCATION VALUE => ',updateData);
-
-                            Location.updateOne({ location: proposal.location, center: proposal.center }, { $set: updateData }).then((result) => {
+                        
+                            Location.updateOne({ location: proposal.location, center: proposal.center, floor:proposal.floor }, { $set: updateData }).then((result) => {
 
                                 if (result.acknowledged === true && result.modifiedCount > 0) {
                                     result.message = 'Succesfully updated';
@@ -54,6 +57,35 @@ const lockProposal = (req, res, next) => {
                                 else throw Error('Problem while updating');
                             });
                         });
+                        Location.updateOne(
+                            {
+                              location: proposal.location,
+                              center: proposal.center,
+                              floor: proposal.floor,
+                              "proposals.proposalId": proposal._id // Find the location with the matching proposalId
+                            },
+                            {
+                              $set: { "proposals.$.locked": true } // Update the matched proposal's locked field to true
+                            }
+                          )
+                            .then((result) => {
+                              if (result.acknowledged === true) {
+                                if (result.modifiedCount > 0) {
+                                  result.message = 'Locked Successfully';
+                                } else {
+                                  result.message = 'Proposal not found'; // Proposal with the specified ID was not found in the array
+                                }
+                              } else {
+                                throw new Error('Problem while updating');
+                              }
+                            })
+                          
+                        selectionData.updateOne({_id:proposal.selectionData[0]},{$set:{workstationLocked:true}}).then(result=>{
+                            if(result.acknowledged === true){
+                                console.log("Selection data set true")
+                            }
+                        })
+                          
                         req.locationData = {
                             address: proposal.address
                         }
@@ -61,7 +93,7 @@ const lockProposal = (req, res, next) => {
                             "Message": "Locked Successfully!"
                         })
                         // console.log("Approve if", proposal.address);/
-
+                        next()
 
                     }
                     else throw new Error('Something went wrong').status = 400;

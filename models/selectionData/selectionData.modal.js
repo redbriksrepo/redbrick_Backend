@@ -2,6 +2,10 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const selectionDataSchema = new Schema({
+    workstationLocked:{
+        type:Boolean,
+        default:false
+    },
     sizeOfSeat: {
         width: Number,
         height: Number
@@ -42,7 +46,8 @@ const selectionDataSchema = new Schema({
         }
     ],
     subWorkStationArea: [
-        {
+        {   
+            sub_id:Number,
             totalNoOfSeats: Number,
             AvailableNoOfSeats: Number,
             sizeOfSeat: {
@@ -56,7 +61,8 @@ const selectionDataSchema = new Schema({
             selectedAreaYAxis: Number,
             selectedAreaXAxisOpposite: Number,
             startingXAxisOpposite: Number,
-            Partition: [
+            automaticSubWorkstation: Boolean,
+            partition: [
                 {
                     startingPosition: Number,
                     startingPositionOpposite: Number,

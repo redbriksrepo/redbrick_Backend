@@ -37,8 +37,9 @@ proposalRoute.get('/getProposalById/:Id',proposalController.getProposalById);
 
 proposalRoute.post('/approveProposal/:Id', middleware.authentication,proposalController.approveProposal, proposalController.generate.generateProposalPDF);
 
-proposalRoute.post('/lockProposal/:Id', middleware.authentication,proposalController.lockProposal, proposalController.generate.generateProposalPDF);
+proposalRoute.post('/lockProposal/:Id', middleware.authentication,proposalController.lockProposal, proposalController.addLockSeat);
 
 proposalRoute.post('/updateProposalId/:Id',proposalController.updateProposalId);
 
+proposalRoute.get('/viewLayoutSales/:Id',proposalController.viewLayoutSales)
 module.exports = proposalRoute;

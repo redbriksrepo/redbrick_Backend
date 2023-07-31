@@ -276,39 +276,7 @@ const addProposalRequirement = (req, res, next) => {
                 throw error;
             }
             else {
-                // try {
-                //     let requirementFields = ['workStation', 'cabin', 'meetingRooms'];
-                //     requirementFields.forEach((mainField) => {
-                //         if (proposal?.[mainField]) {
-                //             let error = new Error('Requirement cannot be added twice');
-                //             throw error;
-                //         }
-                //     })
-                // }
-                // catch (err) {
-                //     if (!err.status) err.status = 406;
-                //     if (!err.message) err.message = 'Requirement cannot be added twice';
-                //     // console.log(err);
-                //     throw err;
-                // }
-                // try {
-                //     let requirementField = ['workstation2x1', 'workstation3x2', 'workstation4x2', 'workstation5x2', 'workstation5x2_5', 'workstation4x4', 'workstation5x4', 'workstation5x5', 'cubicalCount', 'cabinRegular', 'cabinMedium', 'cabinLarge', 'cabinMD', 'meeting4P', 'meeting6P', 'meeting8P', 'meeting10P', 'meeting12P','meeting16P','board20P','board24P','collab4P','collab6P','collab8P','dryPantryNumber','receptionSmall','receptionMedium','receptionLarge','storeRoomNumber','phoneBoothNumber','nicheSeat2Pax','nicheSeat4Pax','cafeteriaNumber','server1Rack','server2Rack','server3Rack','server4Rack','prayerRoomNumber','wellnessRoomNumber','trainingRoomNumber','gameRoomNumber','totalNumberOfSeats','content'];
-                //     // requirementField.forEach((field) => {
-                //     //     if (proposal?.[field]) {
-                //     //         let error = new Error('Requirement cannot be added twice');
-                //     //         throw error;
-                //     //     }
-                //     // })
-                // }
-                // catch (err) {
-                //     if (!err.status) err.status = 406;
-                //     if (!err.message) err.message = 'Requirement cannot be added twice';
-                //     // console.log(err);
-                //     throw err;
-                // }
-
-
-
+               
 
                 // Deciding in which workstation seats should be selected
 

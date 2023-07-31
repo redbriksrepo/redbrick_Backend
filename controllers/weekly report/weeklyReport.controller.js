@@ -24,7 +24,7 @@ const sendWeeklyReport= (req, res, next) => {
                         let temp = logData.map((log) => {
                             
                             log.salesPerson = `${log.salesPerson.firstName} ${log.salesPerson.lastName}`;
-                            console.log('log::::::::::::===>>>>',log)
+                            // console.log('log::::::::::::===>>>>',log)
                             // console.log(log);
                             return log;
                         });
@@ -93,7 +93,7 @@ const sendWeeklyReport= (req, res, next) => {
                         workSheet.getRow(1).font = {
                             bold: true
                         }
-                        console.log(temp,"<<<<<<<<<<<<<<<<<<<++++++++++++++++++++++++++================")
+                        // console.log(temp,"<<<<<<<<<<<<<<<<<<<++++++++++++++++++++++++++================")
                         workSheet.addRows(temp);
                         workbook.title = `Weekly Report from ${lastWeekDate.toDateString()} to ${date.toDateString()}`;
                         

@@ -11,7 +11,9 @@ const updateFinalOfferAmmount = require('./esclateToClosure/esclateToClosure.pro
 const approveProposal = require('./approveProposal/approveProposal.proposal.controller');
 const getProposalById = require('./getProposalById/getProposalById.controller')
 const lockProposal = require('./lockProposal/lockProposal.proposal.controller')
-const updateProposalId = require('./updateProposalId/update-proposalID.controller')
+const updateProposalId = require('./updateProposalId/update-proposalID.controller');
+const addLockSeat = require('./addLockSeats/add-locked.controller');
+const viewLayoutSales = require('./viewLayoutForSales/veiw-layout-sales-dashboard.controller');
 const proposalController = {
     create: create,
     getAll: getAll,
@@ -26,7 +28,9 @@ const proposalController = {
     updateFinalOfferAmmount,
     approveProposal,
     lockProposal,
-    updateProposalId
+    updateProposalId,
+    addLockSeat:addLockSeat,
+    viewLayoutSales:viewLayoutSales
 };
 
 module.exports = proposalController;

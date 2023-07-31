@@ -6,6 +6,7 @@ const locationModel = new Schema({
         type: String,
         required: true
     },
+    layoutId:String,
     center: {
         type: String,
         required: true
@@ -51,6 +52,10 @@ const locationModel = new Schema({
         type: String,
         required: true
     },
+    centerImage:{
+        type:String
+        
+    },
     imageLinks: {
         type: Array,
     },
@@ -91,6 +96,9 @@ const locationModel = new Schema({
         type: Number,
         default:0
     },
+    proposals:{
+        type:Array
+    },
     // adding cost sheet values
     costOfStandardInteriors:Number,
     amortizedFitOutRentFor3Years:Number,
@@ -119,7 +127,13 @@ const locationModel = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'User'
     },
-    address: String
+    address: String,
+    jsonData: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'JsonData'
+        }
+    ]
 },{
     timestamps: true
 });
