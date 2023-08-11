@@ -14,8 +14,10 @@ const createLocation = async (req,res,next) => {
             throw error;
         }
         else {
+           
             if (jsonFile) data.jsonFile = jsonFile.path;
             if (layoutImage) data.layoutImage = layoutImage.path;
+            if(centerImage) data.centerImage = centerImage.path;
             // console.log(data);
             if (data.imageLinks === '{}') {
                 delete data.imageLinks;

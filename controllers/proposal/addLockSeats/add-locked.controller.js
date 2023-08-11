@@ -897,7 +897,7 @@ const addLockedSeats = (req, res, next) => {
                
                 {
                     $set: {
-                       
+                        'AvailableNoOfSeats':layoutData.AvailableNoOfSeats -  workstationToSelect.seatesToBeSelectedInWorkstation,
                         'workstations.$[workstation].AvailableNoOfSeats': workStationData.AvailableNoOfSeats -  workstationToSelect.seatesToBeSelectedInWorkstation,
                         'workstations.$[workstation].selectedAreaXAxis': workStationData.selectedAreaXAxis,
                         'workstations.$[workstation].selectedAreaYAxis': workStationData.selectedAreaYAxis,
@@ -919,7 +919,7 @@ const addLockedSeats = (req, res, next) => {
                             'workstation._id': workStationData._id
                         },
                         {
-                            'subWorkstation.sub_id':  workStationData.subWorkStationArea[0].sub_id
+                            'subWorkstation._id':  workStationData.subWorkStationArea._id
                         }
                   ],
                   new: true

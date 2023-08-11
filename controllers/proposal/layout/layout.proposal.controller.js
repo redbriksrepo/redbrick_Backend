@@ -114,7 +114,7 @@ const generateLayout = (req, res, next) => {
               if (seatsToBeSelected !== 0) {
                 let error = new Error("Space not Available!");
                 error.status = 404;
-                throw error;
+                return next(error);
               }
             }
           }
@@ -2019,7 +2019,7 @@ const generateLayout = (req, res, next) => {
               blankOutTheRemainingWorkStation(element);
             });
             allData.forEach((element)=>{
-              console.log("<<<<======>>>>>--------------\n",element.workstationLocked,"\n<<<<======>>>>>")
+              // console.log("<<<<======>>>>>--------------\n",element.workstationLocked,"\n ===========")
               if(element.workstationLocked===true){
                 seatsSelectedWhite(element)
               }

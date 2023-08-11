@@ -3188,9 +3188,9 @@ const generateProposalPDF = (req, res, next) => {
                 });
             }
             else{
-              console.log('SELECTED_WORKSTATIONdATA_LENGTH =>',selectedWorkstationData.length);
+              // console.log('SELECTED_WORKSTATIONdATA_LENGTH =>',selectedWorkstationData.length);
                     selectionData.insertMany(selectedWorkstationData).then((result) => {
-                      console.log(result);
+                      // console.log(result);
                     let selectedWorkstationDataIds = [];
                     result.forEach((element) => selectedWorkstationDataIds.push(element._id));
                     Proposal.updateOne({ _id: Id }, { $set: { status: 'Completed But not Esclated', selectFrom: selectFrom, selectionData: selectedWorkstationDataIds } }).then((updateResult) => {

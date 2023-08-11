@@ -22,6 +22,7 @@ const markSeatsOnLayoutAll=(jsondataId,filePath,doc,color)=>{
       // console.log(color)
       const layoutDraw = await selectionData.findById(mongoose.Types.ObjectId(jsondataId));
       let layoutData=layoutDraw.toObject()
+    // console.log(layoutData)
           // const doc = new PDFDocument({ size: [800, 566], margin: 0 });
           // doc.pipe(res);
           const imagePath = path.join(__dirname, '..', '..', '..', filePath);
@@ -310,13 +311,22 @@ const generateLayout = async (req, res, next) => {
 // console.log("/<><><><><<>><>\<><><>",Id)
   try {
     const jsonData = await JsonData.findById(Id);
-    const flattenedArray = jsonData.selectedSeatsData.flat();
+    const flattenedArray = jsonData.selectedSeatsData;
+    
     const filePath = jsonData.imageFile;
     const doc = new PDFDocument({ size: [800, 566], margin: 0 });
     doc.pipe(res);
     for (const data of flattenedArray) {
       try {
-        await markSeatsOnLayoutAll(data,filePath, doc,getRandomColor());
+        console.log('DATA => ',data);
+        let color = getRandomColor();
+        console.log('COLOR => ',color)
+        for(let element of data){
+            console.log('ELEMENT => ',element);
+            await markSeatsOnLayoutAll(element,filePath, doc,color);
+        }
+        // await data.forEach(async (element) => {
+        // })
       } catch (error) {
         console.error("Error occurred during PDF generation:", error);
         res.status(500).json({ error: "An error occurred during PDF generation." });
@@ -325,6 +335,7 @@ const generateLayout = async (req, res, next) => {
     }
     // console.log("dgfhjkl;")
     doc.end();
+    console.log('END');
     // res.end();
   } catch (error) {
     console.error("Error occurred during JSON data retrieval:", error);

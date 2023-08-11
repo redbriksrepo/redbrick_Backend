@@ -3,6 +3,11 @@ const express = require('express');
 const databaseConnection = require('./utils/database.util');
 const cors = require('cors');
 const path = require('path');
+const dotenv = require('dotenv');
+
+if(process.env.NODE_ENV !== 'development'){
+    dotenv.config();
+}
 
 // Custome Imports
 const mainRoute = require('./routes/main.route');

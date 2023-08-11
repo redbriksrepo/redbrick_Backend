@@ -6,6 +6,7 @@ const jwt = require("jsonwebtoken");
 const checkUserStatus = (req, res, next) => {
     try {
         let data = req.body;
+        // console.log("Hello User",data.userName)
         User.findOne({ userName: data.userName })
             .then((user) => {
                 if (user) {

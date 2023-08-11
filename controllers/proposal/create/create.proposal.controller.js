@@ -6,6 +6,7 @@ const LogController = require("../../log/main.log.controller");
 const Location = require("../../../models/location/location.model");
 const User = require("../../../models/user/user.model");
 const Broker = require('../../../models/broker/broker.model');
+const JsonData = require("../../../models/jsonData/jsonData.model");
 
 const initProposal = (req, res, next) => {
     try {
@@ -75,7 +76,7 @@ const addClientInfoWithGivenData = (Id, data, req, res,next) => {
             res.status(202).send({
                 "Message": "Client Info added Successfully!",
                 "AvailableNoOfSeatsInLayout": layoutData.AvailableNoOfSeats,
-                "TotalNoOfSeatsInLayout": layoutData.TotalNoOfSeats
+                "TotalNoOfSeatsInLayout": layoutData.TotalNoOfSeats,
             })
         }
     }).catch((err) => {
@@ -281,9 +282,14 @@ const addProposalRequirement = (req, res, next) => {
                 // Deciding in which workstation seats should be selected
 
                 try {
+                    Location.findOne({location:proposal.location,center:proposal.center,floor:proposal.floor}).then((locationData)=>{
+                        JsonData.findById(locationData.jsonData).then(jsondata=>{
+                        
+                   
                     let location = proposal.center;
                     let requiredNoOfSeats = proposal.totalNumberOfSeats;
-                    let layoutData = require(path.join('..', '..', '..', 'assets', 'layout', 'json', `${proposal.location}_${proposal.center}_${proposal.floor}.json`))
+                    // let layoutData = require(path.join('..', '..', '..', 'assets', 'layout', 'json', `${proposal.location}_${proposal.center}_${proposal.floor}.json`))
+                  let layoutData = jsondata.toObject()
                     let workStationToBeSelectedIn = [];
                     let seatsToBeSelected = requiredNoOfSeats;
                     
@@ -315,7 +321,11 @@ const addProposalRequirement = (req, res, next) => {
                         else {
                             seatAvailability = false;
                         }
+                 
                     }
+                        
+                })
+                })
                 }
                 catch (err) {
                     if (!err.message) err.message = 'Error while calculating seats';
@@ -389,6 +399,7 @@ const addProposalRequirement = (req, res, next) => {
                         error.status = 400;
                         throw error;
                     }
+                    
                 }).catch((err) => {
                     if (!err.message) err.message = 'Error when adding requirement to proposal';
                     if (!err.status) err.status = 400;
@@ -396,8 +407,9 @@ const addProposalRequirement = (req, res, next) => {
 
                     next(err);
                 })
-
+          
             }
+            
         }).catch((err) => {
             if (!err.message) err.message = 'Error when adding requirement to proposal';
             if (!err.status) err.status = 400;
