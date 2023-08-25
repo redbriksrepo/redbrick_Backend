@@ -1,21 +1,22 @@
 const Location = require("../../../models/location/location.model");
-const JsonData = require("../../../models/jsonData/jsonData.model")
+// const JsonData = require("../../../models/jsonData/jsonData.model")
 const fs = require('fs')
 const createLocation = async (req,res,next) => {
     try {
         let data = req.body;
         // console.log('Location added=>>',data)
-        let jsonFile = req.files['jsonFile'][0];
+        // let jsonFile = req.files['jsonFile'][0];
         let layoutImage = req.files['layoutImage'][0];
         let centerImage = req.files['centerImage'];
-        if (!jsonFile && !layoutImage) {
+        // if (!jsonFile && !layoutImage) {
+            if (!layoutImage) {
             let error = new Error('Please upload JSON and layout Image');
             error.status = 400;
             throw error;
         }
         else {
            
-            if (jsonFile) data.jsonFile = jsonFile.path;
+            // if (jsonFile) data.jsonFile = jsonFile.path;
             if (layoutImage) data.layoutImage = layoutImage.path;
             if(centerImage) data.centerImage = centerImage.path;
             // console.log(data);
@@ -25,12 +26,12 @@ const createLocation = async (req,res,next) => {
             else {
                 data.imageLinks = Object.values(JSON.parse(data.imageLinks));
             }
-            if (data.videoLinks === '{}') {
-                delete data.videoLinks;
-            }
-            else {
-                data.videoLinks = Object.values(JSON.parse(data.videoLinks));
-            }
+            // if (data.videoLinks === '{}') {
+            //     delete data.videoLinks;
+            // }
+            // else {
+            //     data.videoLinks = Object.values(JSON.parse(data.videoLinks));
+            // }
             if(data.rentSheet === '{}'){
                 delete data.rentSheet;
             }
@@ -52,42 +53,42 @@ const createLocation = async (req,res,next) => {
                             throw error;
                         }
                         else {
-                            fs.readFile(jsonFile.path, "utf8", (err, fileData) => {
-                                if (err) {
-                                  console.error("Error reading the JSON file:", err);
-                                  return;
-                                }
+                            // fs.readFile(jsonFile.path, "utf8", (err, fileData) => {
+                            //     if (err) {
+                            //       console.error("Error reading the JSON file:", err);
+                            //       return;
+                            //     }
                     
-                                try {
-                                  // Parse the JSON data to a JavaScript object
-                                  const jsonData = JSON.parse(fileData);
-                                  jsonData.imageFile = layoutImage.path;
-                                //   console.log(layoutImage.path, "FILEPATH");
-                                  // Create a new instance of the jsonData model
-                                  const jsonDataObj = new JsonData(jsonData);
+                            //     try {
+                            //       // Parse the JSON data to a JavaScript object
+                            //       const jsonData = JSON.parse(fileData);
+                            //       jsonData.imageFile = layoutImage.path;
+                            //     //   console.log(layoutImage.path, "FILEPATH");
+                            //       // Create a new instance of the jsonData model
+                            //       const jsonDataObj = new JsonData(jsonData);
                     
-                                  // Save the jsonData instance to the database
-                                  jsonDataObj.save().then((jsonResult) => {
-                                Location.updateOne({location:data.location,center:data.center,floor:data.floor }, { $set:{jsonData:jsonResult._id}}).then((result) => {
-                                    console.log(result,'Complete JSON REFERNVE')
-                                    })
+                            //       // Save the jsonData instance to the database
+                            //       jsonDataObj.save().then((jsonResult) => {
+                            //     Location.updateOne({location:data.location,center:data.center,floor:data.floor }, { $set:{jsonData:jsonResult._id}}).then((result) => {
+                            //         console.log(result,'Complete JSON REFERNVE')
+                            //         })
                                     
-                                    if (!jsonResult) {
-                                      let error = new Error("Error while adding JSON data");
-                                      error.status = 401;
-                                      throw error;
-                                    } else {
-                                    //   console.log("JSON Data Added Successfully");
-                                    }
-                                  }).catch((err) => {
-                                    if (!err.message) err.message = "Error while adding JSON data";
-                                    if (!err.status) err.status = 503;
-                                    next(err);
-                                  });
-                                } catch (error) {
-                                  console.error("Error parsing JSON:", error);
-                                }
-                              });
+                            //         if (!jsonResult) {
+                            //           let error = new Error("Error while adding JSON data");
+                            //           error.status = 401;
+                            //           throw error;
+                            //         } else {
+                            //         //   console.log("JSON Data Added Successfully");
+                            //         }
+                            //       }).catch((err) => {
+                            //         if (!err.message) err.message = "Error while adding JSON data";
+                            //         if (!err.status) err.status = 503;
+                            //         next(err);
+                            //       });
+                            //     } catch (error) {
+                            //       console.error("Error parsing JSON:", error);
+                            //     }
+                            //   });
                     
                             res.status(202).send({
                                 "data": result,

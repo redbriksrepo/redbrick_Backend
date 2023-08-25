@@ -18,32 +18,29 @@ const updateLocationData = (req, res, next) => {
         }
         else {
             Location.findById(mongoose.Types.ObjectId(Id)).then((locationData) => {
-                if (req.files['jsonFile'] || req.files['layoutImage']) {
-                    if (req.files['jsonFile']) {
-                        fs.unlinkSync(locationData.jsonFile);
-                        data.jsonFile = req.files['jsonFile'][0].path;
-                        jsonUpdated = true;
-                        // fs.unlink(locationData.jsonFile, (err) => {
-                        //     if (err) throw err;
-                        //     data.jsonFile = req.files['jsonFile'][0].path;
-                        // })
-                    }
+                // if (req.files['jsonFile'] || req.files['layoutImage']) {
+                    if (req.files['layoutImage']) {
+                    // if (req.files['jsonFile']) {
+                    //     fs.unlinkSync(locationData.jsonFile);
+                    //     data.jsonFile = req.files['jsonFile'][0].path;
+                    //     jsonUpdated = true;
+                    //     // fs.unlink(locationData.jsonFile, (err) => {
+                    //     //     if (err) throw err;
+                    //     //     data.jsonFile = req.files['jsonFile'][0].path;
+                    //     // })
+                    // }
                     if (req.files['layoutImage']) {
                         fs.unlinkSync(locationData.layoutImage);
                         data.layoutImage = req.files['layoutImage'][0].path;
                         layoutImageUpdated = true;
-                        // fs.unlink(locationData.layoutImage, (err) => {
-                        //     if (err) throw err;
-                        //     data.layoutImage = req.files['layoutImage'][0].path;
-                        // })
                     }
                 }
                 
                     if (data.location !== locationData.location || data.center !== locationData.center || data.floor !== locationData.floor) {
-                        if (!jsonUpdated) {
-                            fs.renameSync(locationData.jsonFile, path.join('assets', 'layout', 'json', `${data.location}_${data.center}_${data.floor}.json`));
-                            data.jsonFile = path.join('assets', 'layout', 'json', `${data.location}_${data.center}_${data.floor}.json`);                            
-                        }
+                        // if (!jsonUpdated) {
+                        //     fs.renameSync(locationData.jsonFile, path.join('assets', 'layout', 'json', `${data.location}_${data.center}_${data.floor}.json`));
+                        //     data.jsonFile = path.join('assets', 'layout', 'json', `${data.location}_${data.center}_${data.floor}.json`);                            
+                        // }
                         if (!layoutImageUpdated) {
                             fs.renameSync(locationData.layoutImage, path.join('assets', 'layout', 'image', `${data.location}_${data.center}_${data.floor}.png`));
                             data.layoutImage = path.join('assets', 'layout', 'image', `${data.location}_${data.center}_${data.floor}.png`);
@@ -61,12 +58,12 @@ const updateLocationData = (req, res, next) => {
                 else {
                     data.imageLinks = Object.values(JSON.parse(data.imageLinks));
                 }
-                if (data.videoLinks === '{}') {
-                    delete data.videoLinks;
-                }
-                else {
-                    data.videoLinks = Object.values(JSON.parse(data.videoLinks));
-                }
+                // if (data.videoLinks === '{}') {
+                //     delete data.videoLinks;
+                // }
+                // else {
+                //     data.videoLinks = Object.values(JSON.parse(data.videoLinks));
+                // }
                 if(data.rentSheet === '{}'){
                     delete data.rentSheet;
                 }

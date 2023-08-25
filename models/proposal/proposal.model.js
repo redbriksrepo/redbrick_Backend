@@ -17,6 +17,7 @@ const proposalSchema = new Schema({
     center: String,
     address:String,
     floor:String,
+    locationId:String,
     brokerType: String,
     brokerCategory: {
         type: Schema.Types.ObjectId,
@@ -125,7 +126,17 @@ const proposalSchema = new Schema({
             type: Schema.Types.ObjectId,
             ref: 'selectionData'
         }
-    ]
+    ],
+    imageDataOfLayout:{
+        type:String,
+        default:''
+    },
+    seatsData:{
+        type:Array
+    },
+    seatSize:{
+        type:Array
+    }
 }, {
     timestamps: true
 });

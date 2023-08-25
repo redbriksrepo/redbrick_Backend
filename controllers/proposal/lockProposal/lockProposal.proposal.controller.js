@@ -1,7 +1,6 @@
 const Proposal = require("../../../models/proposal/proposal.model");
 const Location = require("../../../models/location/location.model");
-const LayoutData = require("../../../models/layoutData/layoutData.modal");
-const selectionData = require("../../../models/selectionData/selectionData.modal");
+
 const lockProposal = (req, res, next) => {
     try {
         let Id = req.params.Id;
@@ -80,17 +79,12 @@ const lockProposal = (req, res, next) => {
                               }
                             })
                           
-                        selectionData.updateOne({_id:proposal.selectionData[0]},{$set:{workstationLocked:true}}).then(result=>{
-                            if(result.acknowledged === true){
-                                console.log("Selection data set true")
-                            }
-                        })
-                          
                         req.locationData = {
                             address: proposal.address
                         }
                         res.status(202).send({
-                            "Message": "Locked Successfully!"
+                            "Message": "Locked Successfully!",
+                            locationId:proposal.locationId
                         })
                         // console.log("Approve if", proposal.address);/
                         next()

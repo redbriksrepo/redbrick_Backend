@@ -6,7 +6,7 @@ const LogController = require("../../log/main.log.controller");
 const Location = require("../../../models/location/location.model");
 const User = require("../../../models/user/user.model");
 const Broker = require('../../../models/broker/broker.model');
-const JsonData = require("../../../models/jsonData/jsonData.model");
+// const JsonData = require("../../../models/jsonData/jsonData.model");
 
 const initProposal = (req, res, next) => {
     try {
@@ -72,11 +72,11 @@ const addClientInfoWithGivenData = (Id, data, req, res,next) => {
             User.findById(mongoose.Types.ObjectId(proposal.salesPerson)).then((user) => {
                 User.updateOne({ _id: mongoose.Types.ObjectId(user._id) }, { $set: { proposals: [...user.proposals, Id] } }).then()
             });
-            let layoutData = require(path.join('..', '..', '..', 'assets', 'layout', 'json', `${proposal.location}_${proposal.center}_${proposal.floor}.json`));
+            // let layoutData = require(path.join('..', '..', '..', 'assets', 'layout', 'json', `${proposal.location}_${proposal.center}_${proposal.floor}.json`));
             res.status(202).send({
                 "Message": "Client Info added Successfully!",
-                "AvailableNoOfSeatsInLayout": layoutData.AvailableNoOfSeats,
-                "TotalNoOfSeatsInLayout": layoutData.TotalNoOfSeats,
+                // "AvailableNoOfSeatsInLayout": layoutData.AvailableNoOfSeats,
+                // "TotalNoOfSeatsInLayout": layoutData.TotalNoOfSeats,
             })
         }
     }).catch((err) => {
@@ -281,56 +281,7 @@ const addProposalRequirement = (req, res, next) => {
 
                 // Deciding in which workstation seats should be selected
 
-                try {
-                    Location.findOne({location:proposal.location,center:proposal.center,floor:proposal.floor}).then((locationData)=>{
-                        JsonData.findById(locationData.jsonData).then(jsondata=>{
-                        
-                   
-                    let location = proposal.center;
-                    let requiredNoOfSeats = proposal.totalNumberOfSeats;
-                    // let layoutData = require(path.join('..', '..', '..', 'assets', 'layout', 'json', `${proposal.location}_${proposal.center}_${proposal.floor}.json`))
-                  let layoutData = jsondata.toObject()
-                    let workStationToBeSelectedIn = [];
-                    let seatsToBeSelected = requiredNoOfSeats;
-                    
-                    layoutData.workstations.forEach((workStation) => {
-                        if (requiredNoOfSeats <= workStation.AvailableNoOfSeats && workStationToBeSelectedIn.length <= 0) {
-                            workStationId = workStation._id;
-                            workStationToBeSelectedIn = [...workStationToBeSelectedIn, { workStationId: workStation._id, seatesToBeSelectedInWorkstation: requiredNoOfSeats }]
-                        }
-                    });
-                    if (workStationToBeSelectedIn.length <= 0) {
-                        if (seatsToBeSelected <= layoutData.AvailableNoOfSeats) {
-                            layoutData.workstations.forEach((workStation) => {
-                                if (seatsToBeSelected !== 0) {
-                                    if (workStation.AvailableNoOfSeats <= seatsToBeSelected) {
-                                        seatsToBeSelected -= workStation.AvailableNoOfSeats;
-                                        workStationToBeSelectedIn = [...workStationToBeSelectedIn, { workStationId: workStation._id, seatesToBeSelectedInWorkstation: workStation.AvailableNoOfSeats }];
-
-                                    }
-                                    else if (workStation.AvailableNoOfSeats >= seatsToBeSelected) {
-                                        workStationToBeSelectedIn = [...workStationToBeSelectedIn, { workStationId: workStation._id, seatesToBeSelectedInWorkstation: seatsToBeSelected }];
-                                        seatsToBeSelected = 0;
-                                    }
-                                }
-                            })
-
-                                                        
-                                consolidatedSeats = true;
-                        }
-                        else {
-                            seatAvailability = false;
-                        }
-                 
-                    }
-                        
-                })
-                })
-                }
-                catch (err) {
-                    if (!err.message) err.message = 'Error while calculating seats';
-                    throw err;
-                }
+             
 
                 Proposal.updateOne({ _id: Id }, { $set: data }).then((result) => {
                     if (result.acknowledged === true) {

@@ -23,23 +23,23 @@ const deleteLocationData = (req, res, next) => {
                     Location.deleteOne({ _id: mongoose.Types.ObjectId(Id) }).then((result) => {
                         if (result.acknowledged) {
                             if (result.deletedCount > 0) {
-                                fs.unlink(locationData.jsonFile, (err) => {
-                                    if (err) {
-                                        return next(err);
-                                    }
-                                    else {
-                                        fs.unlink(locationData.layoutImage, (err) => {
-                                            if (err) {
-                                                return next(err);
-                                            }
-                                            else {
-                                                res.status(200).send({
-                                                    "Message": "Location Data removed successfully"
-                                                })
-                                            }
-                                        })
-                                    }
-                                })
+                                // fs.unlink(locationData.jsonFile, (err) => {
+                                //     if (err) {
+                                //         return next(err);
+                                //     }
+                                //     else {
+                                //         fs.unlink(locationData.layoutImage, (err) => {
+                                //             if (err) {
+                                //                 return next(err);
+                                //             }
+                                //             else {
+                                //                 res.status(200).send({
+                                //                     "Message": "Location Data removed successfully"
+                                //                 })
+                                //             }
+                                //         })
+                                //     }
+                                // })
                             }
                             else {
                                 let error = new Error('Something went wrong while removing loation data');

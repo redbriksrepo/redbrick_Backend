@@ -8,9 +8,13 @@ const getLocationList = require("./location-list/location-list.location.controll
 const updateLocationData = require("./update/update.location.controller");
 const updateRackValue = require('./updateRackValue/updateRackValue.location.controller');
 const getFloorsInCenter = require('./floorsInCenter/floorInCenters.location.controller')
+const getImageById = require('./getImage/getImageById.location.controller');
+const addLayoutData = require('./addLayouts/add-layout.location.controller');
+const getBorderDataById = require("./getBorderData/getBorderData.location.controller");
 
 const locationController = {
     create: createLocation,
+    addLayout:addLayoutData,
     getAll: getAllLocation,
     getById: getLocationById,
     getLoctionList: getLocationList,
@@ -19,7 +23,9 @@ const locationController = {
     delete: deleteLocationData,
     update: updateLocationData,
     getRentSheet:getRent,
-    updateRackValue
+    updateRackValue,
+    getImage:getImageById,
+    getBorder:getBorderDataById
     
 }
 

@@ -17,7 +17,7 @@ proposalRoute.get('/getAll',middleware.authentication, proposalController.getAll
 
 proposalRoute.get('/getById');
 
-proposalRoute.get('/layout/:Id/:selectFrom', proposalController.layout);
+proposalRoute.get('/layout/:Id', proposalController.layout);
 
 proposalRoute.post('/generate/:Id/?:selectFrom',middleware.authentication, proposalController.generate.generateProposal, proposalController.generate.generateProposalPDF, proposalController.generate.sendProposalByEmail);
 
@@ -41,5 +41,7 @@ proposalRoute.post('/lockProposal/:Id', middleware.authentication,proposalContro
 
 proposalRoute.post('/updateProposalId/:Id',proposalController.updateProposalId);
 
-proposalRoute.get('/viewLayoutSales/:Id',proposalController.viewLayoutSales)
+proposalRoute.get('/viewLayoutSales/:Id',proposalController.viewLayoutSales);
+
+proposalRoute.post('/saveImage/:Id',proposalController.sendImage);
 module.exports = proposalRoute;

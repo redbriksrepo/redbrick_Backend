@@ -44,10 +44,10 @@ const locationModel = new Schema({
         type: Number,
         required: true
     },
-    jsonFile: {
-        type: String,
-        required: true
-    },
+    // jsonFile: {
+    //     type: String,
+    //     required: true
+    // },
     layoutImage: {
         type: String,
         required: true
@@ -59,9 +59,9 @@ const locationModel = new Schema({
     imageLinks: {
         type: Array,
     },
-    videoLinks: {
-        type: Array
-    },
+    // videoLinks: {
+    //     type: Array
+    // },
     rentSheet:{
         type:Array
     },
@@ -128,12 +128,15 @@ const locationModel = new Schema({
         ref: 'User'
     },
     address: String,
-    jsonData: [
-        {
-            type: Schema.Types.ObjectId,
-            ref: 'JsonData'
-        }
-    ]
+    layoutBorder:{
+        type:Array
+    }
+    // jsonData: [
+    //     {
+    //         type: Schema.Types.ObjectId,
+    //         ref: 'JsonData'
+    //     }
+    // ]
 },{
     timestamps: true
 });
