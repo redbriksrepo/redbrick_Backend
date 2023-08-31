@@ -1,6 +1,13 @@
 const Proposal = require("../../../models/proposal/proposal.model");
 const Location = require("../../../models/location/location.model");
-
+getRandomColor =() => {
+    const letters = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+}
 const lockProposal = (req, res, next) => {
     try {
         let Id = req.params.Id;
@@ -13,7 +20,7 @@ const lockProposal = (req, res, next) => {
 
             Proposal.findById(Id).then((proposal) => {
    
-                Proposal.updateOne({ _id: proposal._id }, { $set: { status: 'Completed and Locked', lockedProposal: true } }).then((updateResult) => {
+                Proposal.updateOne({ _id: proposal._id }, { $set: { status: 'Completed and Locked', lockedProposal: true,color: getRandomColor() } }).then((updateResult) => {
         
                     if (updateResult.acknowledged && updateResult.modifiedCount > 0) {
                         Location.findOne({ location: proposal.location, center: proposal.center }).then((locationdata) => {
