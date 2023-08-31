@@ -136,6 +136,9 @@ const proposalSchema = new Schema({
     },
     seatSize:{
         type:Array
+    },
+    color:{
+        type:String
     }
 }, {
     timestamps: true

@@ -7,7 +7,7 @@ const createLocation = async (req,res,next) => {
         // console.log('Location added=>>',data)
         // let jsonFile = req.files['jsonFile'][0];
         let layoutImage = req.files['layoutImage'][0];
-        let centerImage = req.files['centerImage'];
+        // let centerImage = req.files['centerImage'];
         // if (!jsonFile && !layoutImage) {
             if (!layoutImage) {
             let error = new Error('Please upload layout and Center Image');
@@ -15,8 +15,7 @@ const createLocation = async (req,res,next) => {
             throw error;
         }
         else {
-           
-            // if (jsonFile) data.jsonFile = jsonFile.path;
+
             if (layoutImage) data.layoutImage = layoutImage.path;
             // if(centerImage) data.centerImage = centerImage.path;
             if (centerImage) {

@@ -16,6 +16,10 @@ const updateProposalId = require('./updateProposalId/update-proposalID.controlle
 const addLockSeat = require('./addLockSeats/add-locked.controller');
 const viewLayoutSales = require('./viewLayoutForSales/veiw-layout-sales-dashboard.controller');
 const sendImageData = require('./layout/saveImageData.proposal.controller');
+const getAllLockedProposal = require('./getAllLockedProposal/get-locked-proposal.proposal.controller')
+const getLayoutDataByLocationId = require('./sendDataOfLayoutsOfLockedProposal/getLayoutData-LockedProposal.proposal.controller')
+
+const addOldClientProposals = require('./addOldProposals/add-old-clients-proposal.proposal.controller') 
 const proposalController = {
     create: create,
     getAll: getAll,
@@ -33,7 +37,10 @@ const proposalController = {
     updateProposalId,
     addLockSeat:addLockSeat,
     viewLayoutSales:viewLayoutSales,
-    sendImage:sendImageData
+    sendImage:sendImageData,
+    getLockedProposal:getAllLockedProposal,
+    getLayoutDataByLocationId:getLayoutDataByLocationId,
+    addOldClientProposals:addOldClientProposals
 };
 
 module.exports = proposalController;

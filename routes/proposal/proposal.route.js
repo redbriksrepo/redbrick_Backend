@@ -44,4 +44,10 @@ proposalRoute.post('/updateProposalId/:Id',proposalController.updateProposalId);
 proposalRoute.get('/viewLayoutSales/:Id',proposalController.viewLayoutSales);
 
 proposalRoute.post('/saveImage/:Id',proposalController.sendImage);
+
+proposalRoute.get('/getAllLockedProposal',proposalController.getLockedProposal);
+
+proposalRoute.post('/addOldProposal',proposalController.addOldClientProposals);
+
+proposalRoute.get('/getLayoutDataOfSameLocation/:Id',proposalController.getLayoutDataByLocationId);
 module.exports = proposalRoute;
