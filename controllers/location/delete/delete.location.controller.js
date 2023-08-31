@@ -40,6 +40,9 @@ const deleteLocationData = (req, res, next) => {
                                 //         })
                                 //     }
                                 // })
+                                res.status(200).send({
+                                                        "Message": "Location removed successfully"
+                                                    })
                             }
                             else {
                                 let error = new Error('Something went wrong while removing loation data');
