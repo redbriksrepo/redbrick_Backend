@@ -10,7 +10,7 @@ const createLocation = async (req,res,next) => {
         let centerImage = req.files['centerImage'];
         // if (!jsonFile && !layoutImage) {
             if (!layoutImage) {
-            let error = new Error('Please upload JSON and layout Image');
+            let error = new Error('Please upload layout and Center Image');
             error.status = 400;
             throw error;
         }
@@ -18,14 +18,18 @@ const createLocation = async (req,res,next) => {
            
             // if (jsonFile) data.jsonFile = jsonFile.path;
             if (layoutImage) data.layoutImage = layoutImage.path;
-            if(centerImage) data.centerImage = centerImage.path;
+            // if(centerImage) data.centerImage = centerImage.path;
+            if (centerImage) {
+                data.centerImage = centerImage.path;
+                data.centerImage= centerImage.map(image => image.path) 
+            }
             // console.log(data);
-            if (data.imageLinks === '{}') {
-                delete data.imageLinks;
-            }
-            else {
-                data.imageLinks = Object.values(JSON.parse(data.imageLinks));
-            }
+            // if (data.imageLinks === '{}') {
+            //     delete data.imageLinks;
+            // }
+            // else {
+            //     data.imageLinks = Object.values(JSON.parse(data.imageLinks));
+            // }
             // if (data.videoLinks === '{}') {
             //     delete data.videoLinks;
             // }
