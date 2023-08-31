@@ -52,13 +52,10 @@ const locationModel = new Schema({
         type: String,
         required: true
     },
-    centerImage:{
-        type:String
-        
-    },
-    imageLinks: {
-        type: Array,
-    },
+    centerImage:[String],
+    // imageLinks: {
+    //     type: Array,
+    // },
     // videoLinks: {
     //     type: Array
     // },

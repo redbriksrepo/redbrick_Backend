@@ -11,6 +11,7 @@ const getFloorsInCenter = require('./floorsInCenter/floorInCenters.location.cont
 const getImageById = require('./getImage/getImageById.location.controller');
 const addLayoutData = require('./addLayouts/add-layout.location.controller');
 const getBorderDataById = require("./getBorderData/getBorderData.location.controller");
+const getCenterImages = require('./getCenterImages/getCenterImages.location.controller');
 
 const locationController = {
     create: createLocation,
@@ -25,7 +26,8 @@ const locationController = {
     getRentSheet:getRent,
     updateRackValue,
     getImage:getImageById,
-    getBorder:getBorderDataById
+    getBorder:getBorderDataById,
+    getCenterImages:getCenterImages
     
 }
 
