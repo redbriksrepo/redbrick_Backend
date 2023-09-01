@@ -18,19 +18,19 @@ const Proposal = require("../../../models/proposal/proposal.model")
                 }
         
                 const layoutBorderData = locationdata.layoutBorder;
-                const seatSize= layoutBorderData[0].seatSize;
+                // const seatSize= layoutBorderData[0].seatSize;
                 // console.log(seatSize)
-                const shapeArray = [];
+                // const shapeArray = [];
                 
                     // Iterate through each layoutBorder object in the layoutBorderData
-                 for (const layoutBorderObj of layoutBorderData) {
+                //  for (const layoutBorderObj of layoutBorderData) {
                         // Iterate through each shape object in the layoutBorder object's layoutBorder array
-                        for (const shapeObj of layoutBorderObj.layoutBorder) {
-                            shapeArray.push(JSON.parse(shapeObj.shape));
-                        }
-                    }
+                        // for (const shapeObj of layoutBorderObj.layoutBorder) {
+                        //     shapeArray.push(JSON.parse(shapeObj.shape));
+                        // }
+                    // }
 
-                    res.status(200).json({ locationId: locationdata._id, shapes: shapeArray, seatSize:seatSize, layoutArray:layoutBorderData[0].layoutBorder });})
+                    res.status(200).json({ locationId: locationdata._id, layoutArray:layoutBorderData });})
         })
         // Find the location by its ID
         

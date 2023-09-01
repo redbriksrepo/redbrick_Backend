@@ -18,22 +18,22 @@ const getBorderDataById = (req, res, next) => {
                             res.status(200).send('No Data')
                         } else {
                             let data=location.layoutBorder;
-                           
-                            const shapeArray = [];
-                            for (const layoutBorderObj of data) {
-                                // Iterate through each shape object in the layoutBorder object's layoutBorder array
-                                for (const shapeObj of layoutBorderObj.layoutBorder) {
-                                    shapeArray.push(JSON.parse(shapeObj.shape));
-                                }
-                            }
-                            if(shapeArray.length==0){
-                                res.status(200).send({"Message":'No data'})
-                            }else{
-                                res.status(200).send({shapes: shapeArray, layoutArray:data}); // Send the layoutImage field
-                            }
+                            res.status(200).send({layoutArray:data}); // Send the layoutdata field
+                            // const shapeArray = [];
+                            // for (const layoutBorderObj of data) {
+                            //     // Iterate through each shape object in the layoutBorder object's layoutBorder array
+                            //     // for (const shapeObj of layoutBorderObj.layoutBorder) {
+                            //     //     shapeArray.push(JSON.parse(shapeObj.shape));
+                            //     // }
+                            // }
+                            // if(shapeArray.length==0){
+                            //     res.status(200).send({"Message":'No data'})
+                            // }else{
+                               
+                            // }
                         }
                     }).catch((err) => {
-                        if (!err.message) err.message = 'Something went wrong while getting image of selected location';
+                        if (!err.message) err.message = 'Something went wrong while getting data of selected location';
                         if (!err.status) err.status = 503;
                         next(err);
                     })
