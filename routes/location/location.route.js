@@ -18,30 +18,51 @@ const fileStorage = multer.diskStorage({
         }
         // console.log(req.body.location,req.body.center,req.body.floor,file.mimetype)\
     },
-    filename: (req, file, cb) => {
+    filename: async (req, file, cb) => {
         let data = req.body;
+        let locationId = req.params.Id;
+        console.log(req.body, req.params);
+        
+        // if(!locationId) {
+            const location = await Location.findOne().where('location').equals(data.location).where('center').equals(data.center).where('floor').equals(data.floor)
+            console.log('LOCATION ==> ', location);
+            if(location){
+                console.log('LOCATION_ID ==> ',location._id.toString() ,locationId,location._id.toString() !== locationId );
+            if(location._id.toString() !== locationId){
+                return cb({message: 'Location Already Exists'})
+            }
+            }
+        // }
+        if (file.fieldname === 'centerImage') {
+            const prefix = req.body.location + '_' + req.body.center + '_' + req.body.floor;
+            const uniqueFileName = `${prefix}_${Date.now()}.${file.mimetype.split('/')[1]}`;
+            cb(null, uniqueFileName);
+        }
+        else if(file.fieldname === 'layoutImage') {
+            cb(null, `${req.body.location}_${req.body.center}_${req.body.floor}.${file.mimetype.split('/')[1]}`);
+        }
         // cb(null, `${req.body.location}_${req.body.center}_${req.body.floor}.${file.mimetype.split('/')[1]}`);
-        Location.findOne().where('location').equals(data.location).where('center').equals(data.center).where('floor').equals(data.floor).then((result) => {
-            if (result) {
-                let error = new Error('Location Already Exists');
-                error.status = 400;
-                throw (error);
+        // Location.findOne().where('location').equals(data.location).where('center').equals(data.center).where('floor').equals(data.floor).then((result) => {
+        //     if (result) {
+        //         let error = new Error('Location Already Exists');
+        //         error.status = 400;
+        //         throw (error);
                 // res.send("location already Exist")
-            }
-            else {
-                // cb(null, `${req.body.location}_${req.body.center}_${req.body.floor}.${file.mimetype.split('/')[1]}`);
+            // }
+            // else {
+                
                 // const prefix = req.body.location + '_' + req.body.center + '_' + req.body.floor;
-                // cb(null, `${prefix}_${file.fieldname}.${file.mimetype.split('/')[1]}`);
-                const prefix = req.body.location + '_' + req.body.center + '_' + req.body.floor;
-                const uniqueFileName = `${prefix}_${Date.now()}.${file.mimetype.split('/')[1]}`;
-                cb(null, uniqueFileName);
-            }
-        }).
-            catch((err) => {
-                if (!err.message) err.message = 'Location Already Exists';
-                // throw err;
-                cb(err, null);
-            })
+                // // cb(null, `${prefix}_${file.fieldname}.${file.mimetype.split('/')[1]}`);
+                // const prefix = req.body.location + '_' + req.body.center + '_' + req.body.floor;
+                // const uniqueFileName = `${prefix}_${Date.now()}.${file.mimetype.split('/')[1]}`;
+                // cb(null, uniqueFileName);
+            // }
+        // }).
+        //     catch((err) => {
+        //         if (!err.message) err.message = 'Location Already Exists';
+        //         // throw err;
+        //         cb(err, null);
+        //     })
     }
     
 });
@@ -65,7 +86,7 @@ const fileFilter = (req, file, cb) => {
 
 locationRoute.post('/create',middleware.checkAdminAuthorization, multer({ storage: fileStorage, fileFilter: fileFilter }).fields([{ name: 'layoutImage', maxCount: 1 }, { name: 'centerImage', maxCount: 10 }]), locationController.create);
 
-locationRoute.post('/update/:Id', middleware.checkAdminAuthorization, multer({ storage: fileStorage, fileFilter: fileFilter }).fields([{ name: 'layoutImage', maxCount: 1 }]), locationController.update);
+locationRoute.post('/update/:Id', middleware.checkAdminAuthorization, multer({ storage: fileStorage, fileFilter: fileFilter }).fields([{ name: 'layoutImage', maxCount: 1 },{ name: 'centerImage', maxCount: 10 }]), locationController.update);
 
 locationRoute.delete('/delete/:Id', middleware.checkAdminAuthorization, locationController.delete);
 
@@ -90,4 +111,7 @@ locationRoute.post('/addLayout/:Id',locationController.addLayout);
 locationRoute.get('/getBorderData/:Id',locationController.getBorder);
 
 locationRoute.get('/getCenterImages/:Id', locationController.getCenterImages);
+
+locationRoute.post('/deleteImg/:Id',locationController.deleteImage);
+
 module.exports = locationRoute;

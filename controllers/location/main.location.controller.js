@@ -12,6 +12,7 @@ const getImageById = require('./getImage/getImageById.location.controller');
 const addLayoutData = require('./addLayouts/add-layout.location.controller');
 const getBorderDataById = require("./getBorderData/getBorderData.location.controller");
 const getCenterImages = require('./getCenterImages/getCenterImages.location.controller');
+const deleteImage = require('./images/deleteImage.location.controller')
 
 const locationController = {
     create: createLocation,
@@ -27,8 +28,8 @@ const locationController = {
     updateRackValue,
     getImage:getImageById,
     getBorder:getBorderDataById,
-    getCenterImages:getCenterImages
-    
+    getCenterImages:getCenterImages,
+    deleteImage:deleteImage
 }
 
 module.exports = locationController;
