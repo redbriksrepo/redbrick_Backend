@@ -10,7 +10,7 @@ const addLayoutData = async (req,res,next) => {
         const data = req.body; // Assuming you'll send locationId and layoutBorderData in the request body
  
         // Find the location by its ID
-        console.log(locationId)
+        // console.log(locationId)
         
         const location = await Location.findById(locationId);
 

@@ -117,16 +117,6 @@ const proposalSchema = new Schema({
     rackValue:Number,
     previousFinalOfferAmmount: Number,
     clientFinalOfferAmmount: Number,
-    selectFrom: {
-        type: String,
-        default: 'left'
-    },
-    selectionData: [
-        {
-            type: Schema.Types.ObjectId,
-            ref: 'selectionData'
-        }
-    ],
     imageDataOfLayout:{
         type:String,
         default:''
