@@ -11,26 +11,17 @@ const getBorderDataById = (req, res, next) => {
         } else {
             if (mongoose.isValidObjectId(Id)) {
                 Location.findById(mongoose.Types.ObjectId(Id))
-                    .select('layoutBorder') // Select only the layoutBorder field
+                    .select('layoutBorder totalNoOfWorkstation selectedNoOfSeats') // Select only the layoutBorder field
                     .then((location) => {
                         if (!location) {
                             console.log("No Data in layoutBorder")
                             res.status(200).send('No Data')
                         } else {
                             let data=location.layoutBorder;
-                            res.status(200).send({layoutArray:data}); // Send the layoutdata field
-                            // const shapeArray = [];
-                            // for (const layoutBorderObj of data) {
-                            //     // Iterate through each shape object in the layoutBorder object's layoutBorder array
-                            //     // for (const shapeObj of layoutBorderObj.layoutBorder) {
-                            //     //     shapeArray.push(JSON.parse(shapeObj.shape));
-                            //     // }
-                            // }
-                            // if(shapeArray.length==0){
-                            //     res.status(200).send({"Message":'No data'})
-                            // }else{
-                               
-                            // }
+                           
+                            console.log(location)
+                            res.status(200).send({layoutArray:data,totalNoOfWorkstation:location.totalNoOfWorkstation-location.selectedNoOfSeats}); // Send the layoutdata field
+                         
                         }
                     }).catch((err) => {
                         if (!err.message) err.message = 'Something went wrong while getting data of selected location';

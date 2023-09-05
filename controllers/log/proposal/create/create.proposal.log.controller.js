@@ -1,6 +1,6 @@
 const ProposalLog = require("../../../../models/proposal-log/proposal-log.model")
 
-const createProposalLog = ({ proposalId, clientName, salesPerson, location, center, salesHead,  }) => {
+const createProposalLog = ({ proposalId, clientName, salesPerson, location, center, salesHead, floor  }) => {
     let proposalLogData = {
         proposalId,
         logMessage: 'Initialized with client Info',
@@ -8,6 +8,7 @@ const createProposalLog = ({ proposalId, clientName, salesPerson, location, cent
         salesPerson,
         location,
         center,
+        floor,
         salesHead
     }
     let proposalLog = new ProposalLog(proposalLogData);

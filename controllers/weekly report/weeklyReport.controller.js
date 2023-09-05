@@ -131,9 +131,9 @@ const sendWeeklyReport= (req, res, next) => {
            User.find().where('role').equals('admin').then((admin)=>{
                 admin.forEach((adminList)=>{
                     ProposalLog.find().where('updatedAt').gt(lastWeekDate).populate('salesPerson','firstName lastName').then(async(logData) => {
-                        // console.log(logData);
+                       
                         logData = await JSON.parse(JSON.stringify(logData));
-                        // console.log(logData);
+                        console.log(logData);
                         
                         let temp = logData.map((log) => {
                             
@@ -165,6 +165,10 @@ const sendWeeklyReport= (req, res, next) => {
                                 header: 'Proposal Status',
                                 key: 'logMessage',
                                 width: 40
+                            },{
+                                header:'Final Price',
+                                key:'price',
+                                width:20
                             },
                             {
                                 header: 'Sales Person',
@@ -195,6 +199,11 @@ const sendWeeklyReport= (req, res, next) => {
                                 header: 'Center',
                                 key: 'center',
                                 width: 20
+                            },
+                            {
+                                header:'Floor',
+                                key:'floor',
+                                width:20
                             }
                         ];
         

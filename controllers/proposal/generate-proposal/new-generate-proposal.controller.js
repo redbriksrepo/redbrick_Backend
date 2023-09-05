@@ -8,8 +8,6 @@ const nodemailer = require('nodemailer');
 const LogController = require('../../log/main.log.controller');
 const ProposalLog = require('../../../models/proposal-log/proposal-log.model');
 const Location = require('../../../models/location/location.model');
-
-
 const generateProposal = (req, res, next) => {
     let data = req.body;
     let Id = req.params.Id;
@@ -112,11 +110,14 @@ const generateProposalPDF = (req, res, next) => {
         doc.fontSize(16).fillColor('grey').text('Top clients rely on us for innovatice workspace solutions', 0, 50, { width: 800, align: 'center' }).fontSize(12);
         doc.image('./assets/proposal/image/proposal-layout__page3-our_client.png', 20, 150, { width: 760 });
         doc.addPage();
-        // doc.image(path.join(__dirname, '..', '..', '..', 'assets', 'layout', 'image', `${proposal.location}_${proposal.center}_${proposal.floor}.png`), { height: 566, align: 'center', valign: 'center' });
-        // Generation of layout start from here ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      doc.image(proposal.imageDataOfLayout)
-        
-        
+       
+          const imageOptions = {
+            fit: [800, 566], 
+            align: 'center',
+            valign: 'center',
+          };
+
+          doc.image(proposal.imageDataOfLayout, 0, 0, imageOptions);
         doc.addPage();
         doc.rect(20, 10, 100, 30).fillAndStroke('#5e5e5e', 'black').fillColor('white').text('Proposal ID', 20, 20, { width: 100, align: 'center' })
         doc.rect(120, 10, 660, 30).fillAndStroke('#5e5e5e', 'black').fillColor('white').text(proposal._id , 120, 20, { width: 660, align: 'center' });

@@ -65,6 +65,7 @@ const addClientInfoWithGivenData = (Id, data, req, res,next) => {
                 salesPerson: req.user._id,
                 location: data.location,
                 center: data.center,
+                floor:data.floor,
                 salesHead: req.user.salesHead
             }
             // console.log("logData",logData);
