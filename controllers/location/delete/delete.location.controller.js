@@ -40,18 +40,23 @@ const deleteLocationData = (req, res, next) => {
                                 //         })
                                 //     }
                                 // })
+                                fs.unlinkSync(locationData.layoutImage);
+                                locationData.centerImage?.forEach(imagePath => {
+                                    fs.unlinkSync(imagePath); // Delete the file from the server
+                                  });
+                                // console.log(locationData, result)
                                 res.status(200).send({
                                                         "Message": "Location removed successfully"
                                                     })
                             }
                             else {
-                                let error = new Error('Something went wrong while removing loation data');
+                                let error = new Error('Something went wrong while removing location data');
                                 error.status = 503;
                                 throw error;
                             }
                         }
                         else {
-                            let error = new Error('Something went wrong while removing loation data');
+                            let error = new Error('Something went wrong while removing location data');
                             error.status = 503;
                             throw error;
                         }

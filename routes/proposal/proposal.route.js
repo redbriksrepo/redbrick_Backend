@@ -49,5 +49,7 @@ proposalRoute.get('/getAllLockedProposal',proposalController.getLockedProposal);
 
 proposalRoute.post('/addOldProposal',proposalController.addOldClientProposals);
 
+proposalRoute.delete('/delete/:Id',proposalController.deleteProposal)
+
 proposalRoute.get('/getLayoutDataOfSameLocation/:Id',proposalController.getLayoutDataByLocationId);
 module.exports = proposalRoute;

@@ -13,12 +13,12 @@ const addOldClientProposals = (req, res, next) => {
           throw error;
         } else {
           let date = new Date();
-          let Id = `RBO${String(data.location).toUpperCase().slice(0, 2)}${String(result.center).toUpperCase().slice(0, 2)}${("0" + date.getDate() ).slice(-2)}${("0" + (date.getMonth() + 1)).slice(-2)}${("0" + date.getHours()).slice(-2)}${("0" + date.getMinutes()).slice(-2)}`;
+          let Id = `RBO${String(data.location).toUpperCase().slice(0, 2)}${String(result.center).toUpperCase().slice(0, 2)}${("0" + date.getDate()).slice(-2)}${("0" + (date.getMonth() + 1)).slice(-2)}${("0" + date.getHours()).slice(-2)}${("0" + date.getMinutes()).slice(-2)}`;
           const proposal = new Proposal({
             _id: String(Id),
             clientName: data.clientName,
             location: data.location,
-            locationId:data.locationId,
+            locationId: data.locationId,
             center: data.center,
             floor: data.floor,
             finalOfferAmmount: data.finalOfferAmmount,
@@ -32,14 +32,24 @@ const addOldClientProposals = (req, res, next) => {
             NonStandardRequirement: data.NonStandardRequirement,
             Serviced: data.Serviced,
             totalNumberOfSeats: data.totalNumberOfSeats,
-            color:data.color,
-            seatSize:data.seatSize,
-            seatsData:data.seatsData,
-            status:data.status
+            color: data.color,
+            seatSize: data.seatSize,
+            seatsData: data.seatsData,
+            status: data.status
 
           });
           proposal.save().then((result) => {
-            res.send(result);
+            if (result) {
+              Location.findByIdAndUpdate(data.locationId, { $inc: { selectedNoOfSeats: data.totalNumberOfSeats } })
+                .then((resp) => {
+                  res.status(200).send(result);
+                }).catch((error) => {
+                  // let erro= new Error('Error while updating location seat')
+                  // erro.status = 503;
+                  next(error)
+                });
+            }
+
           });
         } // res.send(result)
       }

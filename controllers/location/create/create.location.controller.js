@@ -4,6 +4,7 @@ const fs = require('fs')
 const createLocation = async (req,res,next) => {
     try {
         let data = req.body;
+        console.log(data)
         // console.log('Location added=>>',data)
         // let jsonFile = req.files['jsonFile'][0];
         let layoutImage = req.files['layoutImage'][0];
@@ -41,6 +42,10 @@ const createLocation = async (req,res,next) => {
             else{
                 data.rentSheet = Object.values(JSON.parse(data.rentSheet));
             }
+            if(data.selectedNoOfSeats==''){
+                data.selectedNoOfSeats = 0
+            }
+            // console.log(data)
             Location.findOne().where('location').equals(data.location).where('center').equals(data.center).where('floor').equals(data.floor).then((result) => {
                 if (result) {
                     let error = new Error('Location Already Exists');
