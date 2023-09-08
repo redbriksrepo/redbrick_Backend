@@ -10,4 +10,6 @@ dashboardRoute.get('/locationData', dashboardController.getLocationData);
 
 dashboardRoute.get('/proposalWithConflict', dashboardController.proposalWithConflict);
 
+dashboardRoute.get('/recentProposalData/:Id', dashboardController.recentProposalData)
+
 module.exports = dashboardRoute;
