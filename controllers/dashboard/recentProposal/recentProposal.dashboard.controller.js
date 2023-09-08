@@ -13,7 +13,7 @@ const getRecentProposalData = (req, res, next) => {
             }
             else if (currentUser.role === 'sales head') {
                 // return Proposal.find().select('salesPerson status').where('createdAt').gt(date).populate('salesPerson', 'firstName lastName').where('salesHead').equals(currentUser._id);
-                return Proposal.find().select('salesPerson status finalOfferAmmount clientFinalOfferAmmount previousFinalOfferAmmount lockedProposal ').where('escalateForCloser').equals(true).where('lockedProposal').equals(false).nor([{ status: "Completed and approved" }]).populate('salesPerson', 'firstName lastName').where('salesHead').equals(currentUser._id);
+                return Proposal.find().where('escalateForCloser').equals(true).where('lockedProposal').equals(false).nor([{ status: "Completed and approved" }]).populate('salesPerson', 'firstName lastName').where('salesHead').equals(currentUser._id);
             } 
             else {
                 let error = new Error('not Authorized');

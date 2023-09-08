@@ -2,12 +2,16 @@ const getLocationData = require("./locationData/locationData.dashboard.controlle
 const getRecentProposalData = require("./recentProposal/recentProposal.dashboard.controller");
 const getUserData = require("./userData/userData.dashboard.controller");
 const proposalWithConflict = require('./proposalWithConflict/proposalWithConflict.dashboard.controller');
-
+const getcenterData = require('./centerDataOnDashboard/centerData.dashboard.controller')
+const getFloorData = require('./floorData/floordata.dashboard.controller')
 const dashboardController = {
     userData: getUserData,
     recentProposal: getRecentProposalData,
     getLocationData: getLocationData,
-    proposalWithConflict: proposalWithConflict
+    getcenterData:getcenterData,
+    proposalWithConflict: proposalWithConflict,
+    getFloorData:getFloorData
+    
 }
 
 module.exports = dashboardController;

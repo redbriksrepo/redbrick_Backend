@@ -10,4 +10,7 @@ dashboardRoute.get('/locationData', dashboardController.getLocationData);
 
 dashboardRoute.get('/proposalWithConflict', dashboardController.proposalWithConflict);
 
+dashboardRoute.get('/centers/:locationName',dashboardController.getcenterData);
+
+dashboardRoute.get('/floorData/:locationName/:centerName',dashboardController.getFloorData);
 module.exports = dashboardRoute;

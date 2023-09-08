@@ -7,10 +7,10 @@ const getLocationData = (req, res, next) => {
         const currentUser = req.user;
         const findLocation = () => {
             if (currentUser.role === 'admin') {
-                return Location.find().select('location center availableNoOfWorkstation systemPrice totalNoOfWorkstation selectedNoOfSeats rentAndCamTotal rackRate bookingPriceUptilNow totalProposals futureRackRate currentRackRate')
+                return Location.find().select('location center floor availableNoOfWorkstation systemPrice totalNoOfWorkstation selectedNoOfSeats rentAndCamTotal rackRate bookingPriceUptilNow totalProposals futureRackRate currentRackRate')
             }
             else if(currentUser.role === 'sales head') {
-                return Location.find().select('location center availableNoOfWorkstation systemPrice totalNoOfWorkstation selectedNoOfSeats rentAndCamTotal rackRate bookingPriceUptilNow totalProposals futureRackRate currentRackRate').where('salesHead').equals(mongoose.Types.ObjectId(currentUser._id))
+                return Location.find().select('location center floor availableNoOfWorkstation systemPrice totalNoOfWorkstation selectedNoOfSeats rentAndCamTotal rackRate bookingPriceUptilNow totalProposals futureRackRate currentRackRate').where('salesHead').equals(mongoose.Types.ObjectId(currentUser._id))
             }
             else {
                 let error = new Error('not Authorized');
@@ -24,79 +24,31 @@ const getLocationData = (req, res, next) => {
                 throw error;
             }
             else {
-                let locationList = new Set();
+             
                 let locationData = [];
                
                 locations = JSON.parse(JSON.stringify(locations));
                 // console.log(locations)\
-                locations.forEach((element) => {
-                    // console.log(locations)
-                    let position = locationData.findIndex((e) => e.location === element.location);
-                    // console.log(position)
-                    if (position >= 0) {
-                        let i = locationData.findIndex((e) => e.location === element.location);
-                        // console.log("HeloOOOOOOOOOOOOOOOOOOOOOOo",locationData[i]);
-                        locationData[i] = {
-                            ...locationData[i],
-                            availableNoOfWorkstation: element.availableNoOfWorkstation + locationData[i].availableNoOfWorkstation,
-                            totalNoOfWorkstation: element.totalNoOfWorkstation + locationData[i].totalNoOfWorkstation,
-                            selectedNoOfSeats: element.selectedNoOfSeats+ locationData[i].selectedNoOfSeats,
-                            systemPrice: element.systemPrice + locationData[i].systemPrice,
-                            bookingPriceUptilNow:element.bookingPriceUptilNow + locationData[i].bookingPriceUptilNow,
-                            totalProposals:element.totalProposals + locationData[i].totalProposals,
-                            
-                            centers: [
-                                ...locationData[i].centers,
-                                {
-                                    _id: element._id,
-                                    name: element.center,
-                                    availableNoOfWorkstation: element.availableNoOfWorkstation,
-                                    totalNoOfWorkstation: element.totalNoOfWorkstation,
-                                    selectedNoOfSeats: element.selectedNoOfSeats,
-                                    systemPrice: element.systemPrice,
-                                    rackRate:element.rackRate,
-                                    rentAndCamTotal: element.rentAndCamTotal,
-                                    bookingPriceUptilNow:element.bookingPriceUptilNow,
-                                    totalProposals:element.totalProposals,
-                                    futureRackRate:element.futureRackRate,
-                                    currentRackRate:element.currentRackRate
-                                }
-                            ]
-                        }
-                    }
-                    else {
-                        // console.log(element)
-                        let temp = {
-                            location: element.location,
-                            availableNoOfWorkstation: element.availableNoOfWorkstation,
-                            totalNoOfWorkstation: element.totalNoOfWorkstation,
-                            selectedNoOfSeats: element.selectedNoOfSeats,
-                            systemPrice : element.systemPrice,
-                            bookingPriceUptilNow:element.bookingPriceUptilNow,
-                            totalProposals:element.totalProposals,
-                            centers: [
-                                {
-                                    _id: element._id,
-                                    name: element.center,
-                                    availableNoOfWorkstation: element.availableNoOfWorkstation,
-                                    totalNoOfWorkstation: element.totalNoOfWorkstation,
-                                    selectedNoOfSeats: element.selectedNoOfSeats,
-                                    systemPrice:element.systemPrice,
-                                    rackRate:element.rackRate,
-                                    rentAndCamTotal: element.rentAndCamTotal,
-                                    bookingPriceUptilNow:element.bookingPriceUptilNow,
-                                    totalProposals:element.totalProposals,
-                                    futureRackRate:element.futureRackRate,
-                                    currentRackRate:element.currentRackRate
-                                }
-                            ]
-                        }
+               // Initialize an empty object to store the structured data
+const structuredData = {};
 
-                        locationData = [...locationData, temp]
-                    }
-                    locationList.add(element.location);
-                    // console.log(locationData)
-                });
+locations.forEach((element) => {
+  if (!structuredData[element.location]) {
+    structuredData[element.location] = {
+      location: element.location,
+      availableNoOfWorkstation: element.availableNoOfWorkstation,
+      totalNoOfWorkstation: 0, // Initialize with 0
+      selectedNoOfSeats: element.selectedNoOfSeats,
+      systemPrice: element.systemPrice,
+      bookingPriceUptilNow: element.bookingPriceUptilNow,
+      totalProposals: element.totalProposals,
+    };
+  }
+});
+
+// Convert the structuredData object to an array
+ locationData = Object.values(structuredData);
+
                 res.json(locationData);
             }
         }).catch((err) => {
