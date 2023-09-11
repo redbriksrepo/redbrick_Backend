@@ -1,65 +1,99 @@
 const { default: mongoose } = require("mongoose");
 const Location = require("../../../models/location/location.model");
+const Proposal = require("../../../models/proposal/proposal.model"); // Import the Proposal model
 
 const getLocationData = (req, res, next) => {
-    try {
+  try {
+    const currentUser = req.user;
 
-        const currentUser = req.user;
-        const findLocation = () => {
-            if (currentUser.role === 'admin') {
-                return Location.find().select('location center floor availableNoOfWorkstation systemPrice totalNoOfWorkstation selectedNoOfSeats rentAndCamTotal rackRate bookingPriceUptilNow totalProposals futureRackRate currentRackRate')
-            }
-            else if(currentUser.role === 'sales head') {
-                return Location.find().select('location center floor availableNoOfWorkstation systemPrice totalNoOfWorkstation selectedNoOfSeats rentAndCamTotal rackRate bookingPriceUptilNow totalProposals futureRackRate currentRackRate').where('salesHead').equals(mongoose.Types.ObjectId(currentUser._id))
-            }
-            else {
-                let error = new Error('not Authorized');
-                error.status = 401;
-                throw error;
-            }
-        }
-        findLocation().then((locations) => {
-            if (!locations) {
-                let error = new Error('Something went wrong');
-                throw error;
-            }
-            else {
-             
-                let locationData = [];
-               
-                locations = JSON.parse(JSON.stringify(locations));
-                // console.log(locations)\
-               // Initialize an empty object to store the structured data
-const structuredData = {};
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1); // Calculate yesterday
 
-locations.forEach((element) => {
-  if (!structuredData[element.location]) {
-    structuredData[element.location] = {
-      location: element.location,
-      availableNoOfWorkstation: element.availableNoOfWorkstation,
-      totalNoOfWorkstation: 0, // Initialize with 0
-      selectedNoOfSeats: element.selectedNoOfSeats,
-      systemPrice: element.systemPrice,
-      bookingPriceUptilNow: element.bookingPriceUptilNow,
-      totalProposals: element.totalProposals,
+    const dayBeforeYesterday = new Date();
+    dayBeforeYesterday.setDate(dayBeforeYesterday.getDate() - 2); // Calculate the day before yesterday
+
+    const findLocation = () => {
+      if (currentUser.role === 'admin') {
+        return Location.find().select('location center floor availableNoOfWorkstation systemPrice totalNoOfWorkstation selectedNoOfSeats rentAndCamTotal rackRate bookingPriceUptilNow totalProposals futureRackRate currentRackRate');
+      } else if (currentUser.role === 'sales head') {
+        return Location.find().select('location center floor availableNoOfWorkstation systemPrice totalNoOfWorkstation selectedNoOfSeats rentAndCamTotal rackRate bookingPriceUptilNow totalProposals futureRackRate currentRackRate').where('salesHead').equals(mongoose.Types.ObjectId(currentUser._id));
+      } else {
+        let error = new Error('not Authorized');
+        error.status = 401;
+        throw error;
+      }
     };
-  }
-});
 
-// Convert the structuredData object to an array
- locationData = Object.values(structuredData);
+    findLocation()
+      .then(async (locations) => {
+        if (!locations) {
+          let error = new Error('Something went wrong');
+          throw error;
+        } else {
+          let locationData = [];
+          locations = JSON.parse(JSON.stringify(locations));
 
-                res.json(locationData);
+          // Initialize an empty object to store the structured data
+          const structuredData = {};
+
+          // Fetch proposal counts for each location
+          for (const location of locations) {
+            const proposalCountToday = await Proposal.countDocuments({
+              location: location.location,
+              createdAt: {
+                $gte: new Date().setHours(0, 0, 0, 0),
+                $lt: new Date().setHours(23, 59, 59, 999),
+              },
+            });
+
+            const proposalCountYesterday = await Proposal.countDocuments({
+              location: location.location,
+              createdAt: {
+                $gte: yesterday.setHours(0, 0, 0, 0),
+                $lt: yesterday.setHours(23, 59, 59, 999),
+              },
+            });
+
+            const proposalCountDayBeforeYesterday = await Proposal.countDocuments({
+              location: location.location,
+              createdAt: {
+                $gte: dayBeforeYesterday.setHours(0, 0, 0, 0),
+                $lt: dayBeforeYesterday.setHours(23, 59, 59, 999),
+              },
+            });
+
+            if (!structuredData[location.location]) {
+              structuredData[location.location] = {
+                location: location.location,
+                availableNoOfWorkstation: location.availableNoOfWorkstation,
+                totalNoOfWorkstation: 0, // Initialize with 0
+                selectedNoOfSeats: location.selectedNoOfSeats,
+                systemPrice: location.systemPrice,
+                bookingPriceUptilNow: location.bookingPriceUptilNow,
+                totalProposals: location.totalProposals,
+                proposalsData: {
+                  today: proposalCountToday,
+                  yesterday: proposalCountYesterday,
+                  dayBeforeYesterday: proposalCountDayBeforeYesterday,
+                },
+              };
             }
-        }).catch((err) => {
-            if (!err.message) err.message = 'Something went wrong';
-            return next(err);
-        })
-    }
-    catch (err) {
+          }
+
+          // Convert the structuredData object to an array
+          locationData = Object.values(structuredData);
+
+          res.json(locationData);
+        }
+      })
+      .catch((err) => {
         if (!err.message) err.message = 'Something went wrong';
-        throw err;
-    }
-}
+        return next(err);
+      });
+  } catch (err) {
+    if (!err.message) err.message = 'Something went wrong';
+    throw err;
+  }
+};
 
 module.exports = getLocationData;

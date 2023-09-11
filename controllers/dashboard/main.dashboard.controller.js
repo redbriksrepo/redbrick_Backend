@@ -4,7 +4,7 @@ const getUserData = require("./userData/userData.dashboard.controller");
 const proposalWithConflict = require('./proposalWithConflict/proposalWithConflict.dashboard.controller');
 const recentProposalData = require('./recentProposalData/recentProposalData.dashboard.controller')
 const getcenterData = require('./centerDataOnDashboard/centerData.dashboard.controller')
-const getFloorData = require('./floorData/floordata.dashboard.controller')
+const getFloorData = require('./floorData/floordata.dashboard.controller');
 const dashboardController = {
     userData: getUserData,
     recentProposal: getRecentProposalData,
@@ -12,7 +12,8 @@ const dashboardController = {
     getcenterData:getcenterData,
     proposalWithConflict: proposalWithConflict,
     recentProposalData : recentProposalData,
-    getFloorData:getFloorData
+    getFloorData:getFloorData,
+
     
 }
 

@@ -13,6 +13,8 @@ dashboardRoute.get('/proposalWithConflict', dashboardController.proposalWithConf
 dashboardRoute.get('/centers/:locationName',dashboardController.getcenterData);
 
 dashboardRoute.get('/floorData/:locationName/:centerName',dashboardController.getFloorData);
-dashboardRoute.get('/recentProposalData/:Id', dashboardController.recentProposalData)
+
+dashboardRoute.get('/recentProposalData/:Id', dashboardController.recentProposalData);
+
 
 module.exports = dashboardRoute;

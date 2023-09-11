@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const selectionDataSchema = require('../selectionData/selectionData.modal');
 
 const proposalSchema = new Schema({
     _id: String,
