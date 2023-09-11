@@ -4,7 +4,10 @@ const mongoose = require('mongoose')
 
 const recentProposalData = (req, res, next) => {
     const id = req.params.Id;
+    const currentUser = req.user;
+    console.log(currentUser)
     try {
+        if(currentUser.role === 'sales head'|| currentUser.role === 'admin'){
         Proposal.findOne({ _id: id }, { location: 1, center: 1, floor: 1, locationId: 1, clientFinalOfferAmmount: 1, totalNumberOfSeats: 1 })
             .then((data) => {
                 if (!data) {
@@ -26,12 +29,18 @@ const recentProposalData = (req, res, next) => {
                     if (!err.message) err.message = "something went wrong"
                     return next(err)
                 })
+                
             }).catch((err) => {
                 if (!err.message) err.message = "something went wrong"
                 return next(err)
             })
 
-
+        }
+        else {
+            let error = new Error('not Authorized');
+            error.status = 401;
+            return next(error) ;
+        }
 
 
 

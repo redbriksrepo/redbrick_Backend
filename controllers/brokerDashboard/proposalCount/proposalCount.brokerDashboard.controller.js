@@ -34,7 +34,7 @@ const proposalCount = async (req, res, next) => {
         editBrokerdata.totalProposalCount = totalProposalCount
         editBrokerdata.approveProposalCount = approveProposalCount
         editBrokerdata.inProgressProposalCount = inProgressProposalCount
-        console.log(editBrokerdata)
+        // console.log(editBrokerdata)
         res.status(200).send(editBrokerdata);
     } catch (err) {
         if (!err.message) err.message = 'Something went wrong';
