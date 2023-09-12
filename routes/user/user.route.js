@@ -34,5 +34,6 @@ userRoute.get('/getById/:id', userController.getById);
 
 userRoute.get('/getSalesHead', userController.getSalesHead);
 
+userRoute.get('/getCount',userController.getCount)
 
 module.exports = userRoute;

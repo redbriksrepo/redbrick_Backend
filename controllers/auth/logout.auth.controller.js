@@ -1,3 +1,4 @@
+const { default: mongoose } = require("mongoose");
 const User = require("../../models/user/user.model");
 const jwt = require('jsonwebtoken');
 
@@ -16,7 +17,7 @@ const logout = (req,res,next) => {
         // let decode = jwt.verify(token, 'sdfkajsdfwf384*&^*^');
         if(decode){
             // User.updateOne({'userName': decode.userName},{$set: {'userActive': false,'activeDevice': 'None'}}).then((data) => {
-                User.updateOne({'userName': decode.userName},{ $unset: { deviceId: "" } }).then((data) => {
+                User.updateOne({_id: mongoose.Types.ObjectId(decode._id)},{ $unset: { deviceId: "" } }).then((data) => {
                 if(data.modifiedCount > 0) {
                     res.status(202).send({
                         "Message": "user logout sucessfully!"

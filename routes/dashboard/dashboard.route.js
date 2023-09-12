@@ -2,7 +2,7 @@ const dashboardController = require('../../controllers/dashboard/main.dashboard.
 
 const dashboardRoute = require('express').Router();
 
-dashboardRoute.get('/userData', dashboardController.userData);
+dashboardRoute.get('/userData/:Page', dashboardController.userData);
 
 dashboardRoute.get('/recentProposal', dashboardController.recentProposal);
 
@@ -16,5 +16,6 @@ dashboardRoute.get('/floorData/:locationName/:centerName',dashboardController.ge
 
 dashboardRoute.get('/recentProposalData/:Id', dashboardController.recentProposalData);
 
+dashboardRoute.get('/salesProposalCount/:Id', dashboardController.salesProposalCount)
 
 module.exports = dashboardRoute;
