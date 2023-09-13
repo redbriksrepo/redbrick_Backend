@@ -141,46 +141,50 @@ const updateLocationData = (req, res, next) => {
         }
         else {
             Location.findById(mongoose.Types.ObjectId(Id)).then((locationData) => {
+
                 // if (req.files['jsonFile'] || req.files['layoutImage']) {
-                    // if (req.files['layoutImage']) {
-                    // if (req.files['jsonFile']) {
-                    //     fs.unlinkSync(locationData.jsonFile);
-                    //     data.jsonFile = req.files['jsonFile'][0].path;
-                    //     jsonUpdated = true;
-                    //     // fs.unlink(locationData.jsonFile, (err) => {
-                    //     //     if (err) throw err;
-                    //     //     data.jsonFile = req.files['jsonFile'][0].path;
-                    //     // })
-                    // }
-                    if (req.files['layoutImage']) {
-                        // fs.unlinkSync(locationData.layoutImage);
-                        data.layoutImage = req.files['layoutImage'][0].path;
-                        layoutImageUpdated = true;
-                    }
-                    if(req.files['centerImage']) {
-                        // if (centerImage) {
-                            data.centerImage = req.files['centerImage'].path;
-                            data.centerImage= [...locationData.centerImage, ...req.files['centerImage'].map(image => image.path)] 
-                        // }
-                    }
+                // if (req.files['layoutImage']) {
+                // if (req.files['jsonFile']) {
+                //     fs.unlinkSync(locationData.jsonFile);
+                //     data.jsonFile = req.files['jsonFile'][0].path;
+                //     jsonUpdated = true;
+                //     // fs.unlink(locationData.jsonFile, (err) => {
+                //     //     if (err) throw err;
+                //     //     data.jsonFile = req.files['jsonFile'][0].path;
+                //     // })
                 // }
-                
-                    if (data.location !== locationData.location || data.center !== locationData.center || data.floor !== locationData.floor) {
-                        // if (!jsonUpdated) {
-                        //     fs.renameSync(locationData.jsonFile, path.join('assets', 'layout', 'json', `${data.location}_${data.center}_${data.floor}.json`));
-                        //     data.jsonFile = path.join('assets', 'layout', 'json', `${data.location}_${data.center}_${data.floor}.json`);                            
-                        // }
-                        if (!layoutImageUpdated) {
-                            fs.renameSync(locationData.layoutImage, path.join('assets', 'layout', 'image', `${data.location}_${data.center}_${data.floor}.png`));
-                            data.layoutImage = path.join('assets', 'layout', 'image', `${data.location}_${data.center}_${data.floor}.png`);
-                        }
-                        
-                        // fs.rename(locationData.layoutImage, path.join('assets', 'layout', 'image', `${data.location}_${data.center}.png`), (err) => {
-                        //     if (err) throw err;
-                        //     data.layoutImage = path.join('assets', 'layout', 'image', `${data.location}_${data.center}.png`);
-                        // })
-                    }
-                
+                if (req.files['layoutImage']) {
+                    // fs.unlinkSync(locationData.layoutImage);
+                    data.layoutImage = req.files['layoutImage'][0].path;
+                    layoutImageUpdated = true;
+                }
+                if (req.files['centerImage']) {
+                    // if (centerImage) {
+                    data.centerImage = req.files['centerImage'].path;
+                    data.centerImage = [...locationData.centerImage, ...req.files['centerImage'].map(image => image.path)]
+                    // }
+                }
+                // }
+
+                if (data.location !== locationData.location || data.center !== locationData.center || data.floor !== locationData.floor) {
+                    // if (!jsonUpdated) {
+                    //     fs.renameSync(locationData.jsonFile, path.join('assets', 'layout', 'json', `${data.location}_${data.center}_${data.floor}.json`));
+                    //     data.jsonFile = path.join('assets', 'layout', 'json', `${data.location}_${data.center}_${data.floor}.json`);                            
+                    // }
+
+                    // const layoutImgUpdate = () => {
+                    //     if (!layoutImageUpdated) {
+                    //         fs.renameSync(locationData.layoutImage, path.join('assets', 'layout', 'image', `${data.location}_${data.center}_${data.floor}.png`));
+                    //         data.layoutImage = path.join('assets', 'layout', 'image', `${data.location}_${data.center}_${data.floor}.png`);
+                    //     }
+                    // }
+
+                    // fs.rename(locationData.layoutImage, path.join('assets', 'layout', 'image', `${data.location}_${data.center}.png`), (err) => {
+                    //     if (err) throw err;
+                    //     data.layoutImage = path.join('assets', 'layout', 'image', `${data.location}_${data.center}.png`);
+                    // })
+                }
+
                 // if (data.imageLinks === '{}') {
                 //     delete data.imageLinks;
                 // }
@@ -193,37 +197,72 @@ const updateLocationData = (req, res, next) => {
                 // else {
                 //     data.videoLinks = Object.values(JSON.parse(data.videoLinks));
                 // }
-                if(data.rentSheet === '{}'){
+                if (data.rentSheet === '{}') {
                     delete data.rentSheet;
                 }
-                else{
+                else {
                     data.rentSheet = Object.values(JSON.parse(data.rentSheet));
                 }
-            }).then(() => {
-                // console.log('Update Data::', data);
-                Location.updateOne({ _id: mongoose.Types.ObjectId(Id) }, { $set: data }).then((result) => {
-                    if (result.acknowledged) {
-                        if (result.modifiedCount > 0) {
-                            res.status(202).send({
-                                "Message": "Location Data updated successfully"
-                            })
+                return locationData;
+            }).then((loc) => {
+
+                    const update = () => {
+                        Location.updateOne({ _id: mongoose.Types.ObjectId(Id) }, { $set: data }).then((result) => {
+                            if (result.acknowledged) {
+                                if (result.modifiedCount > 0) {
+                                    res.status(202).send({
+                                        "Message": "Location Data updated successfully"
+                                    })
+                                }
+                                else {
+                                    let error = new Error('Error while updating location data');
+                                    error.status = 503;
+                                    throw error;
+                                }
+                            }
+                            else {
+                                let error = new Error('Error while updating location data');
+                                error.status = 503;
+                                throw error;
+                            }
+                        }).catch((err) => {
+                            if (!err.message) err.message = 'Something went wrong while updation location data';
+                            if (!err.status) err.status = 503;
+                            next(err);
+                        })
+                    }
+                    if (data.location === loc?.location && data.center === loc?.center && data.floor === loc?.floor) {
+                        // console.log("not Edit")
+                        // layoutImgUpdate()
+                        if (req.files['layoutImage']) {
+                        fs.unlinkSync(loc.layoutImage)
                         }
-                        else {
-                            let error = new Error('Error while updating location data');
-                            error.status = 503;
-                            throw error;
-                        }
+                        update();
                     }
                     else {
-                        let error = new Error('Error while updating location data');
-                        error.status = 503;
-                        throw error;
+                        // console.log("edit")
+                        Location.findOne().where('location').equals(data.location).where('center').equals(data.center).where('floor').equals(data.floor).then((duplicate) => {
+                            if (duplicate) {
+                                // console.log(duplicate)
+                                let err = new Error("Location Already Exist")
+                                err.status = 409
+                                next(err)
+                            }
+                            else {
+                                // layoutImgUpdate()
+                                if (req.files['layoutImage']) {
+                                fs.unlinkSync(loc.layoutImage)
+                                }
+                                update();
+                            }
+                        }).catch((err) => {
+                            if (!err.message) err.message = 'Something went wrong while updating user!';
+                            if (!err.status) err.status = 400;
+                            next(err);
+                        })
                     }
-                }).catch((err) => {
-                    if (!err.message) err.message = 'Something went wrong while updation location data';
-                    if (!err.status) err.status = 503;
-                    next(err);
-                })
+                    // console.log('Update Data::', data);
+               
             }).catch((err) => {
                 if (!err.message) err.message = 'Error while detecting what was updated in location data';
                 if (!err.status) err.status = 503;
