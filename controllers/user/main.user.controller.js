@@ -4,7 +4,7 @@ const deleteUser = require('./delete/delete.user.controller');
 const getByIdUser = require('./getById/getById.user.controller');
 const getAllUser = require('./getAll/getAll.user.controller');
 const getSalesHead = require('./salesHeadList/salesHeadList.user.controller');
-
+const getCount = require('./getCount/getCount.user.controller')
 
 const userController = {
     create: createUser,
@@ -12,7 +12,8 @@ const userController = {
     delete: deleteUser,
     getById: getByIdUser,
     getAll: getAllUser,
-    getSalesHead: getSalesHead
+    getSalesHead: getSalesHead,
+    getCount : getCount
 }
 
 module.exports = userController;

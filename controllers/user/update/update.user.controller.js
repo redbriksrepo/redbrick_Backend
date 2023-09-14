@@ -31,9 +31,7 @@ const UpdateUserWithGivenData = (data,res,next) => {
 
 const updateUser = (req, res, next) => {
     let data = req.body;
-    // console.log(data);
-    try {
-
+    const saveUser = ()=>{
         if (data.password) {
             bcrypt.hash(data.password, 10, async (err, encrypted) => {
                 if (err) {
@@ -49,6 +47,38 @@ const updateUser = (req, res, next) => {
         else {
             UpdateUserWithGivenData(data,res,next);
         }
+    }
+    try {
+        User.findOne({_id:data._id}).then((user)=>{
+            // console.log("user==>", data.userName, "mongo==>",user?.userName)
+            if(data.userName===user?.userName){
+                // console.log("not Edit")
+                saveUser();
+            }
+            else{
+                // console.log("edit")
+                User.findOne({userName:data.userName}).then((duplicate)=>{
+                    if(duplicate){
+                        // console.log(duplicate)
+                        let err = new Error("UserName Already In Use")
+                        err.status = 409
+                        next(err)
+                    } 
+                    else{
+                        saveUser()
+                    }
+                }).catch((err) => {
+                    if (!err.message) err.message = 'Something went wrong while updating user!';
+                    if (!err.status) err.status = 400;
+                    next(err);
+                })
+            }
+        }).catch((err) => {
+            if (!err.message) err.message = 'Something went wrong while updating user!';
+            if (!err.status) err.status = 400;
+            next(err);
+        })
+        
     }
     catch (err) {
         if (!err.message) err.message = 'Error while updating User';
