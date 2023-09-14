@@ -52,4 +52,6 @@ proposalRoute.post('/addOldProposal',proposalController.addOldClientProposals);
 proposalRoute.delete('/delete/:Id',proposalController.deleteProposal)
 
 proposalRoute.get('/getLayoutDataOfSameLocation/:Id',proposalController.getLayoutDataByLocationId);
+
+proposalRoute.post('/declineProposal/:Id',middleware.authentication,proposalController.declineProposal)
 module.exports = proposalRoute;

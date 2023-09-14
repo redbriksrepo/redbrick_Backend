@@ -19,7 +19,8 @@ const sendImageData = require('./layout/saveImageData.proposal.controller');
 const getAllLockedProposal = require('./getAllLockedProposal/get-locked-proposal.proposal.controller')
 const getLayoutDataByLocationId = require('./sendDataOfLayoutsOfLockedProposal/getLayoutData-LockedProposal.proposal.controller')
 const deleteProposal = require('./delete/delete.proposal.controller')
-const addOldClientProposals = require('./addOldProposals/add-old-clients-proposal.proposal.controller') 
+const addOldClientProposals = require('./addOldProposals/add-old-clients-proposal.proposal.controller');
+const declineProposal= require('./decline Proposal/decline-proposal.proposal.controller')
 const proposalController = {
     create: create,
     getAll: getAll,
@@ -41,7 +42,8 @@ const proposalController = {
     getLockedProposal:getAllLockedProposal,
     getLayoutDataByLocationId:getLayoutDataByLocationId,
     addOldClientProposals:addOldClientProposals,
-    deleteProposal:deleteProposal
+    deleteProposal:deleteProposal,
+    declineProposal:declineProposal
 };
 
 module.exports = proposalController;

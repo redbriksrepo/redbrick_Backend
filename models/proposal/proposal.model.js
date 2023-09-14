@@ -128,6 +128,9 @@ const proposalSchema = new Schema({
     },
     color:{
         type:String
+    },
+    declineNote:{
+        type : String 
     }
 }, {
     timestamps: true

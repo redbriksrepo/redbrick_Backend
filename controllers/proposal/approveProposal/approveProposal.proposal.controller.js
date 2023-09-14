@@ -20,20 +20,7 @@ const approveClouser = (req, res, next) => {
                   });
 
                     if (updateResult.acknowledged && updateResult.modifiedCount > 0) {
-                        // Location.findOne({ location: proposal.location, center: proposal.center }).then((locationdata) => {
-                        //     Location.updateOne({ location: proposal.location, center: proposal.center }, { $set: { bookingPriceUptilNow: Number(locationdata.bookingPriceUptilNow) + Number(data.salesHeadFinalOfferAmmount) }}).then((result)=>{
-                        //         if (result.acknowledged === true) {
-                        //             result.message='Succesfully Approved';
-                        //         }
-                        //         else throw Error('Problem while updating');
-                        //     });
-                        // });
-                        // res.status(202).send({
-                        //     "Message": "Proposal Approved!"
-                        // })
-                        // console.log("Approve if",proposal.address);
-                     
-                        req.locationData = {
+                    req.locationData = {
                             address: proposal.address
                         }
                         next();

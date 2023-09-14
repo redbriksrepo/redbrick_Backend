@@ -6,7 +6,7 @@ const getFloorData = async (req, res, next) => {
     const centerName = req.params.centerName; // Center name from the URL parameter
 
     // Search for floors that match the given location and center names
-    const floors = await Location.find({ location: locationName, center: centerName }).select('floor selectedNoOfSeats totalNoOfWorkstation bookingPriceUptilNow totalProposals rackRate currentRackRate');
+    const floors = await Location.find({ location: locationName, center: centerName }).select('floor selectedNoOfSeats totalNoOfWorkstation bookingPriceUptilNow totalProposals rackRate currentRackRate systemPrice');
     
     if (floors.length === 0) {
       return res.status(404).json({ message: "No floors found for the given location and center names." });
@@ -16,6 +16,7 @@ const getFloorData = async (req, res, next) => {
     const data = floors.map((floor) => ({
       floorName: floor.floor,
       floorData: {
+        systemPrice:floor.systemPrice,
         selectedNoOfSeats: floor.selectedNoOfSeats,
         totalNoOfWorkstation: floor.totalNoOfWorkstation,
         bookingPriceUptilNow: floor.bookingPriceUptilNow,

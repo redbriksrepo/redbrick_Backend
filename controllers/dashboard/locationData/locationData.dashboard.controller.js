@@ -16,7 +16,7 @@ const getLocationData = (req, res, next) => {
       if (currentUser.role === 'admin') {
         return Location.find().select('location center floor availableNoOfWorkstation systemPrice totalNoOfWorkstation selectedNoOfSeats rentAndCamTotal rackRate bookingPriceUptilNow totalProposals futureRackRate currentRackRate');
       } else if (currentUser.role === 'sales head') {
-        return Location.find().select('location center floor availableNoOfWorkstation systemPrice totalNoOfWorkstation selectedNoOfSeats rentAndCamTotal rackRate bookingPriceUptilNow totalProposals futureRackRate currentRackRate').where('salesHead').equals(mongoose.Types.ObjectId(currentUser._id));
+        return Location.find().select('location center floor availableNoOfWorkstation systemPrice totalNoOfWorkstation selectedNoOfSeats rentAndCamTotal rackRate bookingPriceUptilNow totalProposals futureRackRate currentRackRate');
       } else {
         let error = new Error('not Authorized');
         error.status = 401;

@@ -1,77 +1,45 @@
-const Proposal = require('../../../models/proposal/proposal.model')
-const Location = require('../../../models/location/location.model')
-const mongoose = require('mongoose')
+const Proposal = require('../../../models/proposal/proposal.model');
+const Location = require('../../../models/location/location.model');
+const mongoose = require('mongoose');
 
-const recentProposalData = (req, res, next) => {
-    const id = req.params.Id;
-    const currentUser = req.user;
-    console.log(currentUser)
-    try {
-        if(currentUser.role === 'sales head'|| currentUser.role === 'admin'){
-        Proposal.findOne({ _id: id }, { location: 1, center: 1, floor: 1, locationId: 1, clientFinalOfferAmmount: 1, totalNumberOfSeats: 1 })
-            .then((data) => {
-                if (!data) {
-                    return res.status(401).json('No such proposal found');
-                }
-                Location.findOne({ _id: mongoose.Types.ObjectId(data.locationId) }, { systemPrice: 1, rackRate: 1, bookingPriceUptilNow: 1 }).then((locationData) => {
-                    const rackValueAsPerClient = data.clientFinalOfferAmmount / data.totalNumberOfSeats
-                    const currentRackRate = locationData.bookingPriceUptilNow + data.clientFinalOfferAmmount
-                    const pAndL = currentRackRate - rackValueAsPerClient
+const recentProposalData = async (req, res, next) => {
+  const id = req.params.Id;
+  const currentUser = req.user;
 
-                    let newobj = data.toObject()
-                    newobj.rackValueAsPerClient = rackValueAsPerClient
-                    newobj.currentRackRate = currentRackRate
-                    if (pAndL > 0) { newobj.loss = pAndL }
-                    else { newobj.profit = pAndL }
-                    newobj.locationData = locationData
-                    res.status(200).send(newobj);
-                }).catch((err) => {
-                    if (!err.message) err.message = "something went wrong"
-                    return next(err)
-                })
-                
-            }).catch((err) => {
-                if (!err.message) err.message = "something went wrong"
-                return next(err)
-            })
+  try {
+    if (currentUser.role === 'sales head' || currentUser.role === 'admin') {
+      const data = await Proposal.findOne({ _id: id }).select('location center locationId floor totalNumberOfSeats clientFinalOfferAmmount previousFinalOfferAmmount Tenure LockIn depositTerm noticePeriod areaOfCoreSelectedSeat areaOfUsableSelectedSeat clientName')
 
-        }
-        else {
-            let error = new Error('not Authorized');
-            error.status = 401;
-            return next(error) ;
-        }
+      if (!data) {
+        const error = new Error('No such proposal found');
+        error.status = 404; 
+        throw error;
+      }
+    const locationData = await Location.findOne({ _id: mongoose.Types.ObjectId(data.locationId) }).select('totalNoOfWorkstation selectedNoOfSeats bookingPriceUptilNow rackRate rackRateNS')
+      
+      let rackRateAsPerClient =Math.round(data.clientFinalOfferAmmount/data.totalNumberOfSeats);
+      let updatingThePrice = locationData.bookingPriceUptilNow+data.clientFinalOfferAmmount
+      let afterUpdate = Math.round(updatingThePrice/(locationData.selectedNoOfSeats+data.totalNumberOfSeats))
 
+      let sendData = {
+        ...data.toObject(), // Convert Mongoose document to plain JavaScript object
+        rackRateAsPerClient: rackRateAsPerClient,
+        updatingThePrice: updatingThePrice,
+        afterUpdate: afterUpdate,
+        locationData: locationData
+      };
+      console.log(sendData)
 
-
-
-
-        //    const data = await Proposal.aggregate([
-        //         { $match: { _id: id } },
-        //         {
-        //             $lookup: {
-        //                 from: "locations",
-        //                 localField: "locationId",
-        //                 foreignField: "_id",
-        //                 as: "location"
-        //             }
-        //         },
-        //         {
-        //             $project: {
-        //                 _id: 0,
-        //                 location:1,
-        //                 center: 1,
-        //                 floor: 1
-        //               }
-        //         }
-        //     ])
-        // console.log(data)
-        // res.send(data)
-    } catch (err) {
-        if (!err.message) err.message = "something went wrong"
-        if (!err.status) err.status = 400;
-        throw err
+      res.status(200).send(sendData);
+    } else {
+      const error = new Error('Not authorized');
+      error.status = 401;
+      throw error;
     }
-}
+  } catch (err) {
+    if (!err.message) err.message = 'Something went wrong';
+    next(err); // Pass the error to the error-handling middleware
+  }
+};
 
-module.exports = recentProposalData
+module.exports = recentProposalData;

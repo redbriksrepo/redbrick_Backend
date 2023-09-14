@@ -38,6 +38,13 @@ const proposalLogSchema = new Schema({
     center: {
         type: String,
         required: true
+    },
+    floor:{
+        type: String,
+        required: true
+    },
+    price:{
+        type:Number,    
     }
 
 }, {
