@@ -3,7 +3,7 @@ const User = require("../../../models/user/user.model");
 const getUserData = async (req, res, next) => {
     try {
         const currentUser = req.user;
-        console.log(currentUser)
+        // console.log(req.params.Page)
         let query;
         if (currentUser.role === 'admin') {
             query = User.aggregate([

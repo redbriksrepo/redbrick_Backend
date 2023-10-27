@@ -27,13 +27,13 @@ proposalRoute.post('/generate/:Id/?:selectFrom',middleware.authentication, propo
 
 proposalRoute.get('/checkSeatAvailabilityAndConsolidatedSeats/:Id', proposalController.checkSeatAvailabilityAndConsolidatedSeats);
 
-proposalRoute.get('/resolveConflict/:Id', proposalController.resolveConflict);
+proposalRoute.get('/resolveConflict/:Id', middleware.authentication, proposalController.resolveConflict);
 
-proposalRoute.get('/finalOfferAmmount/:Id', proposalController.finalOfferAmmount);
+proposalRoute.get('/finalOfferAmmount/:Id', middleware.authentication, proposalController.finalOfferAmmount);
 
-proposalRoute.post('/esclateToClosure/:Id',middleware.authentication, proposalController.updateFinalOfferAmmount);
+proposalRoute.post('/esclateToClosure/:Id', middleware.authentication,middleware.authentication, proposalController.updateFinalOfferAmmount);
 
-proposalRoute.get('/getProposalById/:Id',proposalController.getProposalById);
+proposalRoute.get('/getProposalById/:Id', middleware.authentication,proposalController.getProposalById);
 
 proposalRoute.post('/approveProposal/:Id', middleware.authentication,proposalController.approveProposal, proposalController.generate.generateProposalPDF);
 
@@ -41,15 +41,15 @@ proposalRoute.post('/lockProposal/:Id', middleware.authentication,proposalContro
 
 proposalRoute.post('/updateProposalId/:Id',proposalController.updateProposalId);
 
-proposalRoute.get('/viewLayoutSales/:Id',proposalController.viewLayoutSales);
+proposalRoute.get('/viewLayoutSales/:Id', middleware.authentication,proposalController.viewLayoutSales);
 
-proposalRoute.post('/saveImage/:Id',proposalController.sendImage);
+proposalRoute.post('/saveImage/:Id', middleware.authentication,proposalController.sendImage);
 
-proposalRoute.get('/getAllLockedProposal',proposalController.getLockedProposal);
+proposalRoute.get('/getAllLockedProposal', middleware.authentication,proposalController.getLockedProposal);
 
-proposalRoute.post('/addOldProposal',proposalController.addOldClientProposals);
+proposalRoute.post('/addOldProposal', middleware.authentication,proposalController.addOldClientProposals);
 
-proposalRoute.delete('/delete/:Id',proposalController.deleteProposal)
+proposalRoute.delete('/delete/:Id',middleware.authentication,proposalController.deleteProposal)
 
 proposalRoute.get('/getLayoutDataOfSameLocation/:Id',proposalController.getLayoutDataByLocationId);
 

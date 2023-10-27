@@ -20,13 +20,16 @@ const recentProposalData = async (req, res, next) => {
       let rackRateAsPerClient =Math.round(data.clientFinalOfferAmmount/data.totalNumberOfSeats);
       let updatingThePrice = locationData.bookingPriceUptilNow+data.clientFinalOfferAmmount
       let afterUpdate = Math.round(updatingThePrice/(locationData.selectedNoOfSeats+data.totalNumberOfSeats))
-
+      let remainingSeats = locationData.totalNoOfWorkstation -locationData.selectedNoOfSeats
       let sendData = {
         ...data.toObject(), // Convert Mongoose document to plain JavaScript object
         rackRateAsPerClient: rackRateAsPerClient,
+        bookingPriceUptilNow:locationData.bookingPriceUptilNow,
         updatingThePrice: updatingThePrice,
         afterUpdate: afterUpdate,
-        locationData: locationData
+        remainingSeats : remainingSeats,
+        totalNoOfWorkstation:locationData.totalNoOfWorkstation,
+        systemRackRate:locationData.rackRate
       };
       console.log(sendData)
 

@@ -32,7 +32,11 @@ app.use('/images', express.static(path.join(__dirname, '')));
 // static file serving
 app.use('/uploads', express.static('uploads'));
 app.use('/generated-proposal',express.static(path.join('assets','proposal','generated')))
-
+//if file is not found
+app.use('/generated-proposal', (req, res, next) => {
+    // This middleware will run when the static file middleware doesn't find a file
+    res.status(404).send({Message:'No file found'});
+  })
 // Routes
 app.use(mainRoute);
 app.use('/',(req, res)=>{
@@ -45,7 +49,7 @@ app.use(errorHandler);
 databaseConnection().then(() => {
     app.listen(port,() => {
         console.log(`Server is Running on port ${port}`);
-        // startSheduledTasks();
+        startSheduledTasks();
     })
 }).catch((err) => {
     if (err) throw err;

@@ -65,8 +65,8 @@ const getLocationData = (req, res, next) => {
             if (!structuredData[location.location]) {
               structuredData[location.location] = {
                 location: location.location,
-                availableNoOfWorkstation: location.availableNoOfWorkstation,
-                totalNoOfWorkstation: 0, // Initialize with 0
+                // availableNoOfWorkstation: location.availableNoOfWorkstation,
+                totalNoOfWorkstation: location.totalNoOfWorkstation, // Initialize with 0
                 selectedNoOfSeats: location.selectedNoOfSeats,
                 systemPrice: location.systemPrice,
                 bookingPriceUptilNow: location.bookingPriceUptilNow,

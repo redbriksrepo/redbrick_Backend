@@ -25,7 +25,7 @@ const fileStorage = multer.diskStorage({
 
         // if(!locationId) {
         const location = await Location.findOne().where('location').equals(data.location).where('center').equals(data.center).where('floor').equals(data.floor)
-        console.log('LOCATION ==> ', location);
+        // console.log('LOCATION ==> ', location);
         if (location) {
             console.log('LOCATION_ID ==> ', location._id.toString(), locationId, location._id.toString() !== locationId);
             if (location._id.toString() !== locationId) {

@@ -35,17 +35,17 @@ const proposalSchema = new Schema({
         type:String,
         // default:true
     },
-    workstation2x1: Number,
+    // workstation2x1: Number,
     workstation3x2: Number,
     workstation4x2: Number,
     workstation5x2: Number,
-    workstation5x2_5: Number,
-    workstation4x4: Number,
+    // workstation5x2_5: Number,
+    // workstation4x4: Number,
     workstation5x4: Number,
     workstation5x5: Number,
     cubicalCount:Number,
     cabinRegular: Number,
-    cabinMedium: Number,
+    // cabinMedium: Number,
     cabinLarge: Number,
     cabinMD:Number,
     meeting4P: Number,
@@ -65,8 +65,8 @@ const proposalSchema = new Schema({
     receptionLarge: Number,
     storeRoomNumber: Number,
     phoneBoothNumber: Number,
-    nicheSeat2Pax: Number,
-    nicheSeat4Pax: Number,
+    // nicheSeat2Pax: Number,
+    // nicheSeat4Pax: Number,
     cafeteriaNumber: Number,
     server1Rack: Number,
     server2Rack: Number,
@@ -78,6 +78,7 @@ const proposalSchema = new Schema({
     gameRoomNumber: Number,
     content:String,
     totalNumberOfSeats:Number,
+    billableSeats:Number,
     OTP: Number,
     Tenure: Number,
     LockIn: Number, 
@@ -116,14 +117,18 @@ const proposalSchema = new Schema({
     rackValue:Number,
     previousFinalOfferAmmount: Number,
     clientFinalOfferAmmount: Number,
-    imageDataOfLayout:{
-        type:String,
-        default:''
-    },
+    imagePath:String,
+    // imageDataOfLayout:{
+    //     type:String,
+    //     default:''
+    // },
     seatsData:{
         type:Array
     },
     seatSize:{
+        type:Array
+    },
+    fullRects:{
         type:Array
     },
     color:{

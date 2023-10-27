@@ -5,7 +5,7 @@ const Proposal = require("../../../models/proposal/proposal.model");
 const updateId = (req, res, next) => {
     try {
         let propoaslId = req.params.Id;
-        let numberEdited = 0;
+      
         // let data = req.body;
         if(!propoaslId) {
         throw new Error('Id not provided');

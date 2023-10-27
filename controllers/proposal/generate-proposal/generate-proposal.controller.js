@@ -101,13 +101,13 @@ const generateProposalPDF = (req, res, next) => {
                  finalAmount = locationdata.rackRateNS * proposal.totalNumberOfSeats;
                  perSeatPrice = locationdata.rackRateNS
             }else{
-                if(locationdata.futureRackRate>0){
-                    finalAmount = locationdata.futureRackRate * proposal.totalNumberOfSeats;
-                perSeatPrice = locationdata.futureRackRate;
-                }else{
+                // if(locationdata.futureRackRate>0){
+                //     finalAmount = locationdata.futureRackRate * proposal.totalNumberOfSeats;
+                // perSeatPrice = locationdata.futureRackRate;
+                // }else{
                     finalAmount = locationdata.rackRate * proposal.totalNumberOfSeats;
                     perSeatPrice = locationdata.rackRate;
-                }
+                // }
                 
             }
             let previousAmount = finalAmount || proposal.previousFinalOfferAmmount;

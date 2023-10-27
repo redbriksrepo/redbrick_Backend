@@ -11,7 +11,8 @@ const userRoute = require('./user/user.route');
 const costRoute = require('./cost/cost.route')
 const reportRoute = require('./report/weeklyReport.route');
 const layoutDataRoute = require('./layoutData/layoutData.route');
-const brokerDashboardRoute = require('./brokerDashboard/brokerDashboard.route')
+const brokerDashboardRoute = require('./brokerDashboard/brokerDashboard.route');
+const diagramRoute = require('./diagram/diagram.route');
 const mainRoute = require('express').Router();
 
 mainRoute.use('/auth', authRoute);
@@ -36,6 +37,8 @@ mainRoute.use('/report',reportRoute);
 
 mainRoute.use('/layoutData',layoutDataRoute);
 
-mainRoute.use('/brokerDashboard',brokerDashboardRoute)
+mainRoute.use('/brokerDashboard',brokerDashboardRoute);
+
+mainRoute.use('/diagram',diagramRoute)
 
 module.exports = mainRoute;

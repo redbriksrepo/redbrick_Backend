@@ -6,11 +6,18 @@ const getLayoutDataByLocationId = (req, res, next) => {
     try {
         Proposal.find({ locationId, status: "Completed and Locked" }).then((lockedProposals) => {
             if (lockedProposals.length > 0) {
-                res.status(200).send(lockedProposals);
-            } else {
-               res.status(200).send({
-                message:'no data'
-               })
+                const responseData = lockedProposals.map((proposal) => {
+                    return {
+                        seatSize: proposal.seatSize,
+                        seatsData: proposal.seatsData,
+                        clientName: proposal.clientName,
+                        totalNumberOfSeats: proposal.totalNumberOfSeats,
+                        color:proposal.color
+                    };
+                });
+                res.status(200).send(responseData);
+            }else{
+                res.status(200).send({Message:'No Data'})
             }
         }).catch((err) => {
             if (!err.status) err.status = 400;

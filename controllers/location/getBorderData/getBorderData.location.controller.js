@@ -13,9 +13,9 @@ const getBorderDataById = (req, res, next) => {
                 Location.findById(mongoose.Types.ObjectId(Id))
                     .select('layoutBorder totalNoOfWorkstation selectedNoOfSeats') // Select only the layoutBorder field
                     .then((location) => {
-                        if (!location) {
+                        if (location.layoutBorder.length==0) {
                             console.log("No Data in layoutBorder")
-                            res.status(200).send('No Data')
+                            res.status(200).send({Message:'No data'})
                         } else {
                             let data=location.layoutBorder;
                            

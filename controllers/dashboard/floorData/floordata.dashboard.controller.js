@@ -1,4 +1,5 @@
 const Location = require("../../../models/location/location.model");
+const Proposal = require('../../../models/proposal/proposal.model');
 
 const getFloorData = async (req, res, next) => {
   try {
@@ -12,22 +13,43 @@ const getFloorData = async (req, res, next) => {
       return res.status(404).json({ message: "No floors found for the given location and center names." });
     }
     
+    // Initialize the finalized proposal count object
+    const finalizedProposal = {
+      status: "Completed and Locked",
+      count: 0,
+    };
+
     // Format the data into the desired structure
-    const data = floors.map((floor) => ({
-      floorName: floor.floor,
-      floorData: {
-        systemPrice:floor.systemPrice,
-        selectedNoOfSeats: floor.selectedNoOfSeats,
-        totalNoOfWorkstation: floor.totalNoOfWorkstation,
-        bookingPriceUptilNow: floor.bookingPriceUptilNow,
-        totalProposals: floor.totalProposals,
-        rackRate: floor.rackRate,
-        currentRackRate: floor.currentRackRate
-      }
-    }));
+    floors.map(async (floor) => {
+      // Count the number of proposals with the given status for the same location, center, and floor
+      const proposalCount = await Proposal.countDocuments({
+        location: locationName,
+        center: centerName,
+        floor: floor.floor,
+        status: finalizedProposal.status,
+      });
+
+      // Update the count in the finalizedProposal object
+      finalizedProposal.count = proposalCount;
+      console.log(finalizedProposal)
+      let data = [{
+        floorName: floor.floor,
+        floorData: {
+          systemPrice: floor.systemPrice,
+          selectedNoOfSeats: floor.selectedNoOfSeats,
+          totalNoOfWorkstation: floor.totalNoOfWorkstation,
+          bookingPriceUptilNow: floor.bookingPriceUptilNow,
+          totalProposals: floor.totalProposals,
+          rackRate: floor.rackRate,
+          currentRackRate: floor.currentRackRate,
+          finalizedProposal:proposalCount
+        },
+      }];
+      res.json({ data });
+    });
     
-    // Send the formatted data as a JSON response
-    res.json({ data });
+    // Send the formatted data along with the finalizedProposal object as a JSON response
+    
   } catch (error) {
     // Handle errors appropriately (e.g., send an error response)
     console.error(error);

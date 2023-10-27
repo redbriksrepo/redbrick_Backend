@@ -53,29 +53,30 @@ const generateProposal = (req, res, next) => {
 
 const generateProposalPDF = (req, res, next) => {
     let Id = req.params.Id;
-    // console.log(Id)
+    console.log(Id)
    let data= req.body;
    Proposal.findById(Id).populate('salesPerson', 'userName').then((proposal) => {
+    console.log(proposal)
     Location.findOne({ location: proposal.location, center: proposal.center }).then((locationdata) => {
         let finalAmount;
         let perSeatPrice;
-       let totalNoOfSeats= (proposal.totalNumberOfSeats).toFixed(2)+'ws'
+       let totalNoOfSeats= (proposal.billableSeats).toFixed(2)+'ws'
        let leaseArea =(proposal.areaOfUsableSelectedSeat/ locationdata.efficiency).toFixed(2);
         if(proposal.Serviced==='no'){
-             finalAmount = locationdata.rackRateNS * proposal.totalNumberOfSeats;
+             finalAmount = locationdata.rackRateNS * proposal.billableSeats;
              perSeatPrice = locationdata.rackRateNS
         }else{
-            if(locationdata.futureRackRate>0){
-                finalAmount = locationdata.futureRackRate * proposal.totalNumberOfSeats;
-            perSeatPrice = locationdata.futureRackRate;
-            }else{
-                finalAmount = locationdata.rackRate * proposal.totalNumberOfSeats;
+            // if(locationdata.futureRackRate>0){
+            //     finalAmount = locationdata.futureRackRate * proposal.totalNumberOfSeats;
+            // perSeatPrice = locationdata.futureRackRate;
+            // }else{
+                finalAmount = locationdata.rackRate * proposal.billableSeats;
                 perSeatPrice = locationdata.rackRate;
-            }
+            // }
             
         }
         let previousAmount = finalAmount || proposal.previousFinalOfferAmmount;
-    Proposal.updateOne({ _id:proposal._id }, { $set: { finalOfferAmmount: finalAmount}}).then((result)=>{
+    Proposal.updateOne({ _id:proposal._id }, { $set: { previousFinalOfferAmmount: finalAmount}}).then((result)=>{
       
         if (result.acknowledged === true) {
             result.message='Succesfully updated';
@@ -111,13 +112,18 @@ const generateProposalPDF = (req, res, next) => {
         doc.image('./assets/proposal/image/proposal-layout__page3-our_client.png', 20, 150, { width: 760 });
         doc.addPage();
        
-          const imageOptions = {
-            fit: [800, 566], 
-            align: 'center',
-            valign: 'center',
-          };
+        //   const imageOptions = {
+        //     fit: [800, 566], 
+        //     align: 'center',
+        //     valign: 'center',
+        //   };
 
-          doc.image(proposal.imageDataOfLayout, 0, 0, imageOptions);
+        //   doc.image(proposal.imageDataOfLayout, 0, 0, imageOptions);
+          const imageFilePath = proposal.imagePath;
+
+    // Add the image to the PDF
+    doc.image(imageFilePath, 0, 0, { fit: [800, 566], align: 'center', valign: 'center' });
+
         doc.addPage();
         doc.rect(20, 10, 100, 30).fillAndStroke('#5e5e5e', 'black').fillColor('white').text('Proposal ID', 20, 20, { width: 100, align: 'center' })
         doc.rect(120, 10, 660, 30).fillAndStroke('#5e5e5e', 'black').fillColor('white').text(proposal._id , 120, 20, { width: 660, align: 'center' });
@@ -174,8 +180,14 @@ const generateProposalPDF = (req, res, next) => {
         doc.rect(240, 490, 540, 30).fillAndStroke('#999999', 'black').fillColor('black').text(`INR ${new Intl.NumberFormat('en-IN', { currency: 'INR' }).format(previousAmount)}  + taxes per month`, 240, 500, { width: 540, align: 'center' });
         doc.rect(20, 520, 50, 30).fillAndStroke('#999999', 'black').fillColor('black').text('12', 25, 530, { width: 50, align: 'left' });
         doc.rect(60, 520, 180, 30).fillAndStroke('#999999', 'black').fillColor('black').text('Final Closing Cost (+GST)', 60, 530, { width: 180, align: 'center' });
-        doc.rect(240, 520, 540, 30).fillAndStroke('#999999', 'black').fillColor('black').text(`INR ${new Intl.NumberFormat('en-IN', { currency: 'INR' }).format(proposal.finalOfferAmmount)}  + taxes per month`, 240, 530, { width: 540, align: 'center' });
-        doc.addPage();
+        if (isNaN(proposal.finalOfferAmmount)) {
+            // Display "Yet to be approved" when finalOfferAmmount is NaN
+            doc.rect(240, 520, 540, 30).fillAndStroke('#999999', 'black').fillColor('black').text('Yet to be approved', 240, 530, { width: 540, align: 'center' });
+          } else {
+            // Format and display the number when finalOfferAmmount is not NaN
+            doc.rect(240, 520, 540, 30).fillAndStroke('#999999', 'black').fillColor('black').text(`INR ${new Intl.NumberFormat('en-IN', { currency: 'INR' }).format(proposal.finalOfferAmmount)}  + taxes per month`, 240, 530, { width: 540, align: 'center' });
+          }
+                  doc.addPage();
         //image add of selected content
         if(proposal.cubicalCount>0){
             doc.image('./assets/proposal/image/cubical.jpg', 0, 0, { width: 800, height: 566 });
@@ -184,10 +196,10 @@ const generateProposalPDF = (req, res, next) => {
         
         
 
-        if(proposal.workstation2x1>0){
-            doc.image('./assets/proposal/image/workstation2x1.jpg', 0, 0, { width: 800, height: 566 });
-        doc.addPage();
-        }
+        // if(proposal.workstation2x1>0){
+        //     doc.image('./assets/proposal/image/workstation2x1.jpg', 0, 0, { width: 800, height: 566 });
+        // doc.addPage();
+        // }
         
         
 
@@ -212,17 +224,17 @@ const generateProposalPDF = (req, res, next) => {
         
         
 
-        if(proposal.workstation5x2_5>0){
-          doc.text("In Development");
-        doc.addPage();
-        }
+        // if(proposal.workstation5x2_5>0){
+        //   doc.text("In Development");
+        // doc.addPage();
+        // }
         
         
 
-        if(proposal.workstation4x4>0){
-            doc.text("In Development");
-        doc.addPage();
-        }
+        // if(proposal.workstation4x4>0){
+        //     doc.text("In Development");
+        // doc.addPage();
+        // }
         
         
 
@@ -247,10 +259,10 @@ const generateProposalPDF = (req, res, next) => {
         
         
 
-        if(proposal.cabinMedium>0){
-            doc.image('./assets/proposal/image/md_cabin.jpg', 0, 0, { width: 800, height: 566 });
-        doc.addPage();
-        }
+        // if(proposal.cabinMedium>0){
+        //     doc.image('./assets/proposal/image/md_cabin.jpg', 0, 0, { width: 800, height: 566 });
+        // doc.addPage();
+        // }
         
         
 
@@ -358,14 +370,14 @@ const generateProposalPDF = (req, res, next) => {
         doc.addPage();
         }
 
-        if(proposal.nicheSeat2Pax>0){
-            doc.image('./assets/proposal/image/niche_seating.jpg', 0, 0, { width: 800, height: 566 });
-        doc.addPage();
-        }
-        if(proposal.nicheSeat4Pax>0){
-            doc.image('./assets/proposal/image/niche_seating_2.jpg', 0, 0, { width: 800, height: 566 });
-        doc.addPage();
-        }
+        // if(proposal.nicheSeat2Pax>0){
+        //     doc.image('./assets/proposal/image/niche_seating.jpg', 0, 0, { width: 800, height: 566 });
+        // doc.addPage();
+        // }
+        // if(proposal.nicheSeat4Pax>0){
+        //     doc.image('./assets/proposal/image/niche_seating_2.jpg', 0, 0, { width: 800, height: 566 });
+        // doc.addPage();
+        // }
         
         if(proposal.cafeteriaNumber>0){
             doc.image('./assets/proposal/image/cafeteria_seating.jpg', 0, 0, { width: 800, height: 566 });

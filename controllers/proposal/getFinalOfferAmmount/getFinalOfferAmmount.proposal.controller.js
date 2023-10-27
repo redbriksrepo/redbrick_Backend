@@ -4,7 +4,7 @@ const getFinalOfferAmmount = (req, res, next) => {
     try {
         let Id = req.params.Id;
         if (!Id) throw new Error('Id not provided').status = 400;
-        Proposal.findById(Id).select('finalOfferAmmount -_id').then((data) => {
+        Proposal.findById(Id).select('previousFinalOfferAmmount -_id').then((data) => {
             if (!data) throw new Error('Proposal Not Found').status = 400;
             res.status(200).send(data);
         }).catch((err) => {
