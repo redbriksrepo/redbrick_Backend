@@ -6,8 +6,8 @@ const declineProposal = (req, res, next) => {
         let Id = req.params.Id;
         let currentUser = req.user;
         let data = req.body;
-       console.log(Id)
-       console.log(data)
+    //    console.log(Id)
+    //    console.log(data)
        if (!Id) throw new Error('Id not Provided').status = 400;
        if (currentUser.role === 'sales head') {
            Proposal.findById(Id).then((proposal) => {

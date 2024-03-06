@@ -318,11 +318,11 @@ const generateLayout = async (req, res, next) => {
     doc.pipe(res);
     for (const data of flattenedArray) {
       try {
-        console.log('DATA => ',data);
+        // console.log('DATA => ',data);
         let color = getRandomColor();
-        console.log('COLOR => ',color)
+        // console.log('COLOR => ',color)
         for(let element of data){
-            console.log('ELEMENT => ',element);
+            // console.log('ELEMENT => ',element);
             await markSeatsOnLayoutAll(element,filePath, doc,color);
         }
         // await data.forEach(async (element) => {
@@ -335,7 +335,7 @@ const generateLayout = async (req, res, next) => {
     }
     // console.log("dgfhjkl;")
     doc.end();
-    console.log('END');
+    // console.log('END');
     // res.end();
   } catch (error) {
     console.error("Error occurred during JSON data retrieval:", error);

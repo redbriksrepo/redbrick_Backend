@@ -10,7 +10,7 @@ const deleteImage = (req, res, next) => {
         err.status = 403;
         throw err;
     } else {
-        console.log(data, id)
+        // console.log(data, id)
         Location.updateOne({_id:mongoose.Types.ObjectId(id)}, {$pull:{centerImage:{$in: [data.imgPath]}}}).then((updateResult) => {
             if(updateResult.acknowledged && updateResult.modifiedCount === 1){
                 fs.unlink(data.imgPath,(err) => {

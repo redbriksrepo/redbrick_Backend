@@ -1,4 +1,3 @@
-const dashboardController = require('../controllers/dashboard/main.dashboard.controller');
 const middleware = require('../middlewares/main.middlewares');
 const authRoute = require('./auth/auth.route');
 const brokerRoute = require('./broker/broker.route');
@@ -10,7 +9,6 @@ const proposalRoute = require('./proposal/proposal.route');
 const userRoute = require('./user/user.route');
 const costRoute = require('./cost/cost.route')
 const reportRoute = require('./report/weeklyReport.route');
-const layoutDataRoute = require('./layoutData/layoutData.route');
 const brokerDashboardRoute = require('./brokerDashboard/brokerDashboard.route');
 const diagramRoute = require('./diagram/diagram.route');
 const mainRoute = require('express').Router();
@@ -34,8 +32,6 @@ mainRoute.use('/broker', brokerRoute);
 mainRoute.use('/cost', costRoute);
 
 mainRoute.use('/report',reportRoute);
-
-mainRoute.use('/layoutData',layoutDataRoute);
 
 mainRoute.use('/brokerDashboard',brokerDashboardRoute);
 

@@ -123,7 +123,7 @@ const proposalSchema = new Schema({
     //     default:''
     // },
     seatsData:{
-        type:Array
+        type:JSON
     },
     seatSize:{
         type:Array

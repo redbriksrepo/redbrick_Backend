@@ -4,7 +4,6 @@ const PDFDocument = require('pdfkit');
 const path = require('path');
 const Proposal = require('../../../models/proposal/proposal.model');
 const { default: mongoose } = require('mongoose');
-const JsonData = require('../../../models/jsonData/jsonData.model')
 
 const addLockedSeats = (req, res, next) => {
     let Id = req.params.Id;

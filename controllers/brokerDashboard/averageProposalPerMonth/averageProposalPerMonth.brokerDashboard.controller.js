@@ -14,7 +14,7 @@ const averageProposalPerMonth = async (req, res, next) => {
         //     return new Date(year, month, 0).getDate();
         //   }
         Proposal.find({ brokerCategory: mongoose.Types.ObjectId(brokerId), createdAt: { $gte: new Date(targetYear, targetMonth - 1, 1), $lt: new Date(targetYear, targetMonth, 1) } }).then((proposals) => {
-            console.log(proposals.length)
+            // console.log(proposals.length)
             // let days = daysInMonth(targetMonth,targetYear)
             // console.log("days ==>", days)
             // let averageProposalInMonth = proposals.length/days

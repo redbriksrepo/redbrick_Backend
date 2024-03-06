@@ -14,12 +14,12 @@ const getBorderDataById = (req, res, next) => {
                     .select('layoutBorder totalNoOfWorkstation selectedNoOfSeats') // Select only the layoutBorder field
                     .then((location) => {
                         if (location.layoutBorder.length==0) {
-                            console.log("No Data in layoutBorder")
+                            // console.log("No Data in layoutBorder")
                             res.status(200).send({Message:'No data'})
                         } else {
                             let data=location.layoutBorder;
                            
-                            console.log(location)
+                            // console.log(location)
                             res.status(200).send({layoutArray:data,totalNoOfWorkstation:location.totalNoOfWorkstation-location.selectedNoOfSeats}); // Send the layoutdata field
                          
                         }

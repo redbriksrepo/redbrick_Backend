@@ -35,7 +35,7 @@ const getAllBroker = async (req, res, next) => {
             const brokerObject = broker.toObject();
             brokerObject.inProgress = totalProposals-approveProposals;
             brokerObject.approveProposal = approveProposals;
-            console.log(brokerObject)
+            // console.log(brokerObject)
             brokerdata.push(brokerObject);
         }));
 

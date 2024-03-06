@@ -13,7 +13,7 @@ const approveClouser = (req, res, next) => {
             Proposal.findById(Id).then((proposal) => {
                 Proposal.updateOne({ _id: proposal._id }, { $set: {salesHeadFinalOfferAmmount:data.salesHeadFinalOfferAmmount, finalOfferAmmount: data.finalOfferAmmount || proposal.clientFinalOfferAmmount || proposal.previousFinalOfferAmmount, status: 'Completed and approved', lockedProposal:false } }).then((updateResult) => {
                 LogController.findOneAndUpdate({proposalId: proposal._id}, {$set:{'price':data.salesHeadFinalOfferAmmount}}).then(result=>{
-                    console.log(result)
+                    // console.log(result)
                 }).catch((err) => {
 
                     console.error('Error while updating Log data:', err);

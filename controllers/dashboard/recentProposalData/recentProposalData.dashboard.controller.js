@@ -31,7 +31,7 @@ const recentProposalData = async (req, res, next) => {
         totalNoOfWorkstation:locationData.totalNoOfWorkstation,
         systemRackRate:locationData.rackRate
       };
-      console.log(sendData)
+      // console.log(sendData)
 
       res.status(200).send(sendData);
     } else {

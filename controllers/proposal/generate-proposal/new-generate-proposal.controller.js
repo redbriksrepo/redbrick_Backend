@@ -53,10 +53,10 @@ const generateProposal = (req, res, next) => {
 
 const generateProposalPDF = (req, res, next) => {
     let Id = req.params.Id;
-    console.log(Id)
+    // console.log(Id)
    let data= req.body;
    Proposal.findById(Id).populate('salesPerson', 'userName').then((proposal) => {
-    console.log(proposal)
+    // console.log(proposal)
     Location.findOne({ location: proposal.location, center: proposal.center }).then((locationdata) => {
         let finalAmount;
         let perSeatPrice;
@@ -122,9 +122,12 @@ const generateProposalPDF = (req, res, next) => {
           const imageFilePath = proposal.imagePath;
 
     // Add the image to the PDF
-    doc.image(imageFilePath, 0, 0, { fit: [800, 566], align: 'center', valign: 'center' });
-
+    if(imageFilePath){
+        doc.image(imageFilePath, 0, 0, { fit: [800, 566], align: 'center', valign: 'center' });
         doc.addPage();
+    }
+   
+     
         doc.rect(20, 10, 100, 30).fillAndStroke('#5e5e5e', 'black').fillColor('white').text('Proposal ID', 20, 20, { width: 100, align: 'center' })
         doc.rect(120, 10, 660, 30).fillAndStroke('#5e5e5e', 'black').fillColor('white').text(proposal._id , 120, 20, { width: 660, align: 'center' });
         

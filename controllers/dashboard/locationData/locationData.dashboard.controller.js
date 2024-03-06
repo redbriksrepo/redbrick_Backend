@@ -38,6 +38,10 @@ const getLocationData = (req, res, next) => {
 
           // Fetch proposal counts for each location
           for (const location of locations) {
+            const totalNoOfWorkstation = locations
+            .filter((loc) => loc.location === location.location)
+            .reduce((acc, loc) => acc + loc.totalNoOfWorkstation, 0);
+        
             const proposalCountToday = await Proposal.countDocuments({
               location: location.location,
               createdAt: {
@@ -65,8 +69,8 @@ const getLocationData = (req, res, next) => {
             if (!structuredData[location.location]) {
               structuredData[location.location] = {
                 location: location.location,
-                // availableNoOfWorkstation: location.availableNoOfWorkstation,
-                totalNoOfWorkstation: location.totalNoOfWorkstation, // Initialize with 0
+                // totalNoOfWorkstation: location.totalNoOfWorkstation,
+                totalNoOfWorkstation, 
                 selectedNoOfSeats: location.selectedNoOfSeats,
                 systemPrice: location.systemPrice,
                 bookingPriceUptilNow: location.bookingPriceUptilNow,

@@ -1,5 +1,5 @@
 const Location = require("../../../models/location/location.model");
-const Proposal = require('../../../models/proposal/proposal.model');
+const Proposal = require("../../../models/proposal/proposal.model");
 
 const getFloorData = async (req, res, next) => {
   try {
@@ -7,32 +7,32 @@ const getFloorData = async (req, res, next) => {
     const centerName = req.params.centerName; // Center name from the URL parameter
 
     // Search for floors that match the given location and center names
-    const floors = await Location.find({ location: locationName, center: centerName }).select('floor selectedNoOfSeats totalNoOfWorkstation bookingPriceUptilNow totalProposals rackRate currentRackRate systemPrice');
-    
+    const floors = await Location.find({ location: locationName, center: centerName }).select(
+      'floor selectedNoOfSeats totalNoOfWorkstation bookingPriceUptilNow totalProposals rackRate currentRackRate systemPrice'
+    );
+
     if (floors.length === 0) {
       return res.status(404).json({ message: "No floors found for the given location and center names." });
     }
-    
-    // Initialize the finalized proposal count object
-    const finalizedProposal = {
-      status: "Completed and Locked",
-      count: 0,
-    };
 
-    // Format the data into the desired structure
-    floors.map(async (floor) => {
-      // Count the number of proposals with the given status for the same location, center, and floor
-      const proposalCount = await Proposal.countDocuments({
-        location: locationName,
-        center: centerName,
-        floor: floor.floor,
-        status: finalizedProposal.status,
-      });
+    // Initialize an array to store formatted floor data
+    const formattedData = [];
 
-      // Update the count in the finalizedProposal object
-      finalizedProposal.count = proposalCount;
-      console.log(finalizedProposal)
-      let data = [{
+    // Count the number of finalized proposals for all floors
+    const proposalCounts = await Promise.all(
+      floors.map(async (floor) => {
+        return Proposal.countDocuments({
+          location: locationName,
+          center: centerName,
+          floor: floor.floor,
+          status: "Completed and Locked",
+        });
+      })
+    );
+
+    // Populate the formattedData array with the floor data and proposal counts
+    floors.forEach((floor, index) => {
+      formattedData.push({
         floorName: floor.floor,
         floorData: {
           systemPrice: floor.systemPrice,
@@ -42,14 +42,14 @@ const getFloorData = async (req, res, next) => {
           totalProposals: floor.totalProposals,
           rackRate: floor.rackRate,
           currentRackRate: floor.currentRackRate,
-          finalizedProposal:proposalCount
+          finalizedProposal: proposalCounts[index],
         },
-      }];
-      res.json({ data });
+      });
     });
-    
+
     // Send the formatted data along with the finalizedProposal object as a JSON response
-    
+    res.json({ data: formattedData });
+
   } catch (error) {
     // Handle errors appropriately (e.g., send an error response)
     console.error(error);

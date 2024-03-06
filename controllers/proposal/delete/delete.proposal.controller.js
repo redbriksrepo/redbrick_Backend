@@ -21,7 +21,7 @@ const deleteProposal = async (req, res, next) => {
       } else {
         const locationId = proposal.locationId;
         const totalSeatsToRemove = proposal.totalNumberOfSeats;
-
+        const proposalPrice = proposal.finalOfferAmmount;
         // Delete the proposal
         const result = await Proposal.findByIdAndDelete(proposalId);
 
@@ -33,12 +33,13 @@ const deleteProposal = async (req, res, next) => {
           // Find the location and its current selectedNoOfSeats
           const location = await Location.findById(locationId);
           const currentSelectedNoOfSeats = location.selectedNoOfSeats;
-
+          const bookingPriceUptilNow = location.bookingPriceUptilNow
+          const updatedPriceOfLoaction = bookingPriceUptilNow - proposalPrice
           // Calculate the updated selectedNoOfSeats by subtracting the totalSeatsToRemove
           const updatedSelectedNoOfSeats = currentSelectedNoOfSeats - totalSeatsToRemove;
 
           // Update the Location model with the new selectedNoOfSeats value
-          await Location.findByIdAndUpdate(locationId, { $set: { selectedNoOfSeats: updatedSelectedNoOfSeats } });
+          await Location.findByIdAndUpdate(locationId, { $set: { selectedNoOfSeats: updatedSelectedNoOfSeats, bookingPriceUptilNow:updatedPriceOfLoaction } });
 
           // Update the ProposalLog
           const resp = await ProposalLog.updateOne(

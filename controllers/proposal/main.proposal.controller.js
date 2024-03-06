@@ -1,6 +1,5 @@
 const create = require('./create/create.proposal.controller');
 const getAll = require('./getAll/getAll.proposal.controller');
-// const generateLayout = require('./layout/layout.proposal.controller');
 const sendLayout = require('./layout/sendDataOfLayout.controller')
 const sendOtp = require('./send-otp/send-otp.controller');
 const verifyOtp = require('./verify-otp/verify-otp.controller');
@@ -14,7 +13,6 @@ const getProposalById = require('./getProposalById/getProposalById.controller')
 const lockProposal = require('./lockProposal/lockProposal.proposal.controller')
 const updateProposalId = require('./updateProposalId/update-proposalID.controller');
 const addLockSeat = require('./addLockSeats/add-locked.controller');
-const viewLayoutSales = require('./viewLayoutForSales/veiw-layout-sales-dashboard.controller');
 const sendImageData = require('./layout/saveImageData.proposal.controller');
 const getAllLockedProposal = require('./getAllLockedProposal/get-locked-proposal.proposal.controller')
 const getLayoutDataByLocationId = require('./sendDataOfLayoutsOfLockedProposal/getLayoutData-LockedProposal.proposal.controller')
@@ -37,7 +35,6 @@ const proposalController = {
     lockProposal,
     updateProposalId,
     addLockSeat:addLockSeat,
-    viewLayoutSales:viewLayoutSales,
     sendImage:sendImageData,
     getLockedProposal:getAllLockedProposal,
     getLayoutDataByLocationId:getLayoutDataByLocationId,

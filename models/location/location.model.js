@@ -68,6 +68,9 @@ const locationModel = new Schema({
     carParkCharge:{
         type: Number
     },
+    bikeParkCharge:{
+        type: Number
+    },
     futureRackRate:{
         type:Number,
         default:0

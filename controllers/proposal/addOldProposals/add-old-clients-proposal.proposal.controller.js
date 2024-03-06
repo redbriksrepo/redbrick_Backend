@@ -5,7 +5,7 @@ const { default: mongoose } = require("mongoose");
 const addOldClientProposals = (req, res, next) => {
   try {
     const data = req.body;
-    console.log(data.location, data.center, data.floor);
+    // console.log(data.location, data.center, data.floor);
 
     // Check if a previous proposal exists with the same criteria
     Proposal.findOne({

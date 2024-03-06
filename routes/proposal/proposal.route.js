@@ -33,15 +33,13 @@ proposalRoute.get('/finalOfferAmmount/:Id', middleware.authentication, proposalC
 
 proposalRoute.post('/esclateToClosure/:Id', middleware.authentication,middleware.authentication, proposalController.updateFinalOfferAmmount);
 
-proposalRoute.get('/getProposalById/:Id', middleware.authentication,proposalController.getProposalById);
+proposalRoute.get('/getProposalById/:Id',proposalController.getProposalById);
 
 proposalRoute.post('/approveProposal/:Id', middleware.authentication,proposalController.approveProposal, proposalController.generate.generateProposalPDF);
 
-proposalRoute.post('/lockProposal/:Id', middleware.authentication,proposalController.lockProposal, proposalController.addLockSeat);
+proposalRoute.post('/lockProposal/:Id', middleware.authentication,proposalController.lockProposal);
 
 proposalRoute.post('/updateProposalId/:Id',proposalController.updateProposalId);
-
-proposalRoute.get('/viewLayoutSales/:Id', middleware.authentication,proposalController.viewLayoutSales);
 
 proposalRoute.post('/saveImage/:Id', middleware.authentication,proposalController.sendImage);
 
